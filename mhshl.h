@@ -10,8 +10,8 @@ void divide();
 class ScoringEvent{
 public:
 	ScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec);
-	std::string toString();
-	std::string printHeading();
+	void printString();
+	void printHeading();
 	std::string gameID; // Format for this is MMDDYY-HomeAbbr. For example, 120515-QCB
 	std::string teamID; // The same shorthand team identifier.
 	int scorer;
@@ -24,13 +24,15 @@ public:
 class PenaltyEvent{
 public:
 	PenaltyEvent(std::string gID, std::string tID, int pl, int dur, int per, int sec, std::string charge);
-	std::string toString();
+	void printString();
+	void printHeading();
 	std::string gameID;
 	std::string teamID;
 	int player;
 	int duration;
 	int period;
 	int time;
+	bool scoredOn;
 	std::string offense;
 };
 
