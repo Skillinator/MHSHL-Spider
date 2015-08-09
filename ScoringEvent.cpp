@@ -24,12 +24,6 @@ void ScoringEvent::printString(){
 	spaceBuffer(4, std::to_string(assist1));
 	spaceBuffer(5, std::to_string(assist2));
 	spaceBuffer(8, std::to_string(period));
-	spaceBuffer(2, std::to_string(time/60));
-	std::cout<<":";
-	if(time%60 < 10){
-		std::cout<<0<<time%60;
-	}else{
-		std::cout<<time%60;
-	}
+	std::cout<<" "<<twoPlace(time/60)<<":"<<twoPlace(time%60);
 	std::cout<<"\n";
 }

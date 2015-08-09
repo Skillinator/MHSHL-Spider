@@ -1,2 +1,2 @@
 all:
-	g++ core.cpp ScoringEvent.cpp PenaltyEvent.cpp -lcurl -std=c++11
+	g++ core.cpp Game.cpp ScoringEvent.cpp PenaltyEvent.cpp -lcurl -std=c++11

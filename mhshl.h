@@ -5,8 +5,8 @@
 #include <string>
 
 void spaceBuffer(int len, std::string message);
-void divide();
-
+// Will append the zero to the beginning of a number to bring it to two places.
+std::string twoPlace(int num);
 class ScoringEvent{
 public:
 	ScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec);
@@ -32,7 +32,7 @@ public:
 	int duration;
 	int period;
 	int time;
-	bool scoredOn;
+	int timeRemaining;
 	std::string offense;
 };
 
@@ -76,17 +76,20 @@ Game is a basic class to hold information about, well, a game.
 
 class Game{
 public:
-	Game();
-	std::string toString();
-
+	Game(int m, int d, int y, int st, std::string home, std::string away, bool var);
+	void printString();
+	void printHeading();
 	// Date related stuff
+
+	std::string ID;
+
 	int month;
 	int day;
 	int year;
 	int startTime; // In minutes
 
-	int homeTeam;
-	int awayTeam;
+	std::string homeTeam;
+	std::string awayTeam;
 
 	int homeScore;
 	int awayScore;

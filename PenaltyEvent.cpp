@@ -11,11 +11,11 @@ PenaltyEvent::PenaltyEvent(std::string gID, std::string tID, int pl, int dur, in
 	period = per;
 	time = t;
 	offense = charge;
-	scoredOn = false;
+	timeRemaining = dur*60;
 }
 
 void PenaltyEvent::printHeading(){
-	std::cout<<"\n  GameID   team  player  duration   penalty   period  time\n";
+	std::cout<<"\n  GameID   team  player  duration   penalty   period  time  remaining \n";
 }
 
 void PenaltyEvent::printString(){
@@ -25,12 +25,8 @@ void PenaltyEvent::printString(){
 	spaceBuffer(10, std::to_string(duration));
 	spaceBuffer(11, offense);
 	spaceBuffer(8, std::to_string(period));
-	spaceBuffer(2, std::to_string(time/60));
-	std::cout<<":";
-	if(time%60 < 10){
-		std::cout<<0<<time%60;
-	}else{
-		std::cout<<time%60;
-	}
+	std::cout<<" "<<twoPlace(time/60)<<":"<<twoPlace(time%60);
+	std::cout<<"   ";
+	std::cout<<twoPlace(timeRemaining/60)<<":"<<twoPlace(timeRemaining%60);
 	std::cout<<"\n";
 }

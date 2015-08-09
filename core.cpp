@@ -16,6 +16,13 @@ void spaceBuffer(int len, std::string str){
 	}
 }
 
+std::string twoPlace(int num){
+	if(num < 10){
+		return "0" + std::to_string(num);
+	}
+	return std::to_string(num);
+}
+
 int main(){
 	/*
 	CURL *curl;
@@ -45,6 +52,10 @@ int main(){
 	PenaltyEvent pe = PenaltyEvent("011115-QCB", "QCB", 22, 10, 3, 480, "Elbowing");
 	pe.printHeading();
 	pe.printString();
+
+	Game g = Game(11, 1, 15, 1205, "QCB", "DUB", true);
+	g.printHeading();
+	g.printString();
 
 	return 0;
 }
