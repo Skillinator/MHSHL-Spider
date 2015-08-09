@@ -28,26 +28,12 @@ public:
 	void printHeading();
 	std::string gameID;
 	std::string teamID;
-	int player;
+	int player; 
 	int duration;
 	int period;
 	int time;
 	bool scoredOn;
 	std::string offense;
-};
-
-/*
-League is the base container class for all the teams, games, and players.
-*/
-class League{
-public:
-	League();
-	bool varsity;
-	std::vector<Game> games;
-	std::vector<Team> teams;
-	std::vector<Player> players;
-	std::vector<ScoringEvent> goals;
-	std::vector<PenaltyEvent> penalties;
 };
 
 class Team{
@@ -97,7 +83,7 @@ public:
 	int month;
 	int day;
 	int year;
-	int time; // In minutes
+	int startTime; // In minutes
 
 	int homeTeam;
 	int awayTeam;
@@ -111,8 +97,24 @@ public:
 	int period; // 1-3 self explanatory. 4 is OT. 5 is SO.
 	int time; // Time is in seconds remaining in the period. -1 signifies a final.
 
-	vector<PenaltyEvent> penaltyEvents;
-	vector<ScoringEvent> scoringEvents; 
+	std::vector<PenaltyEvent> penaltyEvents;
+	std::vector<ScoringEvent> scoringEvents; 
 };
+
+
+/*
+League is the base container class for all the teams, games, and players.
+*/
+class League{
+public:
+	League();
+	bool varsity;
+	std::vector<Game> games;
+	std::vector<Team> teams;
+	std::vector<Player> players;
+	std::vector<ScoringEvent> goals;
+	std::vector<PenaltyEvent> penalties;
+};
+
 
 #endif

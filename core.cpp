@@ -1,7 +1,23 @@
 #include <curl/curl.h>
 #include <iostream>
+#include <string>
+#include "mhshl.h"
+
+void spaceBuffer(int len, std::string str){
+	for(int x = 0; x < (len-str.length())/2; x++){
+		std::cout<<" ";
+	}
+	if((len-str.length())%2){
+		std::cout<<" ";
+	}
+	std::cout<<str;
+	for(int x = 0; x < (len-str.length())/2; x++){
+		std::cout<<" ";
+	}
+}
 
 int main(){
+	/*
 	CURL *curl;
 	CURLcode res;
 
@@ -20,5 +36,15 @@ int main(){
 		curl_easy_cleanup(curl);
 	}
 	curl_global_cleanup();
+	*/
+
+	ScoringEvent se = ScoringEvent("011115-QCB", "QCB", 16, 49, 97, 3, 126);
+	se.printHeading();
+	se.printString();
+
+	PenaltyEvent pe = PenaltyEvent("011115-QCB", "QCB", 22, 10, 3, 480, "Elbowing");
+	pe.printHeading();
+	pe.printString();
+
 	return 0;
 }

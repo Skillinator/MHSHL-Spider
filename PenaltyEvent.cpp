@@ -1,4 +1,4 @@
-#include <stdio>
+#include <iostream>
 #include <string>
 #include <vector>
 #include "mhshl.h"
@@ -15,18 +15,22 @@ PenaltyEvent::PenaltyEvent(std::string gID, std::string tID, int pl, int dur, in
 }
 
 void PenaltyEvent::printHeading(){
-	std::cout<<"  GameID   team  player  period  time\n";
+	std::cout<<"\n  GameID   team  player  duration   penalty   period  time\n";
 }
 
 void PenaltyEvent::printString(){
 	spaceBuffer(10, gameID);
 	spaceBuffer(6, teamID);
-	spaceBuffer(8, player);
-	spaceBuffer(4, assist1);
-	spaceBuffer(5, assist2);
-	spaceBuffer(8, period);
-	spaceBuffer(2, time/60);
+	spaceBuffer(8, std::to_string(player));
+	spaceBuffer(10, std::to_string(duration));
+	spaceBuffer(11, offense);
+	spaceBuffer(8, std::to_string(period));
+	spaceBuffer(2, std::to_string(time/60));
 	std::cout<<":";
-	spaceBuffer(2, time%60);
+	if(time%60 < 10){
+		std::cout<<0<<time%60;
+	}else{
+		std::cout<<time%60;
+	}
 	std::cout<<"\n";
 }
