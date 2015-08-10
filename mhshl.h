@@ -39,6 +39,8 @@ public:
 class Team{
 public:
 	Team(std::string abbr, std::string n, std::string c, int identifier);
+	void printHeading();
+	void printString();
 	std::string abbreviation;
 	std::string name;
 	std::string city;
@@ -57,6 +59,8 @@ public:
 class Player{
 public:
 	Player(std::string tID, std::string name, int num);
+	void printHeading();
+	void printString();
 	std::string team; // Abbreviation
 	std::string name;
 	int number;

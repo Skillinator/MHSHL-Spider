@@ -57,5 +57,13 @@ int main(){
 	g.printHeading();
 	g.printString();
 
+	Team t = Team("QCB", "Blues", "Quad City", 47180);
+	t.printHeading();
+	t.printString();
+
+	Player p = Player("QCB", "Alexander Skillin", 16);
+	p.printHeading();
+	p.printString();
+
 	return 0;
 }
