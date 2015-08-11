@@ -104,8 +104,6 @@ public:
 	int period; // 1-3 self explanatory. 4 is OT. 5 is SO.
 	int time; // Time is in seconds remaining in the period. -1 signifies a final.
 
-	std::vector<PenaltyEvent> penaltyEvents;
-	std::vector<ScoringEvent> scoringEvents; 
 };
 
 
@@ -114,8 +112,10 @@ League is the base container class for all the teams, games, and players.
 */
 class League{
 public:
-	League();
+	League(bool varsity);
 	bool varsity;
+	void addTeam(std::string abbr, std::string name, std::string city, int identifier)
+	void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec)
 	std::vector<Game> games;
 	std::vector<Team> teams;
 	std::vector<Player> players;
