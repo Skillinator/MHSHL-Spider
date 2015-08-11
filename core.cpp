@@ -7,9 +7,10 @@ void spaceBuffer(int len, std::string str){
 	for(int x = 0; x < (len-str.length())/2; x++){
 		std::cout<<" ";
 	}
-	if((len-str.length())%2){
+	
+	if((len-str.length())%2)
 		std::cout<<" ";
-	}
+
 	std::cout<<str;
 	for(int x = 0; x < (len-str.length())/2; x++){
 		std::cout<<" ";
@@ -17,10 +18,38 @@ void spaceBuffer(int len, std::string str){
 }
 
 std::string twoPlace(int num){
-	if(num < 10){
+	if(num < 10)
 		return "0" + std::to_string(num);
-	}
 	return std::to_string(num);
+}
+
+void showTeams(League l){
+	if(l.teams.size() == 0)
+		return;
+
+	l.teams[0].printHeading();
+	for(int i = 0; i < l.teams.size(); i++){
+			l.teams[i].printString();
+	}
+}
+
+void showPlayers(League l){
+	if(l.players.size() == 0)
+		return;
+
+	l.players[0].printHeading();
+	for(int i = 0; i < l.players.size(); i++){
+		l.players[i].printString();
+	}
+}
+void showGames(League l){
+	if(l.games.size() == 0)
+		return;
+
+	l.games[0].printHeading();
+	for(int i = 0; i < l.games.size(); i++){
+		l.games[i].printString();
+	}
 }
 
 int main(){
@@ -45,25 +74,34 @@ int main(){
 	curl_global_cleanup();
 	*/
 
-	ScoringEvent se = ScoringEvent("011115-QCB", "QCB", 16, 49, 97, 3, 126);
-	se.printHeading();
-	se.printString();
+	League l = League(true);
+	l.addTeam("QCB", "Blues", "Quad City", 1);
+	l.addTeam("DBQ", "Devils", "Dubuque", 2);
+	l.addTeam("CDR", "Jr. Roughriders", "Cedar Rapids", 3);
+	l.addTeam("WAT", "Warriors", "Waterloo", 4);
+	l.addTeam("DMC", "Capitals", "Des Moines", 5);
+	l.addTeam("DMO", "Oak Leafs", "Des Moines", 6);
+	l.addTeam("AMS", "Little Cyclones", "Ames", 7);
+	l.addTeam("MCM", "Mohawks", "Mason City", 8);
+	l.addTeam("SCM", "Metros", "Sioux City", 9);
+	l.addTeam("KCJ", "Jets", "Kansas City", 10);
+	l.addTeam("OJL", "Jr. Lancers", "Omaha", 11);
+	l.addTeam("LJS", "Jr. Stars", "Lincoln", 12);
 
-	PenaltyEvent pe = PenaltyEvent("011115-QCB", "QCB", 22, 10, 3, 480, "Elbowing");
-	pe.printHeading();
-	pe.printString();
+	l.addPlayer("QCB", "Test Player 1", 99);
+	l.addPlayer("QCB", "Test Player 2", 87);
+	l.addPlayer("QCB", "Test Player 3", 66);
 
-	Game g = Game(11, 1, 15, 1205, "QCB", "DUB", true);
-	g.printHeading();
-	g.printString();
+	l.addGame(11, 1, 15, 1200, "QCB", "CDR", true);
+	showTeams(l);
+	showPlayers(l);
+	showGames(l);
 
-	Team t = Team("QCB", "Blues", "Quad City", 47180);
-	t.printHeading();
-	t.printString();
 
-	Player p = Player("QCB", "Alexander Skillin", 16);
-	p.printHeading();
-	p.printString();
+	l.addScoringEvent("110115-QCB", "QCB", 66, 99, 87, 3, 60);
 
+	showTeams(l);
+	showPlayers(l);
+	showGames(l);
 	return 0;
 }

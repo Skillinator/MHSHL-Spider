@@ -114,8 +114,10 @@ class League{
 public:
 	League(bool varsity);
 	bool varsity;
-	void addTeam(std::string abbr, std::string name, std::string city, int identifier)
-	void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec)
+	bool addTeam(std::string abbr, std::string name, std::string city, int identifier);
+	bool addPlayer(std::string tID, std::string name, int number);
+	void addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec);
+	bool addGame(int m, int d, int y, int st, std::string home, std::string away, bool var);
 	std::vector<Game> games;
 	std::vector<Team> teams;
 	std::vector<Player> players;
