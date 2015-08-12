@@ -53,6 +53,7 @@ public:
 	int pts;
 	int gf;
 	int ga;
+	int pim;
 	int streak;
 };
 

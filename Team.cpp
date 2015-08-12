@@ -8,7 +8,7 @@ Team::Team(std::string abbr, std::string n, std::string c, int identifier){
 	name = n;
 	city = c;
 	id = identifier;
-	gp = w = l = ot = so = pts = gf = ga = streak = 0;
+	gp = w = l = ot = so = pts = gf = ga = pim = streak = 0;
 }
 
 /*
@@ -40,7 +40,7 @@ Jr. Lancers
 */
 
 void Team::printHeading(){
-	std::cout<<"\n abbr      city            name        gp   w   l  ot  so  pts  gf  ga  streak\n";
+	std::cout<<"\n abbr      city            name        gp   w   l  ot  so  pts  gf  ga  pim  streak\n";
 }
 
 void Team::printString(){
@@ -55,6 +55,7 @@ void Team::printString(){
 	spaceBuffer(5, std::to_string(pts));
 	spaceBuffer(4, std::to_string(gf));
 	spaceBuffer(4, std::to_string(ga));
+	spaceBuffer(5, std::to_string(pim));
 	spaceBuffer(8, std::to_string(streak));
 	std::cout<<"\n";
 }
