@@ -9,6 +9,7 @@ void spaceBuffer(int len, std::string message);
 std::string twoPlace(int num);
 class ScoringEvent{
 public:
+	ScoringEvent();
 	ScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec);
 	void printString();
 	void printHeading();
@@ -23,6 +24,7 @@ public:
 
 class PenaltyEvent{
 public:
+	PenaltyEvent();
 	PenaltyEvent(std::string gID, std::string tID, int pl, int dur, int per, int sec, std::string charge);
 	void printString();
 	void printHeading();
@@ -38,6 +40,7 @@ public:
 
 class Team{
 public:
+	Team();
 	Team(std::string abbr, std::string n, std::string c, int identifier);
 	void printHeading();
 	void printString();
@@ -59,6 +62,7 @@ public:
 
 class Player{
 public:
+	Player();
 	Player(std::string tID, std::string name, int num);
 	void printHeading();
 	void printString();
@@ -81,12 +85,13 @@ Game is a basic class to hold information about, well, a game.
 
 class Game{
 public:
+	Game();
 	Game(int m, int d, int y, int st, std::string home, std::string away, bool var);
 	void printString();
 	void printHeading();
 	// Date related stuff
 
-	std::string ID;
+	std::string id;
 
 	int month;
 	int day;
@@ -117,8 +122,16 @@ public:
 	bool varsity;
 	bool addTeam(std::string abbr, std::string name, std::string city, int identifier);
 	bool addPlayer(std::string tID, std::string name, int number);
+	void addPenaltyEvent(std::string gID, std::string tID, int player, int per, int time, int duration, std::string penalty);
 	void addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec);
 	bool addGame(int m, int d, int y, int st, std::string home, std::string away, bool var);
+	
+	Game* getGame(std::string gID);
+	Player* getPlayer(std::string tID, int num);
+	PenaltyEvent* getPenaltyEvent(std::string gID, std::string tID, int player, int per, int time, int duration, std::string penalty);
+	ScoringEvent* getScoringEvent(std::string gID, int per, int time);
+	Team* getTeam(std::string tID);
+
 	std::vector<Game> games;
 	std::vector<Team> teams;
 	std::vector<Player> players;

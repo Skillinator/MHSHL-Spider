@@ -3,6 +3,12 @@
 #include <vector>
 #include "mhshl.h"
 
+ScoringEvent::ScoringEvent(){
+	gameID="NULL";
+	teamID="NUL";
+	scorer = assist1 = assist2 = period = time = 0;
+}
+
 ScoringEvent::ScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int t){
 	gameID = gID;
 	teamID = tID;

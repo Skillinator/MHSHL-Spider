@@ -3,6 +3,12 @@
 #include <vector>
 #include "mhshl.h"
 
+Player::Player(){
+	team = "NUL";
+	name = "NULL";
+	number = gp = g = a = pp = sh = pim = goalStreak = pointStreak = 0;
+}
+
 Player::Player(std::string tID, std::string gname, int num){
 	team = tID;
 	name = gname;

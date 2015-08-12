@@ -3,6 +3,12 @@
 #include <vector>
 #include "mhshl.h"
 
+Team::Team(){
+	abbreviation = "NUL";
+	name = city = "NULL";
+	id = gp = w = l = ot = so = pts = gf = ga = pim = streak = 0;
+}
+
 Team::Team(std::string abbr, std::string n, std::string c, int identifier){
 	abbreviation = abbr;
 	name = n;

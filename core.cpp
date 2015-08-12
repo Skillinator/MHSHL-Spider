@@ -75,24 +75,25 @@ int main(){
 	*/
 
 	League l = League(true);
-	l.addTeam("QCB", "Blues", "Quad City", 1);
-	l.addTeam("DBQ", "Devils", "Dubuque", 2);
-	l.addTeam("CDR", "Jr. Roughriders", "Cedar Rapids", 3);
-	l.addTeam("WAT", "Warriors", "Waterloo", 4);
-	l.addTeam("DMC", "Capitals", "Des Moines", 5);
-	l.addTeam("DMO", "Oak Leafs", "Des Moines", 6);
-	l.addTeam("AMS", "Little Cyclones", "Ames", 7);
-	l.addTeam("MCM", "Mohawks", "Mason City", 8);
-	l.addTeam("SCM", "Metros", "Sioux City", 9);
-	l.addTeam("KCJ", "Jets", "Kansas City", 10);
-	l.addTeam("OJL", "Jr. Lancers", "Omaha", 11);
-	l.addTeam("LJS", "Jr. Stars", "Lincoln", 12);
+	std::cout<<l.addTeam("QCB", "Blues", "Quad City", 1);
+	std::cout<<l.addTeam("DBQ", "Devils", "Dubuque", 2);
+	std::cout<<l.addTeam("CDR", "Jr. Roughriders", "Cedar Rapids", 3);
+	std::cout<<l.addTeam("WAT", "Warriors", "Waterloo", 4);
+	std::cout<<l.addTeam("DMC", "Capitals", "Des Moines", 5);
+	std::cout<<l.addTeam("DMO", "Oak Leafs", "Des Moines", 6);
+	std::cout<<l.addTeam("AMS", "Little Cyclones", "Ames", 7);
+	std::cout<<l.addTeam("MCM", "Mohawks", "Mason City", 8);
+	std::cout<<l.addTeam("SCM", "Metros", "Sioux City", 9);
+	std::cout<<l.addTeam("KCJ", "Jets", "Kansas City", 10);
+	std::cout<<l.addTeam("OJL", "Jr. Lancers", "Omaha", 11);
+	std::cout<<l.addTeam("LJS", "Jr. Stars", "Lincoln", 12);
 
-	l.addPlayer("QCB", "Test Player 1", 99);
-	l.addPlayer("QCB", "Test Player 2", 87);
-	l.addPlayer("QCB", "Test Player 3", 66);
+	std::cout<<l.addPlayer("QCB", "Test Player 1", 99);
+	std::cout<<l.addPlayer("QCB", "Test Player 2", 87);
+	std::cout<<l.addPlayer("QCB", "Test Player 3", 66);
 
-	l.addGame(11, 1, 15, 1200, "QCB", "CDR", true);
+	std::cout<<l.addGame(11, 1, 15, 1200, "QCB", "CDR", true);
+
 	showTeams(l);
 	showPlayers(l);
 	showGames(l);
@@ -103,5 +104,6 @@ int main(){
 	showTeams(l);
 	showPlayers(l);
 	showGames(l);
+
 	return 0;
 }

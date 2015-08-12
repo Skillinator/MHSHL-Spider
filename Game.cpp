@@ -3,6 +3,12 @@
 #include <vector>
 #include "mhshl.h"
 
+Game::Game(){
+	month = day = year = startTime = awayScore = homeScore = awayShots = homeShots = period = time = 0;
+	homeTeam = awayTeam = "NUL";
+	id = "NULL";
+}
+
 Game::Game(int m, int d, int y, int st, std::string home, std::string away, bool var){
 	month = m;
 	day = d;
@@ -19,11 +25,8 @@ Game::Game(int m, int d, int y, int st, std::string home, std::string away, bool
 	if(var){
 		time = 17*60;
 	}
-	ID.append(twoPlace(month));
-	ID.append(twoPlace(day));
-	ID.append(twoPlace(year));
-	ID.append("-");
-	ID.append(homeTeam);
+
+	id = twoPlace(m) + twoPlace(d) + twoPlace(y) + "-" + home;
 }
 
 void Game::printHeading(){
@@ -31,7 +34,7 @@ void Game::printHeading(){
 }
 
 void Game::printString(){
-	spaceBuffer(10, ID);
+	spaceBuffer(10, id);
 	spaceBuffer(3, std::to_string(month));
 	spaceBuffer(3, std::to_string(day));
 	spaceBuffer(3, std::to_string(year));

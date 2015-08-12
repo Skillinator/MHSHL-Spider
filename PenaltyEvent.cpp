@@ -3,6 +3,13 @@
 #include <vector>
 #include "mhshl.h"
 
+PenaltyEvent::PenaltyEvent(){
+	gameID="NULL";
+	teamID="NUL";
+	duration = period = time = timeRemaining = 0;
+	offense="NULL";
+}
+
 PenaltyEvent::PenaltyEvent(std::string gID, std::string tID, int pl, int dur, int per, int t, std::string charge){
 	gameID = gID;
 	teamID = tID;
