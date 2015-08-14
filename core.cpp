@@ -92,7 +92,7 @@ int main(){
 	std::cout<<l.addPlayer("QCB", "Test Player 2", 87);
 	std::cout<<l.addPlayer("QCB", "Test Player 3", 66);
 
-	std::cout<<l.addGame(11, 1, 15, 1200, "QCB", "CDR", true);
+	std::cout<<l.addGame(11, 1, 15, 1200, "QCB", "CDR");
 
 	showTeams(l);
 	showPlayers(l);

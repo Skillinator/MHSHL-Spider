@@ -27,13 +27,13 @@ bool League::addPlayer(std::string tID, std::string name, int number){
 	return true;
 }
 
-bool League::addGame(int m, int d, int y, int st, std::string home, std::string away, bool var){
+bool League::addGame(int m, int d, int y, int st, std::string home, std::string away){
 	std::string ID = twoPlace(m) + twoPlace(d) + twoPlace(y) + "-" + home;
 
 	if(getGame(ID)->id != "NULL")
 		return false;
 
-	Game g = Game(m, d, y, st, home, away, var);
+	Game g = Game(m, d, y, st, home, away, varsity);
 	games.push_back(g);
 	return true;
 }

@@ -124,7 +124,7 @@ public:
 	bool addPlayer(std::string tID, std::string name, int number);
 	void addPenaltyEvent(std::string gID, std::string tID, int player, int per, int time, int duration, std::string penalty);
 	void addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec);
-	bool addGame(int m, int d, int y, int st, std::string home, std::string away, bool var);
+	bool addGame(int m, int d, int y, int st, std::string home, std::string away);
 	
 	Game* getGame(std::string gID);
 	Player* getPlayer(std::string tID, int num);
