@@ -49,6 +49,28 @@ void League::addPenaltyEvent(std::string gID, std::string tID, int player, int p
 
 void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec){
 	
+	ScoringEvent *seTest = getScoringEvent(gID, per, sec);
+	if(seTest->teamID != "NUL"){
+		if(gs != seTest->scorer){
+			getPlayer(tID, seTest->scorer)->g--;
+			getPlayer(tID, gs)->g++;
+		}
+		if(a1 != seTest->assist1){
+			getPlayer(tID, seTest->assist1)->a--;
+			getPlayer(tID, a1)->a++;
+		}
+		if(a2 != seTest->assist2){
+			getPlayer(tID, seTest->assist2)->a--;
+			getPlayer(tID, a2)->a++;
+		}
+		return;
+	}else{
+		std::cout<<seTest->teamID<<"\n";
+	}
+
+	ScoringEvent se = ScoringEvent(gID, tID, gs, a1, a2, per, sec);
+	goals.push_back(se);
+
 	int gameid = -1;
 	bool againstHome = false;
 
@@ -76,6 +98,8 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 		getTeam(game->homeTeam)->ga++;
 	if(!againstHome)
 		getTeam(game->awayTeam)->ga++;
+
+
 }
 
 Game* League::getGame(std::string gID){

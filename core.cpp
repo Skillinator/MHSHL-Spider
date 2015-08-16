@@ -105,5 +105,11 @@ int main(){
 	showPlayers(l);
 	showGames(l);
 
+	l.addScoringEvent("110115-QCB", "QCB", 87, 99, 0, 3, 60);
+
+	showTeams(l);
+	showPlayers(l);
+	showGames(l);
+
 	return 0;
 }
