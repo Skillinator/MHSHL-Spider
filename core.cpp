@@ -52,6 +52,50 @@ void showGames(League l){
 	}
 }
 
+void showPenalties(League l){
+	if(l.penalties.size() == 0)
+		return;
+
+	l.penalties[0].printHeading();
+	for(int i = 0; i < l.penalties.size(); i++){
+		l.penalties[i].printString();
+	}
+}
+void showGoals(League l){
+	if(l.goals.size() == 0)
+		return;
+
+	l.goals[0].printHeading();
+	for(int i = 0; i < l.goals.size(); i++){
+		l.goals[i].printString();
+	}
+}
+
+void initMHSHL(League l){
+	std::cout<<l.addTeam("QCB", "Blues", "Quad City", 1);
+	std::cout<<l.addTeam("DBQ", "Devils", "Dubuque", 2);
+	std::cout<<l.addTeam("CDR", "Jr. Roughriders", "Cedar Rapids", 3);
+	std::cout<<l.addTeam("WAT", "Warriors", "Waterloo", 4);
+	std::cout<<l.addTeam("DMC", "Capitals", "Des Moines", 5);
+	std::cout<<l.addTeam("DMO", "Oak Leafs", "Des Moines", 6);
+	std::cout<<l.addTeam("AMS", "Little Cyclones", "Ames", 7);
+	std::cout<<l.addTeam("MCM", "Mohawks", "Mason City", 8);
+	std::cout<<l.addTeam("SCM", "Metros", "Sioux City", 9);
+	std::cout<<l.addTeam("KCJ", "Jets", "Kansas City", 10);
+	std::cout<<l.addTeam("OJL", "Jr. Lancers", "Omaha", 11);
+	std::cout<<l.addTeam("LJS", "Jr. Stars", "Lincoln", 12);
+}
+
+void dumpStatus(League l){
+
+	showTeams(l);
+	showPlayers(l);
+	showGames(l);
+	showPenalties(l);
+	showGoals(l);
+
+}
+
 int main(){
 	/*
 	CURL *curl;
@@ -74,42 +118,30 @@ int main(){
 	curl_global_cleanup();
 	*/
 
-	League l = League(true);
-	std::cout<<l.addTeam("QCB", "Blues", "Quad City", 1);
-	std::cout<<l.addTeam("DBQ", "Devils", "Dubuque", 2);
-	std::cout<<l.addTeam("CDR", "Jr. Roughriders", "Cedar Rapids", 3);
-	std::cout<<l.addTeam("WAT", "Warriors", "Waterloo", 4);
-	std::cout<<l.addTeam("DMC", "Capitals", "Des Moines", 5);
-	std::cout<<l.addTeam("DMO", "Oak Leafs", "Des Moines", 6);
-	std::cout<<l.addTeam("AMS", "Little Cyclones", "Ames", 7);
-	std::cout<<l.addTeam("MCM", "Mohawks", "Mason City", 8);
-	std::cout<<l.addTeam("SCM", "Metros", "Sioux City", 9);
-	std::cout<<l.addTeam("KCJ", "Jets", "Kansas City", 10);
-	std::cout<<l.addTeam("OJL", "Jr. Lancers", "Omaha", 11);
-	std::cout<<l.addTeam("LJS", "Jr. Stars", "Lincoln", 12);
+	League l = League(17);
+	initMHSHL(l);
 
 	std::cout<<l.addPlayer("QCB", "Test Player 1", 99);
 	std::cout<<l.addPlayer("QCB", "Test Player 2", 87);
 	std::cout<<l.addPlayer("QCB", "Test Player 3", 66);
+	std::cout<<l.addPlayer("CDR", "Test Player 4", 71);
 
 	std::cout<<l.addGame(11, 1, 15, 1200, "QCB", "CDR");
 
-	showTeams(l);
-	showPlayers(l);
-	showGames(l);
 
-
+	l.updateGameTime("110115-QCB", 1, 930);
+	l.addPenaltyEvent("110115-QCB", "QCB", 99, 1, 90, 2, "slashing");
 	l.addScoringEvent("110115-QCB", "QCB", 66, 99, 87, 3, 60);
 
-	showTeams(l);
-	showPlayers(l);
-	showGames(l);
+	dumpStatus(l);
 
-	l.addScoringEvent("110115-QCB", "QCB", 87, 99, 0, 3, 60);
+	l.updateGameTime("110115-QCB", 1, 900);
+	
+	dumpStatus(l);
 
-	showTeams(l);
-	showPlayers(l);
-	showGames(l);
+	l.updateGameTime("110115-QCB", 1, 925);
+	
+	dumpStatus(l);
 
 	return 0;
 }

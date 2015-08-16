@@ -3,8 +3,46 @@
 #include <string>
 #include "mhshl.h"
 
-League::League(bool var){
-	varsity = var;
+League::League(int pL){
+	periodLength = pL * 60;
+}
+
+void League::updatePenalties(std::string gID, int dT){
+	if(penalties.size() == 0)
+		return;
+
+	for(int i = 0; i < penalties.size(); i++){
+		if(penalties[i].gameID == gID){
+			penalties[i].timeRemaining += dT;
+		}
+
+		if(penalties[i].timeRemaining < 0)
+			penalties[i].timeRemaining = 0;
+	}
+}
+
+bool League::powerPlayGoal(std::string gID, std::string tID){
+	return false;
+}
+
+
+void League::updateGameTime(std::string gID, int per, int sec){
+	Game* g = getGame(gID);
+
+	int gameTime = g->time;
+	int gamePeriod = g->period;
+
+	int universalTime = per*periodLength - sec;
+	int gameUniversalTime = gamePeriod*periodLength - gameTime;
+
+	if(gamePeriod == 4)
+		gameUniversalTime = 3*periodLength + 5 - gameTime;
+
+	int dT = gameUniversalTime - universalTime;
+
+	g->time = sec;
+	g->period = per;
+	updatePenalties(gID, dT);
 }
 
 bool League::addTeam(std::string abbr, std::string name, std::string city, int identifier){
@@ -45,15 +83,22 @@ void League::addPenaltyEvent(std::string gID, std::string tID, int player, int p
 	PenaltyEvent pe = PenaltyEvent(gID, tID, player, duration, per, time, penalty);
 	getTeam(tID)->pim += duration;
 	getPlayer(tID, player)->pim += duration;
+	penalties.push_back(pe);
+	updateGameTime(gID, per, time);
 }
 
 void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec){
 	
+	updateGameTime(gID, per, sec);	
 	ScoringEvent *seTest = getScoringEvent(gID, per, sec);
 	if(seTest->teamID != "NUL"){
 		if(gs != seTest->scorer){
 			getPlayer(tID, seTest->scorer)->g--;
 			getPlayer(tID, gs)->g++;
+			if(powerPlayGoal(gID, tID)){
+				getPlayer(tID, seTest->scorer)->pp--;
+				getPlayer(tID, gs)->pp++;
+			}
 		}
 		if(a1 != seTest->assist1){
 			getPlayer(tID, seTest->assist1)->a--;
@@ -78,6 +123,10 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 	getTeam(tID)->gf++;
 
 	getPlayer(tID, gs)->g++;
+	
+	if(powerPlayGoal(gID, tID))
+		getPlayer(tID, gs)->pp++;
+
 	getPlayer(tID, a1)->a++;
 	getPlayer(tID, a2)->a++;
 
