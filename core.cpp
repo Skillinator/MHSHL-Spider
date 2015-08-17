@@ -96,6 +96,28 @@ void dumpStatus(League l){
 
 }
 
+void initializeLeague(League L){
+	/*
+	initMHSHL
+	getRosters
+	getGames
+	serverSync
+	*/
+}
+
+void update(League l){
+	/*
+
+	Sort Scoring Events and Penalty Events by age
+	
+	While ScoringEvents + PenaltyEvents > 0:
+		Add Earliest Event
+
+	updateGameTime(t)
+	
+	*/
+}
+
 int main(){
 	/*
 	CURL *curl;
@@ -125,25 +147,30 @@ int main(){
 	std::cout<<l.addPlayer("QCB", "Test Player 2", 87);
 	std::cout<<l.addPlayer("QCB", "Test Player 3", 66);
 	std::cout<<l.addPlayer("CDR", "Test Player 4", 71);
+	std::cout<<l.addPlayer("CDR", "Test Player 5", 16);
+	std::cout<<l.addPlayer("CDR", "Test Player 6", 31);
 
 	std::cout<<l.addGame(11, 1, 15, 1200, "QCB", "CDR");
 
+	l.addPenaltyEvent("110115-QCB", "CDR", 31, 2, 1, 1000, "Asshole3");
+	l.addPenaltyEvent("110115-QCB", "CDR", 16, 2, 1, 1000, "Asshole2");
+	l.addPenaltyEvent("110115-QCB", "QCB", 99, 2, 1, 1000, "Asshole");
+	showGames(l);
+	showPenalties(l);
 
-	l.updateGameTime("110115-QCB", 1, 930);
-	l.addScoringEvent("110115-QCB", "QCB", 66, 99, 87, 1, 960);
-	
-	l.addPenaltyEvent("110115-QCB", "QCB", 99, 1, 90, 2, "slashing");
-	
+	l.updateGameTime("110115-QCB", 2, 17*60-40);
+	showGames(l);
+	showPenalties(l);
 
-	dumpStatus(l);
+	l.addScoringEvent("110115-QCB", "CDR", 71, 0, 0, 2, 60);
+	showPlayers(l);
+	showGames(l);
+	showPenalties(l);
 
-	l.updateGameTime("110115-QCB", 1, 900);
-	
-	dumpStatus(l);
-
-	l.updateGameTime("110115-QCB", 1, 925);
-	
-	dumpStatus(l);
+	l.addScoringEvent("110115-QCB", "CDR", 71, 0, 0, 2, 61);
+	showPlayers(l);
+	showGames(l);
+	showPenalties(l);
 
 	return 0;
 }

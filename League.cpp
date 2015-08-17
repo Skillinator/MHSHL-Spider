@@ -28,9 +28,11 @@ void League::removeOldestPenalty(std::string gID, std::string tID){
 		PenaltyEvent *pe = &penalties[i];
 		if(pe->gameID == gID && pe->teamID == tID && pe->timeRemaining > 0 && pe->timeRemaining < pe->duration*60 && !pe->scoredOn && pe->duration < 10){
 			pe->goalsWhile++;
+			std::cout<<pe->goalsWhile;
 			if(pe->duration <= 2)
 				pe->scoredOn = true;
-			if(pe->duration <=4 && pe->goalsWhile >= 2)
+
+			if(pe->duration <= 4 && pe->goalsWhile >= 2)
 				pe->scoredOn = true;
 
 			return;
@@ -141,7 +143,7 @@ bool League::addGame(int m, int d, int y, int st, std::string home, std::string 
 	return true;
 }
 
-void League::addPenaltyEvent(std::string gID, std::string tID, int player, int per, int time, int duration, std::string penalty){
+void League::addPenaltyEvent(std::string gID, std::string tID, int player, int duration, int per, int time, std::string penalty){
 	
 	updateGameTime(gID, per, periodLength - time);
 	PenaltyEvent *peTest = getPenaltyEvent(gID, tID, player, per, time, duration, penalty);
@@ -161,11 +163,11 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 		if(gs != seTest->scorer){
 			getPlayer(tID, seTest->scorer)->g--;
 			getPlayer(tID, gs)->g++;
-			if(powerPlayGoal(gID, tID) == 1){
+			if(seTest->pp == 1){
 				getPlayer(tID, seTest->scorer)->pp--;
 				getPlayer(tID, gs)->pp++;
 			}
-			if(powerPlayGoal(gID, tID) == -1){
+			if(seTest->pp == -1){
 				getPlayer(tID, seTest->scorer)->sh--;
 				getPlayer(tID, gs)->sh++;
 			}
@@ -179,12 +181,11 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 			getPlayer(tID, a2)->a++;
 		}
 		return;
-	}else{
-		std::cout<<seTest->teamID<<"\n";
 	}
 
 	ScoringEvent se = ScoringEvent(gID, tID, gs, a1, a2, per, sec);
-	goals.push_back(se);
+
+	se.pp = powerPlayGoal(gID, tID);
 
 	int gameid = -1;
 	bool againstHome = false;
@@ -194,15 +195,16 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 
 	getPlayer(tID, gs)->g++;
 	
-	if(powerPlayGoal(gID, tID) == 1)
+	if(se.pp == 1)
 		getPlayer(tID, gs)->pp++;
 
-	if(powerPlayGoal(gID, tID) == -1)
+	if(se.pp == -1)
 		getPlayer(tID, gs)->sh++;
 
 	getPlayer(tID, a1)->a++;
 	getPlayer(tID, a2)->a++;
 
+	goals.push_back(se);
 
 	Game* game = getGame(gID);
 

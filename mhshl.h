@@ -20,6 +20,7 @@ public:
 	int assist2;
 	int period; // 1-3 normal, 4 OT, 5 SO
 	int time; // Seconds remaining in the period.
+	int pp;
 };
 
 class PenaltyEvent{
@@ -124,7 +125,7 @@ public:
 	bool varsity;
 	bool addTeam(std::string abbr, std::string name, std::string city, int identifier);
 	bool addPlayer(std::string tID, std::string name, int number);
-	void addPenaltyEvent(std::string gID, std::string tID, int player, int per, int time, int duration, std::string penalty);
+	void addPenaltyEvent(std::string gID, std::string tID, int player, int duration, int per, int time, std::string penalty);
 	void addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec);
 	bool addGame(int m, int d, int y, int st, std::string home, std::string away);
 	
