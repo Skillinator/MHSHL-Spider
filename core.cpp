@@ -130,8 +130,10 @@ int main(){
 
 
 	l.updateGameTime("110115-QCB", 1, 930);
+	l.addScoringEvent("110115-QCB", "QCB", 66, 99, 87, 1, 960);
+	
 	l.addPenaltyEvent("110115-QCB", "QCB", 99, 1, 90, 2, "slashing");
-	l.addScoringEvent("110115-QCB", "QCB", 66, 99, 87, 3, 60);
+	
 
 	dumpStatus(l);
 

@@ -35,6 +35,8 @@ public:
 	int period;
 	int time;
 	int timeRemaining;
+	int goalsWhile;
+	bool scoredOn;
 	std::string offense;
 };
 
@@ -128,8 +130,8 @@ public:
 	
 	void updateGameTime(std::string gID, int per, int sec);
 	void updatePenalties(std::string gID, int dT);
-	bool powerPlayGoal(std::string gID, std::string tID);
-
+	int powerPlayGoal(std::string gID, std::string tID);
+	void removeOldestPenalty(std::string gID, std::string tID);
 	Game* getGame(std::string gID);
 	Player* getPlayer(std::string tID, int num);
 	PenaltyEvent* getPenaltyEvent(std::string gID, std::string tID, int player, int per, int time, int duration, std::string penalty);
