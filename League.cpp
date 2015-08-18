@@ -132,13 +132,13 @@ bool League::addPlayer(std::string tID, std::string name, int number){
 	return true;
 }
 
-bool League::addGame(int m, int d, int y, int st, std::string home, std::string away){
+bool League::addGame(int m, int d, int y, int st, std::string home, std::string away, int gameID){
 	std::string ID = twoPlace(m) + twoPlace(d) + twoPlace(y) + "-" + home;
 
 	if(getGame(ID)->id != "NULL")
 		return false;
 
-	Game g = Game(m, d, y, st, home, away, varsity);
+	Game g = Game(m, d, y, st, home, away, periodLength, gameID);
 	games.push_back(g);
 	return true;
 }
@@ -242,6 +242,19 @@ Team* League::getTeam(std::string tID){
 
 	for(int i = 0; i < teams.size(); i++){
 		if(teams[i].abbreviation == tID)
+			return &teams[i];
+	}
+
+	return new Team();
+}
+
+
+Team* League::getTeam(int num){
+	if(teams.size() == 0)
+		return new Team();
+
+	for(int i = 0; i < teams.size(); i++){
+		if(teams[i].id == num)
 			return &teams[i];
 	}
 

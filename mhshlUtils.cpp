@@ -5,6 +5,27 @@
 #include "mhshl.h"
 #include "mhshlUtils.h"
 
+std::vector<std::string> split(std::string str, std::string delim){
+	std::vector<std::string> tmp;
+
+	int  startFrom = 0;
+
+	while(startFrom < str.size() && str.find(delim, startFrom) != std::string::npos){
+		int end = str.find(delim, startFrom);
+		tmp.push_back(str.substr(startFrom, end-startFrom));
+		startFrom = end+delim.size();
+	}
+	tmp.push_back(str.substr(startFrom, str.size()-1));
+
+	return tmp;
+
+}
+
+std::string extract(std::string str, std::string tag){
+	int start = str.find(">", str.find("<"+tag)) + 1;
+	int end = str.find("</"+tag);
+	return str.substr(start, end-start);
+}
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *str){
 	((std::string*)str)->append((char*)contents, size*nmemb);
@@ -12,7 +33,6 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *str
 }
 
 std::string fetchWebPage(std::string url){
-
 	CURL *curl;
 	CURLcode res;
 
@@ -21,12 +41,10 @@ std::string fetchWebPage(std::string url){
 	curl_global_init(CURL_GLOBAL_DEFAULT);
 	curl = curl_easy_init();
 	if(curl){
-		curl_easy_setopt(curl, CURLOPT_URL, "http://midwest-league.stats.pointstreak.com/players-leagues.html?leagueid=301");
-
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &str);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+		
 		res = curl_easy_perform(curl);
 
 		if(res != CURLE_OK)
@@ -38,6 +56,10 @@ std::string fetchWebPage(std::string url){
 	return str;
 }
 void spaceBuffer(int len, std::string str){
+	if(len < str.size()){
+		std::cout<<str;
+		return;
+	}
 	for(int x = 0; x < (len-str.length())/2; x++){
 		std::cout<<" ";
 	}

@@ -4,23 +4,23 @@
 #include "mhshl.h"
 #include "mhshlUtils.h"
 
-void initMHSHL(League l){
-	std::cout<<l.addTeam("QCB", "Blues", "Quad City", 1);
-	std::cout<<l.addTeam("DBQ", "Devils", "Dubuque", 2);
-	std::cout<<l.addTeam("CDR", "Jr. Roughriders", "Cedar Rapids", 3);
-	std::cout<<l.addTeam("WAT", "Warriors", "Waterloo", 4);
-	std::cout<<l.addTeam("DMC", "Capitals", "Des Moines", 5);
-	std::cout<<l.addTeam("DMO", "Oak Leafs", "Des Moines", 6);
-	std::cout<<l.addTeam("AMS", "Little Cyclones", "Ames", 7);
-	std::cout<<l.addTeam("MCM", "Mohawks", "Mason City", 8);
-	std::cout<<l.addTeam("SCM", "Metros", "Sioux City", 9);
-	std::cout<<l.addTeam("KCJ", "Jets", "Kansas City", 10);
-	std::cout<<l.addTeam("OJL", "Jr. Lancers", "Omaha", 11);
-	std::cout<<l.addTeam("LJS", "Jr. Stars", "Lincoln", 12);
+void initMHSHL(League *l){
+	l->addTeam("QCB", "Blues", "Quad City", 47180);
+	l->addTeam("DBQ", "Devils", "Dubuque", 47175);
+	l->addTeam("CDR", "Jr. Roughriders", "Cedar Rapids", 47172);
+	l->addTeam("WAT", "Warriors", "Waterloo", 47182);
+	l->addTeam("DMC", "Capitals", "Des Moines", 47173);
+	l->addTeam("DMO", "Oak Leafs", "Des Moines", 47174);
+	l->addTeam("AMS", "Little Cyclones", "Ames", 47171);
+	l->addTeam("MCM", "Mohawks", "Mason City", 47178);
+	l->addTeam("SCM", "Metros", "Sioux City", 47181);
+	l->addTeam("KCJ", "Jets", "Kansas City", 96071);
+	l->addTeam("OJL", "Jr. Lancers", "Omaha", 149736);
+	l->addTeam("LJS", "Jr. Stars", "Lincoln", 47177);
 }
 
 
-void initializeLeague(League L){
+void initializeLeague(League *L){
 	/*
 	initMHSHL
 	getRosters
@@ -29,7 +29,7 @@ void initializeLeague(League L){
 	*/
 }
 
-void update(League l){
+void update(League *l){
 	/*
 
 	Sort Scoring Events and Penalty Events by age
@@ -42,72 +42,112 @@ void update(League l){
 	*/
 }
 
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *str){
-	((std::string*)str)->append((char*)contents, size*nmemb);
-	return size*nmemb;
+int getMinutes(std::string time){
+	bool pm = (split(time, " ")[1] == "pm");
+	std::string raw = split(time, " ")[0];
+	int minutes = stoi(split(raw, ":")[0]) * 60 + stoi(split(raw, ":")[1]) + 12*60*pm;
+	return minutes;
 }
 
-std::string fetchWebPage(std::string url){
+std::string getValue(std::string str, std::string value){
+	int start = str.find(value + "=") + value.size()+1;
+	int end = str.find("&", start);
+	if(str.find('"', start) < end)
+		end = str.find('"', start);
 
-	CURL *curl;
-	CURLcode res;
+	return str.substr(start, end-start);
+}
 
-	std::string str;
+int getMonth(std::string date){
+	std::string month = split(date, " ")[1];
+	int m;
+	if(month == "Jan")
+		m = 1;
+	if(month == "Feb")
+		m = 2;
+	if(month == "Mar")
+		m = 3;
+	if(month == "Apr")
+		m = 4;
+	if(month == "May")
+		m = 5;
+	if(month == "Jun")
+		m = 6;
+	if(month == "Jul")
+		m = 7;
+	if(month == "Aug")
+		m = 8;
+	if(month == "Sep")
+		m = 9;
+	if(month == "Oct")
+		m = 10;
+	if(month == "Nov")
+		m = 11;
+	if(month == "Dec")
+		m = 12;
+	return m;
+}
 
-	curl_global_init(CURL_GLOBAL_DEFAULT);
-	curl = curl_easy_init();
-	if(curl){
-		curl_easy_setopt(curl, CURLOPT_URL, "http://midwest-league.stats.pointstreak.com/players-leagues.html?leagueid=301");
+int getDay(std::string date){
+	return stoi(split(date, " ")[2]);
+}
 
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &str);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-		res = curl_easy_perform(curl);
+int getYear(int startYear, int month){
+	if(month <= 6)
+		return startYear+1;
+	return startYear;
+}
 
-		if(res != CURLE_OK)
-			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-		curl_easy_cleanup(curl);
+void getGames(int season, int team, League *l){
+	std::string url = "midwest-league.stats.pointstreak.com/players-team-schedule.html?teamid=" + std::to_string(team) + "&seasonid=" + std::to_string(season);
+
+	std::string page = fetchWebPage(url);
+	std::vector<std::string> games = split(extract("<table" + split(page, "<table")[4], "table"), "<tr");
+
+	games.erase(games.begin());
+	games.erase(games.end());
+
+	if(games.size() == 0)
+		return;
+
+	for(int i = 0; i < games.size(); i++){
+		games[i] = extract("<tr" + games[i], "tr");
 	}
-	curl_global_cleanup();
 
-	return str;
+	for(int i = 1; i < games.size(); i++){
+		
+		std::string homeID, awayID = " ";
+		int	month, day, year, time, gameID;
+		
+		
+		std::vector<std::string> elements = split(games[i], "<td");
+		elements.erase(elements.begin());
+		elements.erase(elements.end());
+
+		for(int j=0; j < elements.size(); j++){
+			elements[j] = extract("<td" + elements[j], "td");
+		}
+		homeID = l->getTeam(stoi(getValue(elements[0], "teamid")))->abbreviation;
+		awayID = l->getTeam(stoi(getValue(elements[1], "teamid")))->abbreviation;
+		
+		month = getMonth(elements[2]);
+		day = getDay(elements[2]);
+		year = getYear(2015, month);
+		time = getMinutes(elements[3]);
+		gameID = stoi(getValue(elements[4], "gameid"));
+	
+		l->addGame(month, day, year, time, homeID, awayID, gameID);
+	}
+
 }
 
 int main(){
-	
-
 	League l = League(17);
-	initMHSHL(l);
-
-	std::cout<<l.addPlayer("QCB", "Test Player 1", 99);
-	std::cout<<l.addPlayer("QCB", "Test Player 2", 87);
-	std::cout<<l.addPlayer("QCB", "Test Player 3", 66);
-	std::cout<<l.addPlayer("CDR", "Test Player 4", 71);
-	std::cout<<l.addPlayer("CDR", "Test Player 5", 16);
-	std::cout<<l.addPlayer("CDR", "Test Player 6", 31);
-
-	std::cout<<l.addGame(11, 1, 15, 1200, "QCB", "CDR");
-
-	l.addPenaltyEvent("110115-QCB", "CDR", 31, 2, 1, 1000, "Asshole3");
-	l.addPenaltyEvent("110115-QCB", "CDR", 16, 2, 1, 1000, "Asshole2");
-	l.addPenaltyEvent("110115-QCB", "QCB", 99, 2, 1, 1000, "Asshole");
+	initMHSHL(&l);
+	for(int i = 0; i < l.teams.size(); i++){
+		getGames(14757, l.teams[i].id, &l);
+	}
 	showGames(l);
-	showPenalties(l);
-
-	l.updateGameTime("110115-QCB", 2, 17*60-40);
-	showGames(l);
-	showPenalties(l);
-
-	l.addScoringEvent("110115-QCB", "CDR", 71, 0, 0, 2, 60);
-	showPlayers(l);
-	showGames(l);
-	showPenalties(l);
-
-	l.addScoringEvent("110115-QCB", "CDR", 71, 0, 0, 2, 61);
-	showPlayers(l);
-	showGames(l);
-	showPenalties(l);
-
+	std::cout<<l.games.size();
 	return 0;
 }

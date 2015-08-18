@@ -9,7 +9,7 @@ Game::Game(){
 	id = "NULL";
 }
 
-Game::Game(int m, int d, int y, int st, std::string home, std::string away, bool var){
+Game::Game(int m, int d, int y, int st, std::string home, std::string away, int t, int num){
 	month = m;
 	day = d;
 	year = y;
@@ -21,26 +21,25 @@ Game::Game(int m, int d, int y, int st, std::string home, std::string away, bool
 	awayScore = homeScore = homeShots = awayShots = 0;
 
 	period = 1;
-	time = 14*60;
-	if(var){
-		time = 17*60;
-	}
+
+	time = t;
+	number = num;
 
 	id = twoPlace(m) + twoPlace(d) + twoPlace(y) + "-" + home;
 }
 
 void Game::printHeading(){
-	std::cout<<"\n  GameID   m  d  y  start  home  away  homeScore  awayScore  homeShots  awayShots  per  time\n";
+	std::cout<<"\n     GameID      m  d    y   start   home    away   homeScore  awayScore  homeShots  awayShots  per  time\n";
 }
 
 void Game::printString(){
-	spaceBuffer(10, id);
+	spaceBuffer(16, id);
 	spaceBuffer(3, std::to_string(month));
-	spaceBuffer(3, std::to_string(day));
+	spaceBuffer(4, std::to_string(day));
 	spaceBuffer(3, std::to_string(year));
 	std::cout<<" "<<twoPlace(startTime/60)<<":"<<twoPlace(startTime%60);
-	spaceBuffer(6, homeTeam);
-	spaceBuffer(6, awayTeam);
+	spaceBuffer(8, homeTeam);
+	spaceBuffer(8, awayTeam);
 	spaceBuffer(12, std::to_string(homeScore));
 	spaceBuffer(11, std::to_string(awayScore));
 	spaceBuffer(11, std::to_string(homeShots));

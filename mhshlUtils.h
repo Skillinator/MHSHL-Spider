@@ -7,7 +7,9 @@
 #include <iostream>
 #include "mhshl.h"
 
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb, std::string str);
+std::vector<std::string> split(std::string str, std::string delim);
+std::string extract(std::string str, std::string tag);
+
 std::string fetchWebPage(std::string url);
 
 void spaceBuffer(int len, std::string str);
@@ -25,6 +27,5 @@ void showPenalties(League l);
 void showGoals(League l);
 
 void dumpStatus(League l);
-
 
 #endif

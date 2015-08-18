@@ -89,7 +89,7 @@ Game is a basic class to hold information about, well, a game.
 class Game{
 public:
 	Game();
-	Game(int m, int d, int y, int st, std::string home, std::string away, bool var);
+	Game(int m, int d, int y, int st, std::string home, std::string away, int t, int num);
 	void printString();
 	void printHeading();
 	// Date related stuff
@@ -112,7 +112,7 @@ public:
 
 	int period; // 1-3 self explanatory. 4 is OT. 5 is SO.
 	int time; // Time is in seconds remaining in the period. -1 signifies a final.
-
+	int number;
 };
 
 
@@ -127,7 +127,7 @@ public:
 	bool addPlayer(std::string tID, std::string name, int number);
 	void addPenaltyEvent(std::string gID, std::string tID, int player, int duration, int per, int time, std::string penalty);
 	void addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec);
-	bool addGame(int m, int d, int y, int st, std::string home, std::string away);
+	bool addGame(int m, int d, int y, int st, std::string home, std::string away, int gameID);
 	
 	void updateGameTime(std::string gID, int per, int sec);
 	void updatePenalties(std::string gID, int dT);
@@ -138,6 +138,7 @@ public:
 	PenaltyEvent* getPenaltyEvent(std::string gID, std::string tID, int player, int per, int time, int duration, std::string penalty);
 	ScoringEvent* getScoringEvent(std::string gID, int per, int time);
 	Team* getTeam(std::string tID);
+	Team* getTeam(int num);
 
 	int periodLength;
 
