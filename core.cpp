@@ -139,6 +139,23 @@ void getGames(int season, int team, League *l){
 		l->addGame(month, day, year, time, homeID, awayID, gameID);
 	}
 
+	// Sort games by date
+
+	bool sorted = false;
+	while(!sorted){
+		sorted = true;
+		for(int i = 0; i < l->games.size()-1; i++){
+			std::string date1 = std::to_string(l->games[i].year) + twoPlace(l->games[i].month) + twoPlace(l->games[i].day);
+			std::string date2 = std::to_string(l->games[i+1].year) + twoPlace(l->games[i+1].month) + twoPlace(l->games[i+1].day);
+			if(stoi(date1) > stoi(date2)){
+				sorted = false;
+				Game tmp = l->games[i];
+				l->games[i] = l->games[i+1];
+				l->games[i+1] = tmp;
+			}
+		}
+	}
+
 }
 
 int main(){

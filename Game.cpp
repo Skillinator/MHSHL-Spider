@@ -29,10 +29,10 @@ Game::Game(int m, int d, int y, int st, std::string home, std::string away, int 
 }
 
 void Game::printHeading(){
-	std::cout<<"\n     GameID      m  d    y   start   home    away   homeScore  awayScore  homeShots  awayShots  per  time\n";
+	std::cout<<"\n     GameID      m  d    y   start   home    away   homeScore  awayScore  homeShots  awayShots  per  time    ID\n";
 }
 
-void Game::printString(){
+void Game::printString(){ 
 	spaceBuffer(16, id);
 	spaceBuffer(3, std::to_string(month));
 	spaceBuffer(4, std::to_string(day));
@@ -45,7 +45,9 @@ void Game::printString(){
 	spaceBuffer(11, std::to_string(homeShots));
 	spaceBuffer(11, std::to_string(awayShots));
 	spaceBuffer(5, std::to_string(period));
-	std::cout<<" "<<twoPlace(time/60)<<":"<<twoPlace(time%60)<<"\n";
+	std::cout<<" "<<twoPlace(time/60)<<":"<<twoPlace(time%60);
+	spaceBuffer(8, std::to_string(number));
+	std::cout<<"\n";
 
 
 }
