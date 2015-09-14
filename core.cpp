@@ -98,6 +98,18 @@ int getYear(int startYear, int month){
 	return startYear;
 }
 
+void updateGame(Game* g){
+	std::string url = "midwest-league.stats.pointstreak.com/players-boxscore.html?gameid=" + std::to_string(g->number);
+	std::string page = fetchWebPage(url);
+
+	std::string goals = extract("<table" + split(page, "<table")[5], "table");
+	std::string penalties = extract("<table" + split(page, "<table")[6], "table");
+
+	goals = split(goals, "Scoring Summary")[1];
+	goals = split(goals, "</table>")[0];
+	goals = "<tr" + split(goals, "<tr")[1];
+}
+
 void getGames(int season, int team, League *l){
 	std::string url = "midwest-league.stats.pointstreak.com/players-team-schedule.html?teamid=" + std::to_string(team) + "&seasonid=" + std::to_string(season);
 
@@ -140,7 +152,6 @@ void getGames(int season, int team, League *l){
 	}
 
 	// Sort games by date
-
 	bool sorted = false;
 	while(!sorted){
 		sorted = true;
@@ -156,13 +167,21 @@ void getGames(int season, int team, League *l){
 		}
 	}
 
+	// Update every game, if it exists
+	for(int i = 0; i < l->games.size(); i++){
+		updateGame(&l->games[i]);
+	}
+
 }
+
+const int SEASON_2014_2015 = 13209;
+const int SEASON_2015_2015 = 14757;
 
 int main(){
 	League l = League(17);
 	initMHSHL(&l);
 	for(int i = 0; i < l.teams.size(); i++){
-		getGames(14757, l.teams[i].id, &l);
+		getGames(SEASON_2014_2015, l.teams[i].id, &l);
 	}
 	showGames(l);
 	std::cout<<l.games.size();
