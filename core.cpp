@@ -56,17 +56,17 @@ void processGoal(Game* g, League* l, int p, std::string s){
 
 	std::vector<std::string> firstsplit = split(s, "(");
 	std::vector<std::string> teamscorer = split(firstsplit[0]," - ");
-	/*
+	
 	std::string assists = split(firstsplit[1], ")")[0];
 	std::string time = split(split(firstsplit[1], ")")[1], "<br")[0];
-	*/	
+	
 	std::string team = extract(teamscorer[0], "b");
 	std::string scorer = extract(teamscorer[1], "b");
 
 	gID = g->id;
 	scorernum = std::stoi(getValue(scorer, "playerid"));
 	tID = translateTeamID(team);
-	/*
+	
 	if(assists == "unassisted"){
 		// do nothing
 	}else if(assists.find(", ") == std::string::npos){
@@ -76,7 +76,7 @@ void processGoal(Game* g, League* l, int p, std::string s){
 		a1 = std::stoi(getValue(assistvec[0], "playerid"));
 		a2 = std::stoi(getValue(assistvec[1], "playerid"));
 	}
-	*/
+	
 	std::cout<<team<<"\n";
 	if(tID == g->homeTeam){
 		std::cout<<"Team " << tID << " == " << g->homeTeam << "\n";
