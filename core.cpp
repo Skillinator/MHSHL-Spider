@@ -127,6 +127,9 @@ void processGoal(Game* g, League* l, int p, std::string s){
 		a1 = std::stoi(getValue(assistvec[0], "playerid"));
 		a2 = std::stoi(getValue(assistvec[1], "playerid"));
 	}
+	
+	
+	std::string time = split(firstsplit[1], ") , ")[1]<<"\n";
 	std::cout<<time<<"\n";
 	std::cout<<split(time, ":")[0]<<"\n";
 	std::cout<<split(time, ":")[1]<<"\n";
