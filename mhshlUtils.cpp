@@ -97,7 +97,7 @@ std::string getValue(std::string str, std::string value){
 
 std::string removeSubstring(std::string str, std::string substr){
 	if(str.find(substr) != std::string::npos)
-		str.replace(s.find(substr), substr.size(), "");
+		str.replace(str.find(substr), substr.size(), "");
 	return str;
 }
 
