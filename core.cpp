@@ -43,6 +43,9 @@ void update(League *l){
 }
 
 void processGoal(Game* g, League* l, int p, std::string s){
+	/*
+	Initialize values to their default states
+	*/
 	std::string gID="null";
 	std::string tID="null";
 	int scorernum=0;
@@ -51,39 +54,83 @@ void processGoal(Game* g, League* l, int p, std::string s){
 	int per = p;
 	int sec=0;
 	
+	/*
+	If no scoring occured, stop processing right here 
+	*/
 	if(s.find("no scoring") != std::string::npos)
 		return;
-
+	
+	/*
+	If a power play goal, remove the parentheses
+	*/
+	if(s.find("(power play)") != std::string::npos)
+		s.replace(s.find("(power play)"), "(power play)".size(), "");
+	
+	/*
+	If an empty net goal, remove the parentheses
+	*/
+	if(s.find("(empty net)") != std::string::npos)
+		s.replace(s.find("(empty net)"), "(empty net)".size(), "");
+	
+	/*
+	Split by the first parenthesis
+	*/
 	std::vector<std::string> firstsplit = split(s, "(");
+	
+	/*
+	This willl give us the team name and the scorer ID
+	The team name still needs to be run through the translate function since it's not how they're stored in our database
+	*/
 	std::vector<std::string> teamscorer = split(firstsplit[0]," - ");
 	
+	/*
+	Separate the assists from the time
+	*/
 	std::string assists = split(firstsplit[1], ")")[0];
 	std::string time = split(split(firstsplit[1], ")")[1], "<br")[0];
 	
+	/*
+	Break the team and scorer values out of their bolding tags
+	*/
 	std::string team = extract(teamscorer[0], "b");
 	std::string scorer = extract(teamscorer[1], "b");
-
+	
+	/*
+	Set the first three values. 
+	gameID is found directly from the game. 
+	PlayerID is found from the playerid value passed in the href to the player's page.
+	teamID is found by translating the team name into our style teamID.
+	*/
 	gID = g->id;
 	scorernum = std::stoi(getValue(scorer, "playerid"));
 	tID = translateTeamID(team);
 	
+	/*
+	Process assists
+	*/
 	if(assists == "unassisted"){
-		// do nothing
+		// do nothing, no assists
 	}else if(assists.find(", ") == std::string::npos){
+		/*
+		Only one assist, process it accordingly.
+		*/
+		std::cout<<getValue(assists, "playerid")<<"\n";
 		a1 = std::stoi(getValue(assists, "playerid"));		
 	}else{
+		// Split the assists apart before processing
 		std::vector<std::string> assistvec = split(assists, ", ");
-		a1 = std::stoi(getValue(assistvec[0], "playerid"));
+		
+		/*
+		Now it's basically the same as processing one assist, we just do it twice.
+		*/
+		std::cout<<getValue(assistvec[0], "playerid")<<"\n";
+		a1 = std::stoi(getValue(assistvec[0], "playerid"));		
+		std::cout<<getValue(assistvec[1], "playerid")<<"\n";
 		a2 = std::stoi(getValue(assistvec[1], "playerid"));
 	}
 	
-	std::cout<<team<<"\n";
-	if(tID == g->homeTeam){
-		std::cout<<"Team " << tID << " == " << g->homeTeam << "\n";
-		g->homeScore++;
-	}else{
-		g->awayScore++;
-	}
+	
+	l->addScoringEvent(gID, tID, scorernum, a1, a2, per, sec);
 	
 }
 
