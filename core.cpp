@@ -136,6 +136,25 @@ void updateGame(Game* g, League* l){
 	std::string url = "midwest-league.stats.pointstreak.com/players-boxscore.html?gameid=" + std::to_string(g->number);
 	std::string page = fetchWebPage(url);
 	
+	
+	/*
+	Take the page after "Shots on Goal", before "</div>", then after "</a>";
+	*/
+	std::string shots = split(split(split(page, "Shots on Goal")[1], "</div>")[0], "</a>")[1];
+	
+	/*
+	Home team's is first, away second. Also split by " "
+	*/
+	std::vector<std::string> homeShots = split(split(shots, "<br>")[0], " ");
+	std::vector<std::string> awayShots = split(split(shots, "<br>")[1],  " ");
+	
+	/*
+	Just take the last element and stoi it, and set as the appropriate team's shot total
+	*/
+	g->homeShots = std::stoi(homeShots[homeShots.size() - 1]));
+	g->awayShots = std::stoi(awayShots[awayShots.size() - 1]));
+	
+	
 	std::string goals = split(page, "Scoring Summary")[1];
 	
 	goals = split(goals, "</table>")[0];
