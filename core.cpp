@@ -89,7 +89,7 @@ void processGoal(Game* g, League* l, int p, std::string s){
 	Separate the assists from the time
 	*/
 	std::string assists = split(firstsplit[1], ")")[0];
-	std::string time = split(split(firstsplit[1], ") , ")[1], "<br")[0];
+	std::string time = split(firstsplit[1], ") , ")[1];
 	
 	/*
 	Break the team and scorer values out of their bolding tags
@@ -128,9 +128,6 @@ void processGoal(Game* g, League* l, int p, std::string s){
 		a2 = std::stoi(getValue(assistvec[1], "playerid"));
 	}
 	
-	
-	std::cout<< split(firstsplit[1], ") , ")[1]<<"\n";
-	std::cout<<time<<"\n";
 	std::cout<<split(time, ":")[0]<<"\n";
 	std::cout<<split(time, ":")[1]<<"\n";
 	sec = l->periodLength - (60*std::stoi(split(time, ":")[0]) + std::stoi(split(time, ":")[1]));
