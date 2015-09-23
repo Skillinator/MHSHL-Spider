@@ -130,7 +130,7 @@ void processGoal(Game* g, League* l, int p, std::string s){
 	
 	
 	l->addScoringEvent(gID, tID, scorernum, a1, a2, per, sec);
-	std::cout<<"addScoringEvent("<<gID<<", "<<tID<<", "<<scorenum<<", "<<a1<<", "<<a2<<", "<<per<<", "<<sec<<")\n";
+	std::cout<<"addScoringEvent("<<gID<<", "<<tID<<", "<<scorernum<<", "<<a1<<", "<<a2<<", "<<per<<", "<<sec<<")\n";
 }
 
 void updateGame(Game* g, League* l){
