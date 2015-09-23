@@ -5,6 +5,12 @@
 #include "mhshl.h"
 #include "mhshlUtils.h"
 
+/*
+String Functions
+
+Functions that help us process strings in the scraping process
+*/
+
 std::vector<std::string> split(std::string str, std::string delim){
 	std::vector<std::string> tmp;
 
@@ -55,6 +61,7 @@ std::string fetchWebPage(std::string url){
 
 	return str;
 }
+
 void spaceBuffer(int len, std::string str){
 	if(len < str.size()){
 		std::cout<<str;
@@ -79,6 +86,22 @@ std::string twoPlace(int num){
 	return std::to_string(num);
 }
 
+std::string getValue(std::string str, std::string value){
+	int start = str.find(value + "=") + value.size()+1;
+	int end = str.find("&", start);
+	if(str.find('"', start) < end)
+		end = str.find('"', start);
+
+	return str.substr(start, end-start);
+}
+
+
+/*
+Output functions
+
+Functions that will batch output the data stored within the database
+*/
+
 void showTeams(League l){
 	if(l.teams.size() == 0)
 		return;
@@ -98,6 +121,7 @@ void showPlayers(League l){
 		l.players[i].printString();
 	}
 }
+
 void showGames(League l){
 	if(l.games.size() == 0)
 		return;
@@ -117,6 +141,7 @@ void showPenalties(League l){
 		l.penalties[i].printString();
 	}
 }
+
 void showGoals(League l){
 	if(l.goals.size() == 0)
 		return;
@@ -134,5 +159,109 @@ void dumpStatus(League l){
 	showGames(l);
 	showPenalties(l);
 	showGoals(l);
+
+}
+
+
+/*
+Time Functions
+
+Functions to help us interpret, store, and read time/date
+
+*/
+int getMinutes(std::string time){
+	bool pm = (split(time, " ")[1] == "pm");
+	std::string raw = split(time, " ")[0];
+	int minutes = stoi(split(raw, ":")[0]) * 60 + stoi(split(raw, ":")[1]) + 12*60*pm;
+	return minutes;
+}
+
+int getPeriod(std::string per){
+	if(per == "Period 1")
+		return 1;
+	if(per == "Period 2")
+		return 2;
+	if(per == "Period 3")
+		return 3;
+	if(per == "OT")
+		return 4;
+	if(per == "Shootout")
+		return 5;
+	return 0;
+}
+
+int getMonth(std::string date){
+	std::string month = split(date, " ")[1];
+	int m;
+	if(month == "Jan")
+		m = 1;
+	if(month == "Feb")
+		m = 2;
+	if(month == "Mar")
+		m = 3;
+	if(month == "Apr")
+		m = 4;
+	if(month == "May")
+		m = 5;
+	if(month == "Jun")
+		m = 6;
+	if(month == "Jul")
+		m = 7;
+	if(month == "Aug")
+		m = 8;
+	if(month == "Sep")
+		m = 9;
+	if(month == "Oct")
+		m = 10;
+	if(month == "Nov")
+		m = 11;
+	if(month == "Dec")
+		m = 12;
+	return m;
+}
+
+int getDay(std::string date){
+	return stoi(split(date, " ")[2]);
+}
+
+int getYear(int startYear, int month){
+	if(month <= 6)
+		return startYear+1;
+	return startYear;
+}
+
+
+/*
+Unsorted functions
+
+Things that don't yet have any comrades.
+*/
+std::string translateTeamID(std::string s){
+
+	if(s == "Ames")
+		return "AMS";
+	if(s == "DM Oak Leafs")
+		return "DMO";
+	if(s == "DM Capitals")
+		return "DMC";
+	if(s == "Sioux City")
+		return "SCM";
+	if(s == "Kansas City")
+		return "KCJ";
+	if(s == "Omaha")
+		return "OJL";
+	if(s == "Quad City")
+		return "QCB";
+	if(s == "Lincoln")
+		return "LJS";
+	if(s == "Dubuque")
+		return "DBQ";
+	if(s == "Mason City")
+		return "MCM";
+	if(s == "Waterloo")
+		return "WAT";
+	if(s == "Cedar Rapids")
+		return "CDR";
+	return "NUL";
 
 }

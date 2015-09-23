@@ -17,34 +17,6 @@ Team::Team(std::string abbr, std::string n, std::string c, int identifier){
 	gp = w = l = ot = so = pts = gf = ga = pim = streak = 0;
 }
 
-/*
-Quad City 9
-Dubuque
-Waterloo
-Cedar Rapids 12
-Ames
-Des Moines
-Sioux City
-Mason City
-Kansas City
-Lincoln
-Omaha
-
-Blues
-Devils
-Warriors
-Jr. Roughriders
-Little Cyclones
-Capitals
-Oak Leafs
-Metros
-Jets
-Mohawks
-Stars
-Jr. Lancers
-17
-*/
-
 void Team::printHeading(){
 	std::cout<<"\n abbr      city            name        gp   w   l  ot  so  pts  gf  ga  pim  streak\n";
 }

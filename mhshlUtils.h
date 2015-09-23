@@ -28,4 +28,22 @@ void showGoals(League l);
 
 void dumpStatus(League l);
 
+
+
+int getYear(int startYear, int month);
+
+std::string translateTeamID(std::string s);
+
+int getDay(std::string date);
+
+int getMonth(std::string date);
+
+int getPeriod(std::string per);
+
+int getMinutes(std::string time);
+
+std::string getValue(std::string str, std::string value);
+
+
+
 #endif
