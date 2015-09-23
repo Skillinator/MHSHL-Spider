@@ -63,14 +63,14 @@ void processGoal(Game* g, League* l, int p, std::string s){
 	/*
 	If a power play goal, remove the parentheses
 	*/
-	if(s.find("(power play)") != std::string::npos)
-		s.replace(s.find("(power play)"), "(power play)".size(), "");
+	if(s.find("(<i>power play</i>)") != std::string::npos)
+		s.replace(s.find("(<i>power play</i>)"), "(<i>power play</i>)".size(), "");
 	
 	/*
 	If an empty net goal, remove the parentheses
 	*/
-	if(s.find("(empty net)") != std::string::npos)
-		s.replace(s.find("(empty net)"), "(empty net)".size(), "");
+	if(s.find("(<i>empty net)") != std::string::npos)
+		s.replace(s.find("(<i>empty net</i>)"), "(<i>empty net</i>)".size(), "");
 	
 	/*
 	Split by the first parenthesis
