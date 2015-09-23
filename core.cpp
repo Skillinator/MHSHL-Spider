@@ -129,7 +129,7 @@ void processGoal(Game* g, League* l, int p, std::string s){
 	}
 	
 	
-	std::string time = split(firstsplit[1], ") , ")[1]<<"\n";
+	std::cout<< split(firstsplit[1], ") , ")[1]<<"\n";
 	std::cout<<time<<"\n";
 	std::cout<<split(time, ":")[0]<<"\n";
 	std::cout<<split(time, ":")[1]<<"\n";
