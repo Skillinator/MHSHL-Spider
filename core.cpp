@@ -89,7 +89,7 @@ void processGoal(Game* g, League* l, int p, std::string s){
 	Separate the assists from the time
 	*/
 	std::string assists = split(firstsplit[1], ")")[0];
-	std::string time = split(split(firstsplit[1], ")")[1], "<br")[0];
+	std::string time = split(split(firstsplit[1], ") , ")[1], "<br")[0];
 	
 	/*
 	Break the team and scorer values out of their bolding tags
