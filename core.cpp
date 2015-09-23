@@ -146,7 +146,7 @@ void updateGame(Game* g, League* l){
 	Home team's is first, away second. Also split by " "
 	*/
 	std::vector<std::string> homeShots = split(split(shots, "<br>")[0], " ");
-	std::vector<std::string> awayShots = split(split(shots, "<br>")[1],  " ");
+	std::vector<std::string> awayShots = split(split(split(shots, "<br>")[1],  "  ")[0], " ");
 	
 	/*
 	Just take the last element and stoi it, and set as the appropriate team's shot total
