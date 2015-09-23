@@ -73,6 +73,7 @@ void processGoal(Game* g, League* l, int p, std::string s){
 	s = removeSubstring(s, "<i>(empty net)</i>");
 	s = removeSubstring(s, "<i>(power play)</i>");
 	s = removeSubstring(s, "<i>(short handed)</i>");
+	s = removeSubstring(s, "<i>(penalty shot)</i>");
 	std::cout<<"Becomes: " << s <<"\n\n";
 	
 	/*
