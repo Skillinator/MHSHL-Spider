@@ -61,6 +61,12 @@ void processGoal(Game* g, League* l, int p, std::string s){
 		return;
 	
 	/*
+	If there's a <br> on the end, remove that
+	*/
+	if(s.find("<br"))
+		s = split(s, "<br")[0];
+	
+	/*
 	Handle power play, shorthanded, and empty net goals
 	*/
 	s = removeSubstring(s, "(<i>empty net</i>)");
