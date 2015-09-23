@@ -69,10 +69,11 @@ void processGoal(Game* g, League* l, int p, std::string s){
 	/*
 	Handle power play, shorthanded, and empty net goals
 	*/
+	std::cout<<s<<"\n\n";
 	s = removeSubstring(s, "(<i>empty net</i>)");
 	s = removeSubstring(s, "(<i>power play</i>)");
 	s = removeSubstring(s, "(<i>short handed</i>)");
-	
+	std::cout<<"Becomes: " << s <<"\n\n";
 	
 	/*
 	Split by the first parenthesis
