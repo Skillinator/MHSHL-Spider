@@ -128,6 +128,7 @@ void processGoal(Game* g, League* l, int p, std::string s){
 		a2 = std::stoi(getValue(assistvec[1], "playerid"));
 	}
 	
+	sec = l->periodLength - (60*std::stoi(split(time, ":")[0]) + std::stoi(split(time, ":")[1]));
 	
 	l->addScoringEvent(gID, tID, scorernum, a1, a2, per, sec);
 	std::cout<<"addScoringEvent("<<gID<<", "<<tID<<", "<<scorernum<<", "<<a1<<", "<<a2<<", "<<per<<", "<<sec<<")\n";
