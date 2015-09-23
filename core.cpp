@@ -184,6 +184,21 @@ void updateGame(Game* g, League* l){
 			}
 		}
 	}	
+	
+	if(page.find("FINAL") != std::string::npos){
+		g->time = -1;
+		g->period = 3;
+	}
+	
+	if(page.find("FINAL SO") != std::string::npos){
+		g->time = -3;
+		g->period = 5;
+	}
+	
+	if(page.find("FINAL OT") != std::string::npos){
+		g->time = -2;
+		g->period = 4;
+	}
 }
 
 void getGames(int season, int team, League *l){
