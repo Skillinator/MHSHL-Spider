@@ -95,6 +95,11 @@ std::string getValue(std::string str, std::string value){
 	return str.substr(start, end-start);
 }
 
+std::string removeSubstring(std::string str, std::string substr){
+	if(str.find(substr) != std::string::npos)
+		str.replace(s.find(substr), substr.size(), "");
+	return str;
+}
 
 /*
 Output functions

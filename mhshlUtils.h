@@ -28,6 +28,7 @@ void showGoals(League l);
 
 void dumpStatus(League l);
 
+std::string removeSubstring(std::string str, std::string substr);
 
 
 int getYear(int startYear, int month);
