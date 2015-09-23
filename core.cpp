@@ -69,12 +69,10 @@ void processGoal(Game* g, League* l, int p, std::string s){
 	/*
 	Handle power play, shorthanded, and empty net goals
 	*/
-	std::cout<<s<<"\n\n";
 	s = removeSubstring(s, "<i>(empty net)</i>");
 	s = removeSubstring(s, "<i>(power play)</i>");
 	s = removeSubstring(s, "<i>(short handed)</i>");
 	s = removeSubstring(s, "<i>(penalty shot)</i>");
-	std::cout<<"Becomes: " << s <<"\n\n";
 	
 	/*
 	Split by the first parenthesis
@@ -118,7 +116,6 @@ void processGoal(Game* g, League* l, int p, std::string s){
 		/*
 		Only one assist, process it accordingly.
 		*/
-		std::cout<<getValue(assists, "playerid")<<"\n";
 		a1 = std::stoi(getValue(assists, "playerid"));		
 	}else{
 		// Split the assists apart before processing
@@ -127,15 +124,13 @@ void processGoal(Game* g, League* l, int p, std::string s){
 		/*
 		Now it's basically the same as processing one assist, we just do it twice.
 		*/
-		std::cout<<getValue(assistvec[0], "playerid")<<"\n";
-		a1 = std::stoi(getValue(assistvec[0], "playerid"));		
-		std::cout<<getValue(assistvec[1], "playerid")<<"\n";
+		a1 = std::stoi(getValue(assistvec[0], "playerid"));
 		a2 = std::stoi(getValue(assistvec[1], "playerid"));
 	}
 	
 	
 	l->addScoringEvent(gID, tID, scorernum, a1, a2, per, sec);
-	
+	std::cout<<"addScoringEvent("<<gID<<", "<<tID<<", "<<scorenum<<", "<<a1<<", "<<a2<<", "<<per<<", "<<sec<<")\n";
 }
 
 void updateGame(Game* g, League* l){
