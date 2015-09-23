@@ -151,8 +151,8 @@ void updateGame(Game* g, League* l){
 	/*
 	Just take the last element and stoi it, and set as the appropriate team's shot total
 	*/
-	g->homeShots = std::stoi(homeShots[homeShots.size() - 1]));
-	g->awayShots = std::stoi(awayShots[awayShots.size() - 1]));
+	g->homeShots = std::stoi(homeShots[homeShots.size() - 1]);
+	g->awayShots = std::stoi(awayShots[awayShots.size() - 1]);
 	
 	
 	std::string goals = split(page, "Scoring Summary")[1];
