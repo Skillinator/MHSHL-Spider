@@ -352,7 +352,6 @@ void updateGame(Game* g, League* l){
 					*/
 					if(firstsplit[n].find("<td") != std::string::npos)
 						firstsplit[n] = extract(firstsplit[n], "td");
-					std::cout<<"\n" << firstsplit[n] << "\n";
 					processPenalty(g, l, per, firstsplit[n]);
 				}
 			}else{
