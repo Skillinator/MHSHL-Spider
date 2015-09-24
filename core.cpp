@@ -332,7 +332,7 @@ void updateGame(Game* g, League* l){
 	/*
 	Cycle through goals by period
 	*/
-	for(int i = 0; i < penVec.size(); i+=2){
+	for(int i = 0; i < penVec.size()-1; i+=2){
 		
 		/*
 		Only if there was a goal in that period
