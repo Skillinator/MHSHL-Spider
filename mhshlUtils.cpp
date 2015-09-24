@@ -194,7 +194,7 @@ int getPeriod(std::string per){
 		std::cout<<"Shootout!\n";
 		return 5;
 		
-		std::cout<<"Default!\n"
+		std::cout<<"Default!\n";
 	return 0;
 }
 
