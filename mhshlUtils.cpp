@@ -191,7 +191,10 @@ int getPeriod(std::string per){
 	if(per == "OT")
 		return 4;
 	if(per == "Shootout")
+		std::cout<<"Shootout!\n";
 		return 5;
+		
+		std::cout<<"Default!\n"
 	return 0;
 }
 
