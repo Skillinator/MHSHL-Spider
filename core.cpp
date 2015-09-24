@@ -160,6 +160,7 @@ void processPenalty(Game* g, League* l, int per, std::string s){
 	We don't really care about a misconduct. Just remove it.
 	*/
 	s = removeSubstring(s, "(Misconduct");
+	s = removeSubstring(s, "(Game Misconduct");
 	
 	/*
 	Split by the first parenthesis
