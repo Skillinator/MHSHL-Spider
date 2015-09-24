@@ -380,18 +380,18 @@ void updateGame(Game* g, League* l){
 	// we still need to properly process time, I'll have to see on some NAHL games or something.
 	
 	if(page.find("FINAL") != std::string::npos){
-		g->time = -1;
-		g->period = 3;
-	}
-	
-	if(page.find("FINAL SO") != std::string::npos){
-		g->time = -3;
-		g->period = 5;
-	}
-	
-	if(page.find("FINAL OT") != std::string::npos){
-		g->time = -2;
-		g->period = 4;
+		switch(g->period){
+			case 4:
+				g->time = -2;
+				break;
+			case 5:
+				g->time = -3;
+				break;
+			default:
+				g->time = -1;
+				g->period = 3;
+				break;
+		}
 	}
 }
 
