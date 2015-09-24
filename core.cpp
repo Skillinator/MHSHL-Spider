@@ -201,9 +201,11 @@ void processPenalty(Game* g, League* l, int per, std::string s){
 	tID = translateTeamID(team);
 	std::cout<<split(time, "min")[0]<<"\n";
 	duration = std::stoi(split(time, " min")[0]);
+	std::cout<<"Got duration\n";
 	sec = l->periodLength - (60*std::stoi(split(time, ":")[0]) + std::stoi(split(time, ":")[1]));
-	
+	std::cout<<"Got seconds value\n";
 	l->addPenaltyEvent(gID, tID, player, duration, per, sec, p);
+	std::cout<<"Added PenaltyEvent\n";
 }
 
 
