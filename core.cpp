@@ -150,6 +150,9 @@ void processPenalty(Game* g, League* l, int per, std::string s){
 	if(s.find("no penalties") != std::string::npos)
 		return;
 	
+	if(s.size() < 10)
+		return;
+	
 	/*
 	If there's a <br> on the end, remove that
 	*/
