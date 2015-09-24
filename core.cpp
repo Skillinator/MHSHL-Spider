@@ -132,10 +132,87 @@ void processGoal(Game* g, League* l, int p, std::string s){
 	l->addScoringEvent(gID, tID, scorernum, a1, a2, per, sec);
 }
 
+
+void processPenalty(Game* g, League* l, int p, std::string s){
+	/*
+	Initialize values to their default states
+	*/
+	std::string gID="null";
+	std::string tID="null";
+	int player = 0;
+	int duration = 0;
+	int per = 0;
+	std::string p = "null";
+	
+	/*
+	If no penalties occured, stop processing right here 
+	*/
+	if(s.find("no penalties") != std::string::npos)
+		return;
+	
+	/*
+	If there's a <br> on the end, remove that
+	*/
+	if(s.find("<br"))
+		s = split(s, "<br")[0];
+	
+	/*
+	We don't really care about a misconduct. Just remove it.
+	*/
+	s = removeSubstring(s, "(Misconduct");
+	
+	/*
+	Split by the first parenthesis
+	*/
+	std::vector<std::string> firstsplit = split(s, "(");
+	
+	/*
+	This willl give us the team name and the player ID
+	The team name still needs to be run through the translate function since it's not how they're stored in our database
+	*/
+	std::vector<std::string> teamplayer = split(firstsplit[0]," - ");
+	
+	/*
+	Separate the charge from the time and duration
+	*/
+	p = split(firstsplit[1], ")")[0];
+	std::string time = split(firstsplit[1], "), ")[1];
+	
+	/*
+	Break the team and player values out of their bolding tags
+	*/
+	std::string team = extract(teamplayer[0], "b");
+	std::string player = extract(teamplayer[1], "b");
+	
+	/*
+	Set the first three values. 
+	gameID is found directly from the game. 
+	PlayerID is found from the playerid value passed in the href to the player's page.
+	teamID is found by translating the team name into our style teamID.
+	*/
+	gID = g->id;
+	scorernum = std::stoi(getValue(player, "playerid"));
+	tID = translateTeamID(team);
+	
+	duration = split(time, " min")[0];
+	sec = l->periodLength - (60*std::stoi(split(time, ":")[0]) + std::stoi(split(time, ":")[1]));
+	
+	l->addPenaltyEvent(gID, tID, player, duration, per, sec, p);
+}
+
+
 void updateGame(Game* g, League* l){
 	std::string url = "midwest-league.stats.pointstreak.com/players-boxscore.html?gameid=" + std::to_string(g->number);
 	std::string page = fetchWebPage(url);
 	
+
+	/*
+	*
+	*
+	* PROCESS SCORING INFORMATION
+	*
+	*
+	*/
 	
 	/*
 	Take the page after "Shots on Goal", before "</div>", then after "</a>";
@@ -154,27 +231,53 @@ void updateGame(Game* g, League* l){
 	g->homeShots = std::stoi(homeShots[homeShots.size() - 1]);
 	g->awayShots = std::stoi(awayShots[awayShots.size() - 1]);
 	
-	
+	/*
+	For goals, we dont' want anything above the scoring summary, or below the next </table>
+	*/
 	std::string goals = split(page, "Scoring Summary")[1];
-	
 	goals = split(goals, "</table>")[0];
 
+	/*
+	Split by </td> to break up the periods. The first and last elements are garbage, just toss them.
+	*/
 	std::vector<std::string> goalVec = split(goals, "</td>");
 	goalVec.erase(goalVec.begin());
 	goalVec.erase(goalVec.end());
 
-	
+	/*
+	Go through and remove the opening <td> tag now from every element, it's unnecessary.
+	*/
 	for(int i = 0; i < goalVec.size(); i++){
 		goalVec[i] = extract(goalVec[i] + "</td>", "td");
 	}
 	
+	
+	/*
+	Cycle through goals by period
+	*/
 	for(int i = 0; i < goalVec.size(); i+=2){
+		
+		/*
+		Only if there was a goal in that period
+		*/
+		
 		if(goalVec[i+1].find("(no scoring)") == std::string::npos ){
-			// Here we do the actual interpretation
+			
+			/*
+			Get the actual number for this period
+			*/
 			int per = getPeriod(goalVec[i]);
+			
+			/*
+			If there are more than one goals in that period, split them up and process them seperately.
+			If there is only one goal, process it directly.
+			*/
 			if(goalVec[i+1].find("<tr>") != std::string::npos){
 				std::vector<std::string> firstsplit = split(goalVec[i+1], "<tr>");
 				for(int n = 0; n < firstsplit.size(); n++){
+					/*
+					If it wasn't the first goal of the period, there will be another <td> tag on it. We can't have that, so strip it off.
+					*/
 					if(firstsplit[n].find("<td") != std::string::npos)
 						firstsplit[n] = extract(firstsplit[n], "td");
 					processGoal(g, l, per, firstsplit[n]);
@@ -184,6 +287,85 @@ void updateGame(Game* g, League* l){
 			}
 		}
 	}	
+	
+	
+	
+	/*
+	*
+	*
+	* PROCESS PENALTY INFORMATION
+	*
+	*
+	*/
+	
+	
+	/*
+	For Penalties, delete everything above the "Penalties" header. Once again, delete all that follows </table>.
+	*/
+	std::string penalties = split(page, "Penalties")[1];
+	penalties = split(penalties, "</table>")[0];
+
+	/*
+	Split by </td> to break up the periods. The first and last elements are garbage, just toss them.
+	*/
+	std::vector<std::string> penVec = split(penalties, "</td>");
+	penVec.erase(penVec.begin());
+	penVec.erase(penVec.end());
+
+	/*
+	Go through and remove the opening <td> tag now from every element, it's unnecessary.
+	*/
+	for(int i = 0; i < penVec.size(); i++){
+		penVec[i] = extract(penVec[i] + "</td>", "td");
+	}
+	
+	
+	/*
+	Cycle through goals by period
+	*/
+	for(int i = 0; i < penVec.size(); i+=2){
+		
+		/*
+		Only if there was a goal in that period
+		*/
+		
+		if(penVec[i+1].find("(no penalties)") == std::string::npos ){
+			
+			/*
+			Get the actual number for this period
+			*/
+			int per = getPeriod(penVec[i]);
+			
+			/*
+			If there are more than one goals in that period, split them up and process them seperately.
+			If there is only one goal, process it directly.
+			*/
+			if(penVec[i+1].find("<tr>") != std::string::npos){
+				std::vector<std::string> firstsplit = split(penVec[i+1], "<tr>");
+				for(int n = 0; n < firstsplit.size(); n++){
+					/*
+					If it wasn't the first goal of the period, there will be another <td> tag on it. We can't have that, so strip it off.
+					*/
+					if(firstsplit[n].find("<td") != std::string::npos)
+						firstsplit[n] = extract(firstsplit[n], "td");
+					processPenalty(g, l, per, firstsplit[n]);
+				}
+			}else{
+				processPenalty(g, l, per, penVec[i+1]);
+			}
+		}
+	}	
+	
+	
+	/*
+	*
+	*
+	* PROCESS TIME INFORMATION
+	*
+	*
+	*/
+	
+	// we still need to properly process time, I'll have to see on some NAHL games or something.
 	
 	if(page.find("FINAL") != std::string::npos){
 		g->time = -1;
