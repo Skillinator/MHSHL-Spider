@@ -183,7 +183,7 @@ void processPenalty(Game* g, League* l, int per, std::string s){
 	*/
 	std::cout<<extract(teamplayer[1], "b")<<"\n";
 	std::string team = extract(teamplayer[0], "b");
-	player = std::stoi(extract(teamplayer[1], "b"));
+	player = std::stoi(getValue(extract(teamplayer[1], "b"), "playerid"));
 	
 	/*
 	Set the first three values. 
