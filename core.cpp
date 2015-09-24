@@ -133,7 +133,7 @@ void processGoal(Game* g, League* l, int p, std::string s){
 }
 
 
-void processPenalty(Game* g, League* l, int p, std::string s){
+void processPenalty(Game* g, League* l, int per, std::string s){
 	/*
 	Initialize values to their default states
 	*/
@@ -141,8 +141,8 @@ void processPenalty(Game* g, League* l, int p, std::string s){
 	std::string tID="null";
 	int player = 0;
 	int duration = 0;
-	int per = 0;
 	std::string p = "null";
+	int sec = 0;
 	
 	/*
 	If no penalties occured, stop processing right here 
@@ -182,7 +182,7 @@ void processPenalty(Game* g, League* l, int p, std::string s){
 	Break the team and player values out of their bolding tags
 	*/
 	std::string team = extract(teamplayer[0], "b");
-	std::string player = extract(teamplayer[1], "b");
+	player = std::stoi(extract(teamplayer[1], "b"));
 	
 	/*
 	Set the first three values. 
@@ -191,10 +191,9 @@ void processPenalty(Game* g, League* l, int p, std::string s){
 	teamID is found by translating the team name into our style teamID.
 	*/
 	gID = g->id;
-	scorernum = std::stoi(getValue(player, "playerid"));
 	tID = translateTeamID(team);
 	
-	duration = split(time, " min")[0];
+	duration = std::stoi(split(time, " min")[0]);
 	sec = l->periodLength - (60*std::stoi(split(time, ":")[0]) + std::stoi(split(time, ":")[1]));
 	
 	l->addPenaltyEvent(gID, tID, player, duration, per, sec, p);
