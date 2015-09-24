@@ -181,6 +181,7 @@ void processPenalty(Game* g, League* l, int per, std::string s){
 	/*
 	Break the team and player values out of their bolding tags
 	*/
+	std::cout<<extract(teamplayer[1], "b")<<"\n";
 	std::string team = extract(teamplayer[0], "b");
 	player = std::stoi(extract(teamplayer[1], "b"));
 	
@@ -192,7 +193,7 @@ void processPenalty(Game* g, League* l, int per, std::string s){
 	*/
 	gID = g->id;
 	tID = translateTeamID(team);
-	
+	std::cout<<split(time, "min")[0]<<"\n";
 	duration = std::stoi(split(time, " min")[0]);
 	sec = l->periodLength - (60*std::stoi(split(time, ":")[0]) + std::stoi(split(time, ":")[1]));
 	
