@@ -209,7 +209,76 @@ void updateGame(Game* g, League* l){
 	std::string url = "midwest-league.stats.pointstreak.com/players-boxscore.html?gameid=" + std::to_string(g->number);
 	std::string page = fetchWebPage(url);
 	
+	
+	/*
+	*
+	*
+	* PROCESS PENALTY INFORMATION
+	*
+	*
+	*/
+	
+	
+	/*
+	For Penalties, delete everything above the "Penalties" header. Once again, delete all that follows </table>.
+	*/
+	std::string penalties = split(page, "Penalties")[1];
+	penalties = split(penalties, "</table>")[0];
 
+	/*
+	Split by </td> to break up the periods. The first and last elements are garbage, just toss them.
+	*/
+	std::vector<std::string> penVec = split(penalties, "</td>");
+	penVec.erase(penVec.begin());
+	penVec.erase(penVec.end());
+
+	/*
+	Go through and remove the opening <td> tag now from every element, it's unnecessary.
+	*/
+	for(int i = 0; i < penVec.size(); i++){
+		penVec[i] = extract(penVec[i] + "</td>", "td");
+	}
+	
+	
+	/*
+	Cycle through goals by period
+	*/
+	for(int i = 0; i < penVec.size()-1; i+=2){
+		
+		/*
+		Only if there was a goal in that period
+		*/
+		
+		if(penVec[i+1].find("(no penalties)") == std::string::npos ){
+			
+			/*
+			Get the actual number for this period
+			*/
+			int per = getPeriod(penVec[i]);
+			
+			/*
+			If there are more than one goals in that period, split them up and process them seperately.
+			If there is only one goal, process it directly.
+			*/
+			if(penVec[i+1].find("<tr>") != std::string::npos){
+				std::vector<std::string> firstsplit = split(penVec[i+1], "<tr>");
+				for(int n = 0; n < firstsplit.size(); n++){
+					/*
+					If it wasn't the first goal of the period, there will be another <td> tag on it. We can't have that, so strip it off.
+					*/
+					if(firstsplit[n].find("<td") != std::string::npos)
+						firstsplit[n] = extract(firstsplit[n], "td");
+					processPenalty(g, l, per, firstsplit[n]);
+				}
+			}else{
+				std::cout<<"\n" << penVec[i]<<"\n";
+				std::cout<<penVec[i+1]<<"\n";
+				processPenalty(g, l, per, penVec[i+1]);
+			}
+		}
+	}	
+	
+	
 	/*
 	*
 	*
@@ -292,75 +361,6 @@ void updateGame(Game* g, League* l){
 		}
 	}	
 	
-	
-	
-	/*
-	*
-	*
-	* PROCESS PENALTY INFORMATION
-	*
-	*
-	*/
-	
-	
-	/*
-	For Penalties, delete everything above the "Penalties" header. Once again, delete all that follows </table>.
-	*/
-	std::string penalties = split(page, "Penalties")[1];
-	penalties = split(penalties, "</table>")[0];
-
-	/*
-	Split by </td> to break up the periods. The first and last elements are garbage, just toss them.
-	*/
-	std::vector<std::string> penVec = split(penalties, "</td>");
-	penVec.erase(penVec.begin());
-	penVec.erase(penVec.end());
-
-	/*
-	Go through and remove the opening <td> tag now from every element, it's unnecessary.
-	*/
-	for(int i = 0; i < penVec.size(); i++){
-		penVec[i] = extract(penVec[i] + "</td>", "td");
-	}
-	
-	
-	/*
-	Cycle through goals by period
-	*/
-	for(int i = 0; i < penVec.size()-1; i+=2){
-		
-		/*
-		Only if there was a goal in that period
-		*/
-		
-		if(penVec[i+1].find("(no penalties)") == std::string::npos ){
-			
-			/*
-			Get the actual number for this period
-			*/
-			int per = getPeriod(penVec[i]);
-			
-			/*
-			If there are more than one goals in that period, split them up and process them seperately.
-			If there is only one goal, process it directly.
-			*/
-			if(penVec[i+1].find("<tr>") != std::string::npos){
-				std::vector<std::string> firstsplit = split(penVec[i+1], "<tr>");
-				for(int n = 0; n < firstsplit.size(); n++){
-					/*
-					If it wasn't the first goal of the period, there will be another <td> tag on it. We can't have that, so strip it off.
-					*/
-					if(firstsplit[n].find("<td") != std::string::npos)
-						firstsplit[n] = extract(firstsplit[n], "td");
-					processPenalty(g, l, per, firstsplit[n]);
-				}
-			}else{
-				std::cout<<"\n" << penVec[i]<<"\n";
-				std::cout<<penVec[i+1]<<"\n";
-				processPenalty(g, l, per, penVec[i+1]);
-			}
-		}
-	}	
 	
 	
 	/*
