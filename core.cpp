@@ -469,7 +469,8 @@ void getPlayers(int season, int team, League *l){
 	page = split(page, "Player Stats")[1];
 	page = split(page, "</table>")[1];
 	
-	Team* t = l->getTeam(team)
+	Team* t = l->getTeam(team);
+	std::string teamID = t->abbreviation;
 	
 	/*
 	Split by </tr>, remove first and last elements
@@ -495,10 +496,10 @@ void getPlayers(int season, int team, League *l){
 		std::string name = "NULL";
 		
 		playerNum = std::stoi(num);
-		playerID = getValue(nameID, "playerid");
+		playerID = std::stoi(getValue(nameID, "playerid"));
 		name = extract(nameID, "a");
 		
-		l->addPlayer(teamID, name, playerID, playernum);
+		l->addPlayer(teamID, name, playerID, playerNum);
 		
 	}
 	
