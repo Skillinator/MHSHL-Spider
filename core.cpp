@@ -478,7 +478,7 @@ void getPlayers(int season, int team, League *l){
 	players.erase(players.begin());
 	players.erase(players.end());
 	
-	for(int i = 0; i < ){
+	for(int i = 0; i < players.size(); i++){
 		/*
 		Remove the opening <tr> element from everything too
 		*/
