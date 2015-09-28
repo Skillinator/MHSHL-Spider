@@ -171,7 +171,7 @@ void dumpStatus(League l){
 /*
 Time Functions
 
-Functions to help us interpret, store, and read time/date
+Functions to help us interpret,  store, and read time/date
 
 */
 int getMinutes(std::string time){

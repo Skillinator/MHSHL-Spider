@@ -460,6 +460,50 @@ void sort_games(League* l){
 	
 }
 
+void getPlayers(int season, int team, League *l){
+	std::cout<<"Fetching Players for team " << team << " during the " << season << " season.\n";
+
+	std::string url = "midwest-league.stats.pointstreak.com/players-team-roster.html?teamid=" + std::to_string(team) + "&seasonid=" + std::to_string(season);
+
+	std::string page = fetchWebPage(url);
+	page = split(page, "Player Stats")[1];
+	page = split(page, "</table>")[1];
+	
+	Team* t = l->getTeam(team)
+	
+	/*
+	Split by </tr>, remove first and last elements
+	*/
+	std::vector<std::string> players = split(page, "</tr>");
+	players.erase(players.begin());
+	players.erase(players.end());
+	
+	for(int i = 0; i < ){
+		/*
+		Remove the opening <tr> element from everything too
+		*/
+		std::string currentPlayer = extract(players[i] + "</tr>", "tr");
+		
+		/*
+		Get the player's number in one string, and his name and ID in another.
+		*/
+		std::string num = extract(split(currentPlayer, "</td>")[0] + "</td", "td");
+		std::string nameID = extract(split(currentPlayer, "</td>")[0] + "</td", "td");
+		
+		int playerNum = 0;
+		int playerID = 0;
+		std::string name = "NULL";
+		
+		playerNum = std::stoi(num);
+		playerID = getValue(nameID, "playerid");
+		name = extract(nameID, "a");
+		
+		l->addPlayer(teamID, name, playerID, playernum);
+		
+	}
+	
+}
+
 // Procedurally updates every game in the database. Only use when a full rebuild is needed.
 void hard_update(League* l){
 	for(int i = 0; i < l->games.size(); i++){
@@ -477,12 +521,18 @@ const int SEASON_2015_2015 = 14757;
 int main(){
 	League l = League(17);
 	initMHSHL(&l);
+	
+	
+	/*
 	for(int i = 0; i < l.teams.size(); i++){
 		getGames(SEASON_2014_2015, l.teams[i].id, &l);
 	}
 	sort_games(&l);
 	hard_update(&l);
 	showGames(l);
-	std::cout<<l.games.size();
+	*/
+	
+	getPlayers(SEASON_2014_2015, 47180, &l);
+	showPlayers(l);
 	return 0;
 }

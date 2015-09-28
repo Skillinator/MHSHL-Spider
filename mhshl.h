@@ -66,11 +66,12 @@ public:
 class Player{
 public:
 	Player();
-	Player(std::string tID, std::string name, int num);
+	Player(std::string tID, std::string name, int identifier, int num);
 	void printHeading();
 	void printString();
 	std::string team; // Abbreviation
 	std::string name;
+	int id;
 	int number;
 	int gp;
 	int g;

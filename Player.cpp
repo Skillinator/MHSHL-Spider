@@ -6,22 +6,24 @@
 Player::Player(){
 	team = "NUL";
 	name = "NULL";
-	number = gp = g = a = pp = sh = pim = goalStreak = pointStreak = 0;
+	number = idgp = g = a = pp = sh = pim = goalStreak = pointStreak = 0;
 }
 
-Player::Player(std::string tID, std::string gname, int num){
+Player::Player(std::string tID, std::string gname, int identifier, int num){
 	team = tID;
 	name = gname;
 	number = num;
+	id = identifier;
 	gp = g = a = pp = sh = pim = goalStreak = pointStreak = 0;
 }
 
 void Player::printHeading(){
-	std::cout<<"\n        name         #  team  gp  g  a  pp  sh  pim  goalStreak  pointStreak\n";
+	std::cout<<"\n        name          ID     #  team  gp  g  a  pp  sh  pim  goalStreak  pointStreak\n";
 }
 
 void Player::printString(){
 	spaceBuffer(20, name);
+	spaceBuffer(8, std::to_string(id));
 	spaceBuffer(3, std::to_string(number));
 	spaceBuffer(6, team);
 	spaceBuffer(4, std::to_string(gp));
