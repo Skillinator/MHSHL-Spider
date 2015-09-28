@@ -122,12 +122,12 @@ bool League::addTeam(std::string abbr, std::string name, std::string city, int i
 	return true;
 }
 
-bool League::addPlayer(std::string tID, std::string name, int number){
+bool League::addPlayer(std::string tID, std::string name, int identifier, int number){
 	
 	if(getPlayer(tID, number)->name != "NULL")
 		return false;
 
-	Player p = Player(tID, name, number);
+	Player p = Player(tID, name, identifier, number);
 	players.push_back(p);
 	return true;
 }

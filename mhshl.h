@@ -125,7 +125,7 @@ public:
 	League(int pL);
 	bool varsity;
 	bool addTeam(std::string abbr, std::string name, std::string city, int identifier);
-	bool addPlayer(std::string tID, std::string name, int number);
+	bool addPlayer(std::string tID, std::string name, int identifier, int number);
 	void addPenaltyEvent(std::string gID, std::string tID, int player, int duration, int per, int time, std::string penalty);
 	void addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec);
 	bool addGame(int m, int d, int y, int st, std::string home, std::string away, int gameID);
