@@ -18,11 +18,11 @@ Player::Player(std::string tID, std::string gname, int identifier, int num){
 }
 
 void Player::printHeading(){
-	std::cout<<"\n        name          ID     #  team  gp  g  a  pp  sh  pim  goalStreak  pointStreak\n";
+	std::cout<<"\n             name                 ID   #  team  gp  g  a  pp  sh  pim  goalStreak  pointStreak\n";
 }
 
 void Player::printString(){
-	spaceBuffer(20, name);
+	spaceBuffer(30, name);
 	spaceBuffer(8, std::to_string(id));
 	spaceBuffer(3, std::to_string(number));
 	spaceBuffer(6, team);

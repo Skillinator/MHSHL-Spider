@@ -478,28 +478,28 @@ void getPlayers(int season, int team, League *l){
 	std::vector<std::string> players = split(page, "</tr>");
 	players.erase(players.begin());
 	players.erase(players.end());
-	
+	players.erase(players.end());	
 	for(int i = 0; i < players.size(); i++){
 		/*
 		Remove the opening <tr> element from everything too
 		*/
 		std::string currentPlayer = extract(players[i] + "</tr>", "tr");
-		
+		if(currentPlayer.find("DP") == currentPlayer.find("HC") && currentPlayer.find("HC") == currentPlayer.find("AC")){
 		/*
-		Get the player's number in one string, and his name and ID in another.
-		*/
-		std::string num = extract(split(currentPlayer, "</td>")[0] + "</td", "td");
-		std::string nameID = extract(split(currentPlayer, "</td>")[0] + "</td", "td");
-		
-		int playerNum = 0;
-		int playerID = 0;
-		std::string name = "NULL";
-		
-		playerNum = std::stoi(num);
-		playerID = std::stoi(getValue(nameID, "playerid"));
-		name = extract(nameID, "a");
-		
-		l->addPlayer(teamID, name, playerID, playerNum);
+			Get the player's number in one string, and his name and ID in another.
+			*/
+			std::string num = extract(split(currentPlayer, "</td>")[0] + "</td", "td");
+			std::string nameID = extract(split(currentPlayer, "</td>")[1] + "</td", "td");
+			
+			int playerNum = 0;
+			int playerID = 0;
+			std::string name = "NULL";
+			playerNum = std::stoi(num);
+			playerID = std::stoi(getValue(nameID, "playerid"));
+			name = split(extract(nameID, "a"), "\t\t\t\t")[1];
+			
+			l->addPlayer(teamID, name, playerID, playerNum);
+		}
 		
 	}
 	
@@ -523,17 +523,15 @@ int main(){
 	League l = League(17);
 	initMHSHL(&l);
 	
+	getPlayers(SEASON_2014_2015, 47180, &l);
 	
-	/*
 	for(int i = 0; i < l.teams.size(); i++){
 		getGames(SEASON_2014_2015, l.teams[i].id, &l);
 	}
 	sort_games(&l);
 	hard_update(&l);
 	showGames(l);
-	*/
 	
-	getPlayers(SEASON_2014_2015, 47180, &l);
 	showPlayers(l);
 	return 0;
 }
