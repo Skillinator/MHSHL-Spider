@@ -184,33 +184,13 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 	}
 
 	ScoringEvent se = ScoringEvent(gID, tID, gs, a1, a2, per, sec);
-
 	se.pp = powerPlayGoal(gID, tID);
-
-	int gameid = -1;
-	bool againstHome = false;
-
-
-	getTeam(tID)->gf++;
-
-	getPlayer(tID, gs)->g++;
-	
-	if(se.pp == 1)
-		getPlayer(tID, gs)->pp++;
-
-	if(se.pp == -1)
-		getPlayer(tID, gs)->sh++;
-
-	getPlayer(tID, a1)->a++;
-	getPlayer(tID, a2)->a++;
-
 	goals.push_back(se);
-
+	
 	Game* game = getGame(gID);
 
 	if(game->id == "NULL")
 		return;
-
 	if(game->homeTeam == tID){
 		game->homeScore++;
 	} else{
@@ -222,7 +202,25 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 		getTeam(game->homeTeam)->ga++;
 	if(!againstHome)
 		getTeam(game->awayTeam)->ga++;
+	
+	// Do not count shootout goals
+	if(per < 5){
+		bool againstHome = false;
 
+
+		getTeam(tID)->gf++;
+
+		getPlayer(tID, gs)->g++;
+		
+		if(se.pp == 1)
+			getPlayer(tID, gs)->pp++;
+
+		if(se.pp == -1)
+			getPlayer(tID, gs)->sh++;
+
+		getPlayer(tID, a1)->a++;
+		getPlayer(tID, a2)->a++;
+	}
 
 }
 
