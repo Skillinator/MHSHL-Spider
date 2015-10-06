@@ -182,22 +182,16 @@ int getMinutes(std::string time){
 }
 
 int getPeriod(std::string per){
-	std::cout<< "Testing period 1 \n";
 	if(per == "Period 1")
 		return 1;
-	std::cout<< "Testing period 2 \n";
 	if(per == "Period 2")
 		return 2;
-	std::cout<< "Testing period 3 \n";
 	if(per == "Period 3")
 		return 3;
-	std::cout<< "Testing period OT \n";
 	if(per == "OT")
 		return 4;
-	std::cout<< "Testing period Shootout\n";
 	if(per == "Shootout")
 		return 5;
-	std::cout<< "Returning default \n";
 	return 0;
 }
 

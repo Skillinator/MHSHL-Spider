@@ -266,7 +266,7 @@ Player* League::getPlayer(std::string tID, int num){
 		return new Player();
 
 	for(int i = 0; i < players.size(); i++){
-		if(players[i].team == tID && players[i].number == num)
+		if(players[i].team == tID && players[i].id == num)
 			return &players[i];
 	}
 
