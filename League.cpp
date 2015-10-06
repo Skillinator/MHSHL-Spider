@@ -189,6 +189,8 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 	
 	Game* game = getGame(gID);
 
+	bool againstHome = false;
+	
 	if(game->id == "NULL")
 		return;
 	if(game->homeTeam == tID){
@@ -205,7 +207,6 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 	
 	// Do not count shootout goals
 	if(per < 5){
-		bool againstHome = false;
 
 
 		getTeam(tID)->gf++;
