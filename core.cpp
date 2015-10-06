@@ -6,6 +6,7 @@
 
 void initMHSHL(League *l){
 	l->addTeam("QCB", "Blues", "Quad City", 47180);
+	return;
 	l->addTeam("DBQ", "Devils", "Dubuque", 47175);
 	l->addTeam("CDR", "Jr. Roughriders", "Cedar Rapids", 47172);
 	l->addTeam("WAT", "Warriors", "Waterloo", 47182);
@@ -42,7 +43,7 @@ void update(League *l){
 	*/
 }
 
-void processGoal(Game* g, League* l, int p, std::string s){
+ScoringEvent processGoal(Game* g, League* l, int p, std::string s){
 	/*
 	Initialize values to their default states
 	*/
@@ -58,7 +59,7 @@ void processGoal(Game* g, League* l, int p, std::string s){
 	If no scoring occured, stop processing right here 
 	*/
 	if(s.find("no scoring") != std::string::npos)
-		return;
+		return ScoringEvent();
 	
 	/*
 	If there's a <br> on the end, remove that
@@ -129,11 +130,11 @@ void processGoal(Game* g, League* l, int p, std::string s){
 	}
 	sec = l->periodLength - (60*std::stoi(split(time, ":")[0]) + std::stoi(split(time, ":")[1]));
 	
-	l->addScoringEvent(gID, tID, scorernum, a1, a2, per, sec);
+	return ScoringEvent(gID, tID, scorernum, a1, a2, per, sec);
 }
 
 
-void processPenalty(Game* g, League* l, int per, std::string s){
+PenaltyEvent processPenalty(Game* g, League* l, int per, std::string s){
 	/*
 	Initialize values to their default states
 	*/
@@ -148,10 +149,10 @@ void processPenalty(Game* g, League* l, int per, std::string s){
 	If no penalties occured, stop processing right here 
 	*/
 	if(s.find("no penalties") != std::string::npos)
-		return;
+		return PenaltyEvent();
 	
 	if(s.size() < 10)
-		return;
+		return PenaltyEvent();
 	
 	/*
 	If there's a <br> on the end, remove that
@@ -201,7 +202,7 @@ void processPenalty(Game* g, League* l, int per, std::string s){
 	tID = translateTeamID(team);
 	duration = std::stoi(split(time, " min")[0]);
 	sec = l->periodLength - (60*std::stoi(split(time, ":")[0]) + std::stoi(split(time, ":")[1]));
-	l->addPenaltyEvent(gID, tID, player, duration, per, sec, p);
+	return PenaltyEvent(gID, tID, player, duration, per, sec, p);
 }
 
 
@@ -209,6 +210,8 @@ void updateGame(Game* g, League* l){
 	std::string url = "midwest-league.stats.pointstreak.com/players-boxscore.html?gameid=" + std::to_string(g->number);
 	std::string page = fetchWebPage(url);
 	
+	std::vector<PenaltyEvent> penaltyEvents;
+	std::vector<ScoringEvent> scoringEvents;
 	
 	/*
 	*
@@ -268,10 +271,11 @@ void updateGame(Game* g, League* l){
 					*/
 					if(firstsplit[n].find("<td") != std::string::npos)
 						firstsplit[n] = extract(firstsplit[n], "td");
-					processPenalty(g, l, per, firstsplit[n]);
+					penaltyEvents.push_back(processPenalty(g, l, per, firstsplit[n]));
 				}
 			}else{
 				processPenalty(g, l, per, penVec[i+1]);
+				penaltyEvents.push_back(processPenalty(g, l, per, penVec[i+1]));
 			}
 		}
 	}	
@@ -351,14 +355,52 @@ void updateGame(Game* g, League* l){
 					*/
 					if(firstsplit[n].find("<td") != std::string::npos)
 						firstsplit[n] = extract(firstsplit[n], "td");
-					processGoal(g, l, per, firstsplit[n]);
+					scoringEvents.push_back(processGoal(g, l, per, firstsplit[n]));
 				}
 			}else{
-				processGoal(g, l, per, goalVec[i+1]);
+				scoringEvents.push_back(processGoal(g, l, per, goalVec[i+1]));
 			}
 		}
-	}	
+	}
 	
+	/*
+	* Go through these in chronological order.
+	*/
+	while(scoringEvents.size() > 0 && penaltyEvents.size() > 0){
+		// Get most recent score, most recent penalty
+		ScoringEvent mrs = scoringEvents[0];
+		PenaltyEvent mrp = penaltyEvents[0];
+		
+		if(mrs.period < mrp.period){
+			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time);
+			scoringEvents.erase(scoringEvents.begin());
+		}else if(mrs.period > mrp.period){
+			l->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
+			penaltyEvents.erase(penaltyEvents.begin());
+		}else if(mrs.time < mrp.time){
+			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time);
+			scoringEvents.erase(scoringEvents.begin());
+		}else{
+			l->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);			
+			penaltyEvents.erase(penaltyEvents.begin());
+		}
+	}
+	
+	if(scoringEvents.size() > 0){		
+		while(scoringEvents.size() > 0){
+			ScoringEvent mrs = scoringEvents[0];
+			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time);
+			scoringEvents.erase(scoringEvents.begin());
+		}
+	}
+	
+	if(penaltyEvents.size() > 0){
+		while(scoringEvents.size() > 0){
+			PenaltyEvent mrp = penaltyEvents[0];
+			l->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
+			penaltyEvents.erase(penaltyEvents.begin());
+		}
+	}
 	
 	
 	/*
