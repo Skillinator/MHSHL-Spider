@@ -13,10 +13,14 @@ void League::updatePenalties(std::string gID, int dT){
 
 	for(int i = 0; i < penalties.size(); i++){
 		if(penalties[i].gameID == gID){
-			penalties[i].timeRemaining += dT;
+			int penaltyTime = periodLength*penalties[i].period - penalties[i].time;
+			penalties[i].timeRemaining = penalties[i].duration * 60 - (dT - penaltyTime);
 		}
-
 		if(penalties[i].timeRemaining < 0)
+			penalties[i].timeRemaining = 0;
+		if(penalties[i].timeRemaining > penalties[i].duration*60)
+			penalties[i].timeRemaining = 0;
+		if(penalties[i].scoredOn)
 			penalties[i].timeRemaining = 0;
 	}
 }
@@ -28,7 +32,6 @@ void League::removeOldestPenalty(std::string gID, std::string tID){
 		PenaltyEvent *pe = &penalties[i];
 		if(pe->gameID == gID && pe->teamID == tID && pe->timeRemaining > 0 && pe->timeRemaining < pe->duration*60 && !pe->scoredOn && pe->duration < 10){
 			pe->goalsWhile++;
-			std::cout<<pe->goalsWhile;
 			if(pe->duration <= 2)
 				pe->scoredOn = true;
 
@@ -43,17 +46,15 @@ void League::removeOldestPenalty(std::string gID, std::string tID){
 int League::powerPlayGoal(std::string gID, std::string tID){
 	int homePenalties = 0;
 	int awayPenalties = 0;
-	
+		
 	std::string homeID = getGame(gID)->homeTeam;
 	std::string awayID = getGame(gID)->awayTeam;
 
 	if(penalties.size() == 0)
 		return 0;
-
 	for(int i = 0; i < penalties.size(); i++){
 		if(penalties[i].gameID == gID){
 			PenaltyEvent pe = penalties[i];
-
 			if(pe.timeRemaining > 0 && pe.timeRemaining < pe.duration*60 && !pe.scoredOn && pe.duration < 10){
 				if(pe.teamID == homeID){
 					homePenalties++;
@@ -66,7 +67,6 @@ int League::powerPlayGoal(std::string gID, std::string tID){
 	
 	if(homePenalties == awayPenalties)
 		return 0;
-
 	if(tID == homeID){
 		if(homePenalties > awayPenalties)
 			return -1;
@@ -101,7 +101,6 @@ void League::updateGameTime(std::string gID, int per, int sec){
 
 	int universalTime = per*periodLength - sec;
 	int gameUniversalTime = gamePeriod*periodLength - gameTime;
-
 	if(gamePeriod == 4)
 		gameUniversalTime = 3*periodLength + 5 - gameTime;
 
@@ -109,7 +108,7 @@ void League::updateGameTime(std::string gID, int per, int sec){
 
 	g->time = sec;
 	g->period = per;
-	updatePenalties(gID, dT);
+	updatePenalties(gID, universalTime);
 }
 
 bool League::addTeam(std::string abbr, std::string name, std::string city, int identifier){
@@ -145,7 +144,7 @@ bool League::addGame(int m, int d, int y, int st, std::string home, std::string 
 
 void League::addPenaltyEvent(std::string gID, std::string tID, int player, int duration, int per, int time, std::string penalty){
 	
-	updateGameTime(gID, per, periodLength - time);
+	updateGameTime(gID, per, time);
 	PenaltyEvent *peTest = getPenaltyEvent(gID, tID, player, per, time, duration, penalty);
 	if(peTest->offense != "NULL")
 		return;
@@ -155,9 +154,8 @@ void League::addPenaltyEvent(std::string gID, std::string tID, int player, int d
 	penalties.push_back(pe);
 }
 
-void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec){
-	
-	updateGameTime(gID, per, periodLength - sec);	
+void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec, int pp){
+	updateGameTime(gID, per, sec);	
 	ScoringEvent *seTest = getScoringEvent(gID, per, sec);
 	if(seTest->teamID != "NUL"){
 		if(gs != seTest->scorer){
@@ -184,7 +182,7 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 	}
 
 	ScoringEvent se = ScoringEvent(gID, tID, gs, a1, a2, per, sec);
-	se.pp = powerPlayGoal(gID, tID);
+	se.pp = pp;
 	goals.push_back(se);
 	
 	Game* game = getGame(gID);
@@ -216,9 +214,10 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 		if(se.pp == 1)
 			getPlayer(tID, gs)->pp++;
 
-		if(se.pp == -1)
+		if(se.pp == -1){
 			getPlayer(tID, gs)->sh++;
-
+			std::cout<<"ID: " << se.gameID << " Scorer: " << se.scorer << "\n";	
+		}
 		getPlayer(tID, a1)->a++;
 		getPlayer(tID, a2)->a++;
 	}

@@ -6,7 +6,6 @@
 
 void initMHSHL(League *l){
 	l->addTeam("QCB", "Blues", "Quad City", 47180);
-	return;
 	l->addTeam("DBQ", "Devils", "Dubuque", 47175);
 	l->addTeam("CDR", "Jr. Roughriders", "Cedar Rapids", 47172);
 	l->addTeam("WAT", "Warriors", "Waterloo", 47182);
@@ -54,6 +53,7 @@ ScoringEvent processGoal(Game* g, League* l, int p, std::string s){
 	int a2 = 0;
 	int per = p;
 	int sec=0;
+	int pp = 0;
 	
 	/*
 	If no scoring occured, stop processing right here 
@@ -66,7 +66,11 @@ ScoringEvent processGoal(Game* g, League* l, int p, std::string s){
 	*/
 	if(s.find("<br"))
 		s = split(s, "<br")[0];
-	
+	if(s.find("(power play)")!=std::string::npos)
+		pp = 1;
+	if(s.find("(short handed)")!= std::string::npos)
+		pp = -1;			
+
 	/*
 	Handle power play, shorthanded, and empty net goals
 	*/
@@ -128,9 +132,11 @@ ScoringEvent processGoal(Game* g, League* l, int p, std::string s){
 		a1 = std::stoi(getValue(assistvec[0], "playerid"));
 		a2 = std::stoi(getValue(assistvec[1], "playerid"));
 	}
-	sec = l->periodLength - (60*std::stoi(split(time, ":")[0]) + std::stoi(split(time, ":")[1]));
+	sec = l->periodLength - (60*std::stoi(split(time, ":")[0]) + std::stoi(split(time, ":")[1]));	
 	
-	return ScoringEvent(gID, tID, scorernum, a1, a2, per, sec);
+	ScoringEvent se = ScoringEvent(gID, tID, scorernum, a1, a2, per, sec);
+	se.pp = pp;
+	return se;
 }
 
 
@@ -157,9 +163,8 @@ PenaltyEvent processPenalty(Game* g, League* l, int per, std::string s){
 	/*
 	If there's a <br> on the end, remove that
 	*/
-	if(s.find("<br"))
+	if(s.find("<br")!=std::string::npos)
 		s = split(s, "<br")[0];
-	
 	/*
 	We don't really care about a misconduct. Just remove it.
 	*/
@@ -173,7 +178,6 @@ PenaltyEvent processPenalty(Game* g, League* l, int per, std::string s){
 	Split by the first parenthesis
 	*/
 	std::vector<std::string> firstsplit = split(s, "(");
-	
 	/*
 	This willl give us the team name and the player ID
 	The team name still needs to be run through the translate function since it's not how they're stored in our database
@@ -185,7 +189,6 @@ PenaltyEvent processPenalty(Game* g, League* l, int per, std::string s){
 	*/
 	p = split(firstsplit[1], ")")[0];
 	std::string time = split(firstsplit[1], "), ")[1];
-	
 	/*
 	Break the team and player values out of their bolding tags
 	*/
@@ -201,7 +204,7 @@ PenaltyEvent processPenalty(Game* g, League* l, int per, std::string s){
 	gID = g->id;
 	tID = translateTeamID(team);
 	duration = std::stoi(split(time, " min")[0]);
-	sec = l->periodLength - (60*std::stoi(split(time, ":")[0]) + std::stoi(split(time, ":")[1]));
+	sec = l->periodLength - (60*std::stoi(split(split(time, ":")[0], ", ")[1]) + std::stoi(split(time, ":")[1]));
 	return PenaltyEvent(gID, tID, player, duration, per, sec, p);
 }
 
@@ -372,13 +375,13 @@ void updateGame(Game* g, League* l){
 		PenaltyEvent mrp = penaltyEvents[0];
 		
 		if(mrs.period < mrp.period){
-			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time);
+			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.pp);
 			scoringEvents.erase(scoringEvents.begin());
 		}else if(mrs.period > mrp.period){
 			l->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
 			penaltyEvents.erase(penaltyEvents.begin());
-		}else if(mrs.time < mrp.time){
-			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time);
+		}else if(mrs.time > mrp.time){
+			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.pp);
 			scoringEvents.erase(scoringEvents.begin());
 		}else{
 			l->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);			
@@ -389,7 +392,7 @@ void updateGame(Game* g, League* l){
 	if(scoringEvents.size() > 0){		
 		while(scoringEvents.size() > 0){
 			ScoringEvent mrs = scoringEvents[0];
-			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time);
+			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.pp);
 			scoringEvents.erase(scoringEvents.begin());
 		}
 	}
@@ -570,7 +573,7 @@ int main(){
 	}
 	sort_games(&l);
 	hard_update(&l);
-	showGames(l);
+//	showGames(l);
 	
 	showPlayers(l);
 	return 0;
