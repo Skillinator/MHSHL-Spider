@@ -166,9 +166,6 @@ bool League::addGame(int m, int d, int y, int st, std::string home, std::string 
 }
 
 void League::addPenaltyEvent(std::string gID, std::string tID, int player, int duration, int per, int time, std::string penalty){
-	std::cout<<player<<":"<<penalty<<":"<<duration<<"\n";
-	if(player == 8162506)
-		std::cout<<"BRENNEN PETERS\n";
 	updateGameTime(gID, per, time);
 	PenaltyEvent *peTest = getPenaltyEvent(gID, tID, player, per, time, duration, penalty);
 	if(peTest->offense != "NULL")

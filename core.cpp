@@ -557,7 +557,6 @@ void getPlayers(int season, int team, League *l){
 	std::vector<std::string> goalies = split(page, "</tr>");
 	goalies.erase(goalies.begin());
 	goalies.erase(goalies.end());
-	goalies.erase(goalies.end());	
 	for(int i = 0; i < goalies.size(); i++){
 		/*
 		Remove the opening <tr> element from everything too
