@@ -398,7 +398,7 @@ void updateGame(Game* g, League* l){
 	}
 	
 	if(penaltyEvents.size() > 0){
-		while(scoringEvents.size() > 0){
+		while(penaltyEvents.size() > 0){
 			PenaltyEvent mrp = penaltyEvents[0];
 			l->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
 			penaltyEvents.erase(penaltyEvents.begin());
