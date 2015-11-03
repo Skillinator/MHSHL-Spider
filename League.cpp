@@ -14,7 +14,7 @@ void League::setGoaliePerformance(std::string gID, std::string tID, int pl, int 
 		if(goaliePerformances.size() == 0)
 			break;
 		GoaliePerformance temp = goaliePerformances[i];
-		if(temp.teamID == tID && temp.gameID == gID && temp.player = pl){
+		if(temp.teamID == tID && temp.gameID == gID && temp.player == pl){
 			goaliePerformances[i].finalFor = f;
 			goaliePerformances[i].finalAgainst = a;
 			goaliePerformances[i].result = res;

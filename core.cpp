@@ -554,15 +554,15 @@ void getPlayers(int season, int team, League *l){
 	/*
 	Split by </tr>, remove first and last elements
 	*/
-	std::vector<std::string> players = split(page, "</tr>");
-	players.erase(players.begin());
-	players.erase(players.end());
-	players.erase(players.end());	
-	for(int i = 0; i < players.size(); i++){
+	std::vector<std::string> goalies = split(page, "</tr>");
+	goalies.erase(goalies.begin());
+	goalies.erase(goalies.end());
+	goalies.erase(goalies.end());	
+	for(int i = 0; i < goalies.size(); i++){
 		/*
 		Remove the opening <tr> element from everything too
 		*/
-		std::string currentPlayer = extract(players[i] + "</tr>", "tr");
+		std::string currentPlayer = extract(goalies[i] + "</tr>", "tr");
 		if(currentPlayer.find("DP") == currentPlayer.find("HC") && currentPlayer.find("HC") == currentPlayer.find("AC") && currentPlayer.find("DG") == currentPlayer.find("AC")){
 		/*
 			Get the player's number in one string, and his name and ID in another.
@@ -578,7 +578,7 @@ void getPlayers(int season, int team, League *l){
 			name = split(extract(nameID, "a"), "\t\t\t\t")[1];
 			
 			if(l->addPlayer(teamID, name, playerID, playerNum))
-				l.players[l.players.size()].goalie = true;
+				l->players[l.players.size()].goalie = true;
 		}
 		
 	}

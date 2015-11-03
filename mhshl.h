@@ -82,7 +82,7 @@ public:
 class Player{
 public:
 	Player();
-	Player(std::string tID, std::string name, int identifier, int num, bool isG);
+	Player(std::string tID, std::string name, int identifier, int num);
 	void printHeading();
 	void printString();
 	std::string team; // Abbreviation
