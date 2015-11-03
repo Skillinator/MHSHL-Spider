@@ -578,7 +578,7 @@ void getPlayers(int season, int team, League *l){
 			name = split(extract(nameID, "a"), "\t\t\t\t")[1];
 			
 			if(l->addPlayer(teamID, name, playerID, playerNum))
-				l->players[l.players.size()].goalie = true;
+				l->players[l->players.size()].goalie = true;
 		}
 		
 	}
