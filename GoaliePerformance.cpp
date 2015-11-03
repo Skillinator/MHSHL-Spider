@@ -23,7 +23,7 @@ GoaliePerformance::GoaliePerformance(std::string gID, std::string tID, int pl, i
 	saves = sa-ga;
 }
 
-void GoaliePerformance::GoaliePerformance(){
+void GoaliePerformance::printHeader(){
 	std::cout<<"\n  GameID   team  player  for  against  RES   time   ga  sa  sv \n";
 }
 

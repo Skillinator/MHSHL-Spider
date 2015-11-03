@@ -55,6 +55,9 @@ public:
 	int goalsAgainst;
 	int shotsAgainst;
 	int saves;
+	
+	void printHeader();
+	void printString();
 };
 
 class Team{
