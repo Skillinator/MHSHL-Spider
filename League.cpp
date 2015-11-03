@@ -143,7 +143,7 @@ bool League::addGame(int m, int d, int y, int st, std::string home, std::string 
 }
 
 void League::addPenaltyEvent(std::string gID, std::string tID, int player, int duration, int per, int time, std::string penalty){
-	
+	std::cout<<player<<":"<<penalty<<":"<<duration<<"\n";
 	updateGameTime(gID, per, time);
 	PenaltyEvent *peTest = getPenaltyEvent(gID, tID, player, per, time, duration, penalty);
 	if(peTest->offense != "NULL")
@@ -216,7 +216,6 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 
 		if(se.pp == -1){
 			getPlayer(tID, gs)->sh++;
-			std::cout<<"ID: " << se.gameID << " Scorer: " << se.scorer << "\n";	
 		}
 		getPlayer(tID, a1)->a++;
 		getPlayer(tID, a2)->a++;
