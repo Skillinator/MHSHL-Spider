@@ -569,8 +569,9 @@ int main(){
 	getPlayers(SEASON_2014_2015, 47180, &l);
 	
 	for(int i = 0; i < l.teams.size(); i++){
-		getGames(SEASON_2014_2015, l.teams[i].id, &l);
+		//getGames(SEASON_2014_2015, l.teams[i].id, &l);
 	}
+	getGames(SEASON_2014_2015, l.teams[0].id, &l);
 	sort_games(&l);
 	hard_update(&l);
 //	showGames(l);
