@@ -7,6 +7,29 @@ League::League(int pL){
 	periodLength = pL * 60;
 }
 
+void League::setGoaliePerformance(std::string gID, std::string tID, int pl, int f, int a, std::string res, int sec, int ga, int sa){
+	if(sec < 1)
+		return;
+	for(int i = 0; i < goaliePerformances.size(); i++){
+		if(goaliePerformances.size() == 0)
+			break;
+		GoaliePerformance temp = goaliePerformances[i];
+		if(temp.teamID == tID && temp.gameID == gID && temp.player = pl){
+			goaliePerformances[i].finalFor = f;
+			goaliePerformances[i].finalAgainst = a;
+			goaliePerformances[i].result = res;
+			goaliePerformances[i].seconds = sec;
+			goaliePerformances[i].goalsAgainst = ga;
+			goaliePerformances[i].shotsAgainst = sa;
+			goaliePerformances[i].saves = sa-ga;
+			return;
+		}
+	}
+	
+	GoaliePerformance gp = GoaliePerformance(gID, tID, pl, f, a, res, sec, ga, sa);
+	goaliePerformances.push_back(gp);
+}
+
 void League::updatePenalties(std::string gID, int dT){
 	if(penalties.size() == 0)
 		return;

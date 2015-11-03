@@ -41,6 +41,22 @@ public:
 	std::string offense;
 };
 
+class GoaliePerformance{
+public:
+	GoaliePerformance();
+	GoaliePerformance(std::string gID, std::string tID, int pl, int f, int a, std::string res, int sec, int ga, int sa);
+	std::string gameID;
+	std::string teamID;
+	int player;
+	int finalFor;
+	int finalAgainst;
+	std::string result;
+	int seconds;
+	int goalsAgainst;
+	int shotsAgainst;
+	int saves;
+};
+
 class Team{
 public:
 	Team();
@@ -66,7 +82,7 @@ public:
 class Player{
 public:
 	Player();
-	Player(std::string tID, std::string name, int identifier, int num);
+	Player(std::string tID, std::string name, int identifier, int num, bool isG);
 	void printHeading();
 	void printString();
 	std::string team; // Abbreviation
@@ -81,6 +97,17 @@ public:
 	int pim;
 	int goalStreak;
 	int pointStreak;
+	bool goalie;
+	int min;
+	int w;
+	int l;
+	int otl;
+	int sol;
+	int so;
+	int ga;
+	int gaa;
+	int sv;
+	int svpercent;
 };
 
 /*
@@ -130,6 +157,8 @@ public:
 	void addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec, int pp);
 	bool addGame(int m, int d, int y, int st, std::string home, std::string away, int gameID);
 	
+	void setGoaliePerformance(std::string gID, std::string tID, int pl, int f, int a, std::string res, int sec, int ga, int sa);
+	
 	void updateGameTime(std::string gID, int per, int sec);
 	void updatePenalties(std::string gID, int dT);
 	int powerPlayGoal(std::string gID, std::string tID);
@@ -148,6 +177,7 @@ public:
 	std::vector<Player> players;
 	std::vector<ScoringEvent> goals;
 	std::vector<PenaltyEvent> penalties;
+	std::vector<GoaliePerformance> goaliePerformances;
 };
 
 

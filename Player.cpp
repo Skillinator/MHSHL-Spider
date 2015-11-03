@@ -14,6 +14,7 @@ Player::Player(std::string tID, std::string gname, int identifier, int num){
 	name = gname;
 	number = num;
 	id = identifier;
+	isGoalie = false;
 	gp = g = a = pp = sh = pim = goalStreak = pointStreak = 0;
 }
 
