@@ -574,7 +574,7 @@ void getPlayers(int season, int team, League *l){
 			std::string name = "NULL";
 			playerNum = std::stoi(num);
 			playerID = std::stoi(getValue(nameID, "playerid"));
-			name = split(extract(nameID, "a"), "\t\t\t\t")[1];
+			name = split(extract(nameID, "a"), "\t\t\t")[1];
 			
 			if(l->addPlayer(teamID, name, playerID, playerNum))
 				l->players[l->players.size()].goalie = true;
