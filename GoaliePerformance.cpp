@@ -24,7 +24,7 @@ void GoaliePerformance::printHeader(){
 }
 
 void GoaliePerformance::printString(){
-	spaceBuffer(10, gameID);
+	spaceBuffer(15, gameID);
 	spaceBuffer(6, teamID);
 	spaceBuffer(8, std::to_string(player));
 	std::cout<<"  "<<twoPlace(seconds/60)<<":"<<twoPlace(seconds%60)<<" ";

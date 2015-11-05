@@ -139,7 +139,7 @@ ScoringEvent processGoal(Game* g, League* l, int p, std::string s){
 	return se;
 }
 
-void processGoalie(Game* G, League* l, std::string g){
+void processGoalie(Game* G, League* l, std::string g, bool done){
 	/*
 	Initialize values to their default states
 	*/
@@ -167,6 +167,25 @@ void processGoalie(Game* G, League* l, std::string g){
 	tID = l->getPlayer(player)->team;
 	
 	l->setGoaliePerformance(gID, tID, player, seconds, goals, shots);
+	
+	if(done){
+		Player* p = l->getPlayer(player);
+		p-> shots += shots;
+		p->ga += goals;
+		p->min += seconds;
+		p->sv = shots-goals;
+		if(p->gp == 0){
+			p->gaa = 0;
+		}else{
+			p->gaa = p->ga*1.0/p->gp;
+		}
+		if(p->shots == 0){
+			p->svpercent = 0;
+		}else{
+			p->svpercent = p->sv*1.0/p->shots;
+		}
+	}
+	
 }
 
 PenaltyEvent processPenalty(Game* g, League* l, int per, std::string s){
@@ -469,10 +488,10 @@ void updateGame(Game* g, League* l){
 	* Strip off the remaining <tr> tag info, then process
 	*/
 	for(int i = 0; i < goalies1.size(); i++){
-		processGoalie(g, l, extract("<tr"+goalies1[i], "tr"));
+		processGoalie(g, l, extract("<tr"+goalies1[i], "tr"), time < 0);
 	}
 	for(int i = 0; i < goalies2.size(); i++){
-		processGoalie(g, l, extract("<tr"+goalies2[i], "tr"));
+		processGoalie(g, l, extract("<tr"+goalies2[i], "tr"), time < 0);
 	}
 		
 	/*

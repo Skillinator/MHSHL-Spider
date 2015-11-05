@@ -37,3 +37,22 @@ void Player::printString(){
 	spaceBuffer(13, std::to_string(pointStreak));
 	std::cout<<"\n";
 }
+
+
+void Player::printGoalieHeading(){
+	std::cout<<"\n             name                 ID   #  team  gp  ga  sa  sv  gaa    svpercent\n";
+}
+
+void Player::printGoalieString(){
+	spaceBuffer(30, name);
+	spaceBuffer(8, std::to_string(id));
+	spaceBuffer(3, std::to_string(number));
+	spaceBuffer(6, team);
+	spaceBuffer(4, std::to_string(gp));
+	spaceBuffer(3, std::to_string(ga));
+	spaceBuffer(3, std::to_string(sa));
+	spaceBuffer(4, std::to_string(sv));
+	spaceBuffer(4, std::to_string(gaa));
+	spaceBuffer(5, std::to_string(svpercent));
+	std::cout<<"\n";
+}

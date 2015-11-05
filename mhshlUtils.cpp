@@ -132,10 +132,18 @@ void showTeams(League l){
 void showPlayers(League l){
 	if(l.players.size() == 0)
 		return;
-
+	std::cout<< " SKATERS \n";
 	l.players[0].printHeading();
 	for(int i = 0; i < l.players.size(); i++){
-		l.players[i].printString();
+		if(!l.players[i].goalie)
+			l.players[i].printString();
+	}
+	
+	std::cout<< " GOALIES \n";
+	l.players[0].printGoalieHeading();
+	for(int i = 0; i < l.players.size(); i++){
+		if(l.players[i].goalie)
+			l.players[i].printGoalieString();
 	}
 }
 

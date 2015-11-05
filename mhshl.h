@@ -85,6 +85,8 @@ public:
 	Player(std::string tID, std::string name, int identifier, int num);
 	void printHeading();
 	void printString();
+	void printGoalieHeading();
+	void printGoalieString();
 	std::string team; // Abbreviation
 	std::string name;
 	int id;
@@ -101,9 +103,9 @@ public:
 	int min;
 	int shots;
 	int ga;
-	int gaa;
+	float gaa;
 	int sv;
-	int svpercent;
+	float svpercent;
 };
 
 /*
