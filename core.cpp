@@ -162,7 +162,7 @@ GoaliePerformance processGoalie(Game* G, League* l, std::string g){
 	
 	if(stripWhitespace(items[0]) == "")
 		return GoaliePerformance();
-	
+	std::cout<<g<<"\n";
 	seconds = std::stoi(stripWhitespace(items[0]));
 	shots = std::stoi(stripWhitespace(items[1]));
 	goals = shots - std::stoi(stripWhitespace(items[2]));
