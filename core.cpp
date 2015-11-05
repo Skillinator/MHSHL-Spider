@@ -466,17 +466,15 @@ void updateGame(Game* g, League* l){
 	goalies2.erase(goalies2.begin());
 	
 	/*
-	* Strip off the remaining <tr> tag info
+	* Strip off the remaining <tr> tag info, then process
 	*/
 	for(int i = 0; i < goalies1.size(); i++){
-		goalies1[i] = extract("<tr"+goalies1[i], "tr");
+		processGoalie(extract("<tr"+goalies1[i], "tr"));
 	}
 	for(int i = 0; i < goalies2.size(); i++){
-		goalies2[i] = extract("<tr"+goalies2[i], "tr");
+		processGoalie(extract("<tr"+goalies2[i], "tr"));
 	}
-	
-	
-	
+		
 	/*
 	*
 	*
