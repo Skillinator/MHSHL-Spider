@@ -28,6 +28,8 @@ void showPenalties(League l);
 
 void showGoals(League l);
 
+void showGoaliePerformances(League l);
+
 void dumpStatus(League l);
 
 std::string removeSubstring(std::string str, std::string substr);

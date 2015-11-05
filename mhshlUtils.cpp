@@ -170,7 +170,7 @@ void showGoaliePerformances(League l){
 	if(l.goals.size() == 0)
 		return;
 
-	l.goaliePerformances[0].printHeading();
+	l.goaliePerformances[0].printHeader();
 	for(int i = 0; i < l.goaliePerformances.size(); i++){
 		l.goaliePerformances[i].printString();
 	}

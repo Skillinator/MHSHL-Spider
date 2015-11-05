@@ -139,7 +139,7 @@ ScoringEvent processGoal(Game* g, League* l, int p, std::string s){
 	return se;
 }
 
-GoaliePerformance processGoalie(Game* g, League* l, std::string g){
+GoaliePerformance processGoalie(Game* G, League* l, std::string g){
 	/*
 	Initialize values to their default states
 	*/
@@ -149,9 +149,9 @@ GoaliePerformance processGoalie(Game* g, League* l, std::string g){
 	int shots = 0;
 	int goals = 0;
 	int seconds = 0;
-	gID = g->id;
+	gID = G->id;
 	
-	player = stoi(split(split(g, "playerid=")[1], "&"));
+	player = std::stoi(split(split(g, "playerid=")[1], "&"));
 	
 	std::vector<std::string> items = split(g, "</td>");
 	items.erase(items.begin());
@@ -163,13 +163,13 @@ GoaliePerformance processGoalie(Game* g, League* l, std::string g){
 	if(stripWhitespace(items[0]) == "")
 		return GoaliePerformance();
 	
-	seconds = stoi(stripWhitespace(items[0]));
-	shots = stoi(stripWhitespace(items[1]));
-	goals = shots - stoi(stripWhitespace(items[2]));
+	seconds = std::stoi(stripWhitespace(items[0]));
+	shots = std::stoi(stripWhitespace(items[1]));
+	goals = shots - std::stoi(stripWhitespace(items[2]));
 	
 	tID = l->getPlayer(player)->team;
 	
-	l->setGoaliePerformance(gID, tID, player, secondds, goals, shots);
+	l->setGoaliePerformance(gID, tID, player, seconds, goals, shots);
 }
 
 PenaltyEvent processPenalty(Game* g, League* l, int per, std::string s){
@@ -684,6 +684,6 @@ int main(){
 //	showGames(l);
 	
 //	showPlayers(l);
-	showGoaliePerformances(&l);
+	showGoaliePerformances(l);
 	return 0;
 }
