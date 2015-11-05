@@ -44,13 +44,10 @@ public:
 class GoaliePerformance{
 public:
 	GoaliePerformance();
-	GoaliePerformance(std::string gID, std::string tID, int pl, int f, int a, std::string res, int sec, int ga, int sa);
+	GoaliePerformance(std::string gID, std::string tID, int pl, int sec, int ga, int sa);
 	std::string gameID;
 	std::string teamID;
 	int player;
-	int finalFor;
-	int finalAgainst;
-	std::string result;
 	int seconds;
 	int goalsAgainst;
 	int shotsAgainst;
@@ -102,11 +99,7 @@ public:
 	int pointStreak;
 	bool goalie;
 	int min;
-	int w;
-	int l;
-	int otl;
-	int sol;
-	int so;
+	int shots;
 	int ga;
 	int gaa;
 	int sv;
@@ -160,7 +153,7 @@ public:
 	void addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec, int pp);
 	bool addGame(int m, int d, int y, int st, std::string home, std::string away, int gameID);
 	
-	void setGoaliePerformance(std::string gID, std::string tID, int pl, int f, int a, std::string res, int sec, int ga, int sa);
+	void setGoaliePerformance(std::string gID, std::string tID, int pl, int sec, int ga, int sa);
 	
 	void updateGameTime(std::string gID, int per, int sec);
 	void updatePenalties(std::string gID, int dT);
@@ -168,6 +161,7 @@ public:
 	void removeOldestPenalty(std::string gID, std::string tID);
 	Game* getGame(std::string gID);
 	Player* getPlayer(std::string tID, int num);
+	Player* getPlayer(int id);
 	PenaltyEvent* getPenaltyEvent(std::string gID, std::string tID, int player, int per, int time, int duration, std::string penalty);
 	ScoringEvent* getScoringEvent(std::string gID, int per, int time);
 	Team* getTeam(std::string tID);

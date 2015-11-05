@@ -139,6 +139,38 @@ ScoringEvent processGoal(Game* g, League* l, int p, std::string s){
 	return se;
 }
 
+GoaliePerformance processGoalie(Game* g, League* l, std::string g){
+	/*
+	Initialize values to their default states
+	*/
+	std::string gID="null";
+	std::string tID="null";
+	int player = 0;
+	int shots = 0;
+	int goals = 0;
+	int seconds = 0;
+	gID = g->id;
+	
+	player = stoi(split(split(g, "playerid=")[1], "&"));
+	
+	std::vector<std::string> items = split(g, "</td>");
+	items.erase(items.begin());
+	
+	for(int i = 0; i < items.size(); i++){
+		items[i] = extract(items[i]+"</td>", "td");
+	}
+	
+	if(stripWhitespace(items[0]) == "")
+		return GoaliePerformance();
+	
+	seconds = stoi(stripWhitespace(items[0]));
+	shots = stoi(stripWhitespace(items[1]));
+	goals = shots - stoi(stripWhitespace(items[2]));
+	
+	tID = l->getPlayer(player)->team;
+	
+	l->setGoaliePerformance(gID, tID, player, secondds, goals, shots);
+}
 
 PenaltyEvent processPenalty(Game* g, League* l, int per, std::string s){
 	/*
@@ -405,6 +437,45 @@ void updateGame(Game* g, League* l){
 		}
 	}
 	
+	/*
+	*
+	*
+	* PROCESS GOALIE INFORMATION
+	*
+	*
+	*/
+	
+	/*
+	* Skip straight to the goalies section. What remains of the first table goes into the g1 string,
+	* and the second table goes into the g2 string.
+	*/
+	std::string goalies = split(page, "Goalies")[1];
+	std::string g1 = split(goalies, "</table>")[0];
+	std::string g2 = split(goalies, "</table>")[1];
+	
+	/*
+	* Split these by <tr to separate the different goalies.
+	*/
+	std::vector<std::string> goalies1 = split(g1, "<tr");
+	std::vector<std::string> goalies2 = split(g2, "<tr");
+	
+	/*
+	* Erase the first element as that is just labeling
+	*/
+	goalies1.erase(goalies1.begin());
+	goalies2.erase(goalies2.begin());
+	
+	/*
+	* Strip off the remaining <tr> tag info
+	*/
+	for(int i = 0; i < goalies1.size(); i++){
+		goalies1[i] = extract("<tr"+goalies1[i], "tr");
+	}
+	for(int i = 0; i < goalies2.size(); i++){
+		goalies2[i] = extract("<tr"+goalies2[i], "tr");
+	}
+	
+	
 	
 	/*
 	*
@@ -612,6 +683,7 @@ int main(){
 	hard_update(&l);
 //	showGames(l);
 	
-	showPlayers(l);
+//	showPlayers(l);
+	showGoaliePerformances(&l);
 	return 0;
 }

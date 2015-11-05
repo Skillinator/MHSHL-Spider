@@ -14,6 +14,8 @@ std::string fetchWebPage(std::string url);
 
 void spaceBuffer(int len, std::string str);
 
+std::string stripWhitespace(std::string s);
+
 std::string twoPlace(int num);
 
 void showTeams(League l);

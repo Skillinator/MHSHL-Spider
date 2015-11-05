@@ -7,7 +7,7 @@ League::League(int pL){
 	periodLength = pL * 60;
 }
 
-void League::setGoaliePerformance(std::string gID, std::string tID, int pl, int f, int a, std::string res, int sec, int ga, int sa){
+void League::setGoaliePerformance(std::string gID, std::string tID, int pl, int sec, int ga, int sa){
 	if(sec < 1)
 		return;
 	for(int i = 0; i < goaliePerformances.size(); i++){
@@ -15,9 +15,6 @@ void League::setGoaliePerformance(std::string gID, std::string tID, int pl, int 
 			break;
 		GoaliePerformance temp = goaliePerformances[i];
 		if(temp.teamID == tID && temp.gameID == gID && temp.player == pl){
-			goaliePerformances[i].finalFor = f;
-			goaliePerformances[i].finalAgainst = a;
-			goaliePerformances[i].result = res;
 			goaliePerformances[i].seconds = sec;
 			goaliePerformances[i].goalsAgainst = ga;
 			goaliePerformances[i].shotsAgainst = sa;
@@ -26,7 +23,7 @@ void League::setGoaliePerformance(std::string gID, std::string tID, int pl, int 
 		}
 	}
 	
-	GoaliePerformance gp = GoaliePerformance(gID, tID, pl, f, a, res, sec, ga, sa);
+	GoaliePerformance gp = GoaliePerformance(gID, tID, pl, sec, ga, sa);
 	goaliePerformances.push_back(gp);
 }
 
@@ -290,6 +287,20 @@ Player* League::getPlayer(std::string tID, int num){
 	}
 
 	return new Player();
+}
+
+Player* League::getPlayer(int id){
+	
+	if(players.size() == 0)
+		return new Player();
+
+	for(int i = 0; i < players.size(); i++){
+		if(players[i].id == id)
+			return &players[i];
+	}
+
+	return new Player();
+	
 }
 
 PenaltyEvent* League::getPenaltyEvent(std::string gID, std::string tID, int player, int per, int time, int duration, std::string penalty){

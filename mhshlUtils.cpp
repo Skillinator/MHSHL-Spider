@@ -27,6 +27,15 @@ std::vector<std::string> split(std::string str, std::string delim){
 
 }
 
+std::string stripWhitespace(std::string s){
+	std::string product = "";
+	for(int i = 0; i < s.size(); i++){
+		if(s[i] != " " && s[i] != "\t")
+			product = product + s[i];
+	}
+	return product;
+}
+
 std::string extract(std::string str, std::string tag){
 	int start = str.find(">", str.find("<"+tag)) + 1;
 	int end = str.find("</"+tag);
@@ -156,6 +165,17 @@ void showGoals(League l){
 		l.goals[i].printString();
 	}
 }
+
+void showGoaliePerformances(League l){
+	if(l.goals.size() == 0)
+		return;
+
+	l.goaliePerformances[0].printHeading();
+	for(int i = 0; i < l.goaliePerformances.size(); i++){
+		l.goaliePerformances[i].printString();
+	}
+}
+
 
 void dumpStatus(League l){
 
