@@ -493,7 +493,8 @@ void updateGame(Game* g, League* l){
 	for(int i = 0; i < goalies2.size(); i++){
 		processGoalie(g, l, extract("<tr"+goalies2[i], "tr"), time < 0);
 	}
-		
+	std::cout<<(time<0);
+	std::cout<<"\n";	
 	/*
 	*
 	*

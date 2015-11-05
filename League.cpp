@@ -8,10 +8,8 @@ League::League(int pL){
 }
 
 void League::setGoaliePerformance(std::string gID, std::string tID, int pl, int sec, int ga, int sa){
-	std::cout<<"Updating Goalie Performance\n";
 	if(sec < 1)
 		return;
-	std::cout<<"More than one minute\n";
 	for(int i = 0; i < goaliePerformances.size(); i++){
 		if(goaliePerformances.size() == 0)
 			break;
@@ -25,11 +23,8 @@ void League::setGoaliePerformance(std::string gID, std::string tID, int pl, int 
 			return;
 		}
 	}
-	std::cout<<"Adding new GP\n";
 	GoaliePerformance gp = GoaliePerformance(gID, tID, pl, sec, ga, sa);
-	std::cout<<"Made new GP\n";
 	goaliePerformances.push_back(gp);
-	std::cout<<"Added to vector\n";
 }
 
 void League::updatePenalties(std::string gID, int dT){
