@@ -463,6 +463,8 @@ void updateGame(Game* g, League* l){
 	* Erase the first element as that is just labeling
 	*/
 	goalies1.erase(goalies1.begin());
+	goalies1.erase(goalies1.begin());
+	goalies2.erase(goalies2.begin());
 	goalies2.erase(goalies2.begin());
 	
 	/*
