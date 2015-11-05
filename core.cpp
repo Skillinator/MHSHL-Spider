@@ -469,10 +469,10 @@ void updateGame(Game* g, League* l){
 	* Strip off the remaining <tr> tag info, then process
 	*/
 	for(int i = 0; i < goalies1.size(); i++){
-		processGoalie(extract("<tr"+goalies1[i], "tr"));
+		processGoalie(g, l, extract("<tr"+goalies1[i], "tr"));
 	}
 	for(int i = 0; i < goalies2.size(); i++){
-		processGoalie(extract("<tr"+goalies2[i], "tr"));
+		processGoalie(g, l, extract("<tr"+goalies2[i], "tr"));
 	}
 		
 	/*
