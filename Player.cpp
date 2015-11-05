@@ -6,7 +6,7 @@
 Player::Player(){
 	team = "NUL";
 	name = "NULL";
-	number = id = gp = g = a = pp = sh = pim = goalStreak = pointStreak = 0;
+	gp = g = a = pp = sh = pim = goalStreak = pointStreak = min = shots = ga = gaa = sv = svpercent = 0;
 }
 
 Player::Player(std::string tID, std::string gname, int identifier, int num){
@@ -15,7 +15,7 @@ Player::Player(std::string tID, std::string gname, int identifier, int num){
 	number = num;
 	id = identifier;
 	goalie = false;
-	gp = g = a = pp = sh = pim = goalStreak = pointStreak = 0;
+	gp = g = a = pp = sh = pim = goalStreak = pointStreak = min = shots = ga = gaa = sv = svpercent = 0;
 }
 
 void Player::printHeading(){
