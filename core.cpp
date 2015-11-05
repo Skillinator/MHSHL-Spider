@@ -139,7 +139,7 @@ ScoringEvent processGoal(Game* g, League* l, int p, std::string s){
 	return se;
 }
 
-GoaliePerformance processGoalie(Game* G, League* l, std::string g){
+void processGoalie(Game* G, League* l, std::string g){
 	/*
 	Initialize values to their default states
 	*/
@@ -150,7 +150,6 @@ GoaliePerformance processGoalie(Game* G, League* l, std::string g){
 	int goals = 0;
 	int seconds = 0;
 	gID = G->id;
-	
 	player = std::stoi(split(split(g, "playerid=")[1], "&")[0]);
 	
 	std::vector<std::string> items = split(g, "</td>");
@@ -159,10 +158,8 @@ GoaliePerformance processGoalie(Game* G, League* l, std::string g){
 	for(int i = 0; i < items.size(); i++){
 		items[i] = extract(items[i]+"</td>", "td");
 	}
-	
 	if(stripWhitespace(items[0]) == "")
-		return GoaliePerformance();
-	std::cout<<g<<"\n";
+		return;
 	seconds = std::stoi(stripWhitespace(items[0]));
 	shots = std::stoi(stripWhitespace(items[1]));
 	goals = shots - std::stoi(stripWhitespace(items[2]));
@@ -462,6 +459,7 @@ void updateGame(Game* g, League* l){
 	/*
 	* Erase the first element as that is just labeling
 	*/
+	goalies1.erase(goalies1.begin());
 	goalies1.erase(goalies1.begin());
 	goalies1.erase(goalies1.begin());
 	goalies2.erase(goalies2.begin());

@@ -27,7 +27,9 @@ void League::setGoaliePerformance(std::string gID, std::string tID, int pl, int 
 	}
 	std::cout<<"Adding new GP\n";
 	GoaliePerformance gp = GoaliePerformance(gID, tID, pl, sec, ga, sa);
+	std::cout<<"Made new GP\n";
 	goaliePerformances.push_back(gp);
+	std::cout<<"Added to vector\n";
 }
 
 void League::updatePenalties(std::string gID, int dT){
