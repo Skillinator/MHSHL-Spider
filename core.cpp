@@ -453,6 +453,35 @@ void updateGame(Game* g, League* l){
 		}
 	}
 	
+	
+	/*
+	*
+	*
+	* PROCESS TIME INFORMATION
+	*
+	*
+	*/
+	
+	// we still need to properly process time, I'll have to see on some NAHL games or something.
+	
+	if(page.find("FINAL") != std::string::npos){
+		switch(g->period){
+			case 4:
+				g->time = -2;
+				break;
+			case 5:
+				g->time = -3;
+				break;
+			default:
+				g->time = -1;
+				g->period = 3;
+				break;
+		
+		
+		}
+	}
+	
+		
 	/*
 	*
 	*
@@ -495,30 +524,7 @@ void updateGame(Game* g, League* l){
 	}
 	std::cout<<(time<0);
 	std::cout<<"\n";	
-	/*
-	*
-	*
-	* PROCESS TIME INFORMATION
-	*
-	*
-	*/
-	
-	// we still need to properly process time, I'll have to see on some NAHL games or something.
-	
-	if(page.find("FINAL") != std::string::npos){
-		switch(g->period){
-			case 4:
-				g->time = -2;
-				break;
-			case 5:
-				g->time = -3;
-				break;
-			default:
-				g->time = -1;
-				g->period = 3;
-				break;
-		}
-	}
+
 }
 
 void getGames(int season, int team, League *l){
