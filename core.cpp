@@ -151,7 +151,7 @@ GoaliePerformance processGoalie(Game* G, League* l, std::string g){
 	int seconds = 0;
 	gID = G->id;
 	
-	player = std::stoi(split(split(g, "playerid=")[1], "&"));
+	player = std::stoi(split(split(g, "playerid=")[1], "&")[0]);
 	
 	std::vector<std::string> items = split(g, "</td>");
 	items.erase(items.begin());

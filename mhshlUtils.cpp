@@ -30,7 +30,7 @@ std::vector<std::string> split(std::string str, std::string delim){
 std::string stripWhitespace(std::string s){
 	std::string product = "";
 	for(int i = 0; i < s.size(); i++){
-		if(s[i] != " " && s[i] != "\t")
+		if(s[i] != ' ' && s[i] != '\t')
 			product = product + s[i];
 	}
 	return product;
