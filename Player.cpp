@@ -51,7 +51,7 @@ void Player::printGoalieString(){
 	spaceBuffer(4, std::to_string(gp));
 	spaceBuffer(5, std::to_string(min));
 	spaceBuffer(3, std::to_string(ga));
-	spaceBuffer(3, std::to_string(saves));
+	spaceBuffer(3, std::to_string(shots));
 	spaceBuffer(4, std::to_string(sv));
 	spaceBuffer(4, std::to_string(gaa));
 	spaceBuffer(5, std::to_string(svpercent));
