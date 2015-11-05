@@ -700,7 +700,7 @@ int main(){
 	hard_update(&l);
 //	showGames(l);
 	
-//	showPlayers(l);
-	showGoaliePerformances(l);
+	showPlayers(l);
+	//showGoaliePerformances(l);
 	return 0;
 }
