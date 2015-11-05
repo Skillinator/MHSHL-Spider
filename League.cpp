@@ -8,11 +8,14 @@ League::League(int pL){
 }
 
 void League::setGoaliePerformance(std::string gID, std::string tID, int pl, int sec, int ga, int sa){
+	std::cout<<"Updating Goalie Performance\n";
 	if(sec < 1)
 		return;
+	std::cout<<"More than one minute\n";
 	for(int i = 0; i < goaliePerformances.size(); i++){
 		if(goaliePerformances.size() == 0)
 			break;
+		
 		GoaliePerformance temp = goaliePerformances[i];
 		if(temp.teamID == tID && temp.gameID == gID && temp.player == pl){
 			goaliePerformances[i].seconds = sec;
@@ -22,7 +25,7 @@ void League::setGoaliePerformance(std::string gID, std::string tID, int pl, int 
 			return;
 		}
 	}
-	
+	std::cout<<"Adding new GP\n";
 	GoaliePerformance gp = GoaliePerformance(gID, tID, pl, sec, ga, sa);
 	goaliePerformances.push_back(gp);
 }
