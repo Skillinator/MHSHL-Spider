@@ -7,6 +7,172 @@
 const int SEASON_2014_2015 = 13209;
 const int SEASON_2015_2015 = 14757;
 
+
+void getGames(int season, int team, League *l){
+	
+	std::cout<<"Fetching Games for team " << team << " during the " << season << " season.\n";
+
+	std::string url = "midwest-league.stats.pointstreak.com/players-team-schedule.html?teamid=" + std::to_string(team) + "&seasonid=" + std::to_string(season);
+
+	std::string page = fetchWebPage(url);
+	
+	std::vector<std::string> games = split(extract("<table" + split(page, "<table")[4], "table"), "<tr");
+
+	games.erase(games.begin());
+	games.erase(games.end());
+
+	if(games.size() == 0)
+		return;
+
+	for(int i = 0; i < games.size(); i++){
+		games[i] = extract("<tr" + games[i], "tr");
+	}
+	
+	std::cout<< "Extracted Games\n";
+
+	for(int i = 1; i < games.size(); i++){
+		std::cout<<"Processing game " << i+1 << " of " << games.size() << "\n";
+		std::string homeID, awayID = " ";
+		int	month, day, year, time, gameID;
+		
+		
+		std::vector<std::string> elements = split(games[i], "<td");
+		elements.erase(elements.begin());
+		elements.erase(elements.end());
+
+		for(int j=0; j < elements.size(); j++){
+			elements[j] = extract("<td" + elements[j], "td");
+		}
+		homeID = l->getTeam(stoi(getValue(elements[0], "teamid")))->abbreviation;
+		awayID = l->getTeam(stoi(getValue(elements[1], "teamid")))->abbreviation;
+		
+		month = getMonth(elements[2]);
+		day = getDay(elements[2]);
+		year = getYear(2015, month);
+		time = getMinutes(elements[3]);
+		gameID = stoi(getValue(elements[4], "gameid"));
+		
+		l->addGame(month, day, year, time, homeID, awayID, gameID);
+		
+	}
+	
+}
+
+void sort_games(League* l){
+	std::cout<<"Sorting Games\n";	
+	// Sort games by date. I probably could move this somewhere else because currently it will repeat for each team. Lot of redundancy.
+
+	bool sorted = false;
+	while(!sorted){
+		sorted = true;
+		for(int i = 0; i < l->games.size()-1; i++){
+			std::string date1 = std::to_string(l->games[i].year) + twoPlace(l->games[i].month) + twoPlace(l->games[i].day);
+			std::string date2 = std::to_string(l->games[i+1].year) + twoPlace(l->games[i+1].month) + twoPlace(l->games[i+1].day);
+			if(stoi(date1) > stoi(date2)){
+				sorted = false;
+				Game tmp = l->games[i];
+				l->games[i] = l->games[i+1];
+				l->games[i+1] = tmp;
+			}
+		}
+	}
+	
+}
+
+void getPlayers(int season, int team, League *l){
+	std::cout<<"Fetching Players for team " << team << " during the " << season << " season.\n";
+
+	std::string url = "midwest-league.stats.pointstreak.com/players-team-roster.html?teamid=" + std::to_string(team) + "&seasonid=" + std::to_string(season);
+
+	
+	Team* t = l->getTeam(team);
+	std::string teamID = t->abbreviation;
+	
+	std::string page = fetchWebPage(url);
+	page = split(page, "Player Stats")[1];
+	page = split(page, "</table>")[1];
+	
+	/*
+	Split by </tr>, remove first and last elements
+	*/
+	std::vector<std::string> players = split(page, "</tr>");
+	players.erase(players.begin());
+	players.erase(players.end());
+	players.erase(players.end());	
+	for(int i = 0; i < players.size(); i++){
+		/*
+		Remove the opening <tr> element from everything too
+		*/
+		std::string currentPlayer = extract(players[i] + "</tr>", "tr");
+		if(currentPlayer.find("DP") == currentPlayer.find("HC") && currentPlayer.find("HC") == currentPlayer.find("AC")){
+		/*
+			Get the player's number in one string, and his name and ID in another.
+			*/
+			std::string num = extract(split(currentPlayer, "</td>")[0] + "</td", "td");
+			std::string nameID = extract(split(currentPlayer, "</td>")[1] + "</td", "td");
+			
+			int playerNum = 0;
+			int playerID = 0;
+			std::string name = "NULL";
+			playerNum = std::stoi(num);
+			playerID = std::stoi(getValue(nameID, "playerid"));
+			name = split(extract(nameID, "a"), "\t\t\t\t")[1];
+			
+			l->addPlayer(teamID, name, playerID, playerNum);
+		}
+		
+	}
+	
+	page = fetchWebPage(url);
+	page = split(page, "Goalie Stats")[1];
+	page = split(page, "</table>")[1];
+	
+	/*
+	Split by </tr>, remove first and last elements
+	*/
+	std::vector<std::string> goalies = split(page, "</tr>");
+	goalies.erase(goalies.begin());
+	goalies.erase(goalies.end());
+	for(int i = 0; i < goalies.size(); i++){
+		/*
+		Remove the opening <tr> element from everything too
+		*/
+		std::string currentPlayer = extract(goalies[i] + "</tr>", "tr");
+		if(currentPlayer.find("DP") == currentPlayer.find("HC") && currentPlayer.find("HC") == currentPlayer.find("AC") && currentPlayer.find("DG") == currentPlayer.find("AC")){
+		/*
+			Get the player's number in one string, and his name and ID in another.
+			*/
+			std::string num = extract(split(currentPlayer, "</td>")[0] + "</td", "td");
+			std::string nameID = extract(split(currentPlayer, "</td>")[1] + "</td", "td");
+			
+			int playerNum = 0;
+			int playerID = 0;
+			std::string name = "NULL";
+			playerNum = std::stoi(num);
+			playerID = std::stoi(getValue(nameID, "playerid"));
+			name = split(extract(nameID, "a"), "\t\t\t")[1];
+			
+			if(l->addPlayer(teamID, name, playerID, playerNum))
+				l->players[l->players.size()-1].goalie = true;
+		}
+		
+	}
+	
+}
+
+// Procedurally updates every game in the database. Only use when a full rebuild is needed.
+void hard_update(League* l){
+	for(int i = 0; i < l->games.size(); i++){
+		std::cout<<"Updating game " << i+1 << " of " << l->games.size() << "\n";
+		std::cout<<l->games[i].id<<"\n";
+		updateGame(&l->games[i],l);
+	}
+	
+	sort_games(l);
+}
+
+
+
 void initMHSHL(League *l){
 	l->addTeam("QCB", "Blues", "Quad City", 47180);
 	l->addTeam("DBQ", "Devils", "Dubuque", 47175);
@@ -30,7 +196,7 @@ void getRosters(League *l){
 
 void getGames(League *l){
 	for(int i = 0; i < l.teams.size(); i++){
-		getGames(SEASON_2014_2015, l.teams[i].id, &l);
+		getGames(SEASON_2014_2015, l->teams[i].id, &l);
 	}
 }
 
@@ -564,170 +730,6 @@ void updateGame(Game* g, League* l){
 		}
 	}
 }
-
-void getGames(int season, int team, League *l){
-	
-	std::cout<<"Fetching Games for team " << team << " during the " << season << " season.\n";
-
-	std::string url = "midwest-league.stats.pointstreak.com/players-team-schedule.html?teamid=" + std::to_string(team) + "&seasonid=" + std::to_string(season);
-
-	std::string page = fetchWebPage(url);
-	
-	std::vector<std::string> games = split(extract("<table" + split(page, "<table")[4], "table"), "<tr");
-
-	games.erase(games.begin());
-	games.erase(games.end());
-
-	if(games.size() == 0)
-		return;
-
-	for(int i = 0; i < games.size(); i++){
-		games[i] = extract("<tr" + games[i], "tr");
-	}
-	
-	std::cout<< "Extracted Games\n";
-
-	for(int i = 1; i < games.size(); i++){
-		std::cout<<"Processing game " << i+1 << " of " << games.size() << "\n";
-		std::string homeID, awayID = " ";
-		int	month, day, year, time, gameID;
-		
-		
-		std::vector<std::string> elements = split(games[i], "<td");
-		elements.erase(elements.begin());
-		elements.erase(elements.end());
-
-		for(int j=0; j < elements.size(); j++){
-			elements[j] = extract("<td" + elements[j], "td");
-		}
-		homeID = l->getTeam(stoi(getValue(elements[0], "teamid")))->abbreviation;
-		awayID = l->getTeam(stoi(getValue(elements[1], "teamid")))->abbreviation;
-		
-		month = getMonth(elements[2]);
-		day = getDay(elements[2]);
-		year = getYear(2015, month);
-		time = getMinutes(elements[3]);
-		gameID = stoi(getValue(elements[4], "gameid"));
-		
-		l->addGame(month, day, year, time, homeID, awayID, gameID);
-		
-	}
-	
-}
-
-void sort_games(League* l){
-	std::cout<<"Sorting Games\n";	
-	// Sort games by date. I probably could move this somewhere else because currently it will repeat for each team. Lot of redundancy.
-
-	bool sorted = false;
-	while(!sorted){
-		sorted = true;
-		for(int i = 0; i < l->games.size()-1; i++){
-			std::string date1 = std::to_string(l->games[i].year) + twoPlace(l->games[i].month) + twoPlace(l->games[i].day);
-			std::string date2 = std::to_string(l->games[i+1].year) + twoPlace(l->games[i+1].month) + twoPlace(l->games[i+1].day);
-			if(stoi(date1) > stoi(date2)){
-				sorted = false;
-				Game tmp = l->games[i];
-				l->games[i] = l->games[i+1];
-				l->games[i+1] = tmp;
-			}
-		}
-	}
-	
-}
-
-void getPlayers(int season, int team, League *l){
-	std::cout<<"Fetching Players for team " << team << " during the " << season << " season.\n";
-
-	std::string url = "midwest-league.stats.pointstreak.com/players-team-roster.html?teamid=" + std::to_string(team) + "&seasonid=" + std::to_string(season);
-
-	
-	Team* t = l->getTeam(team);
-	std::string teamID = t->abbreviation;
-	
-	std::string page = fetchWebPage(url);
-	page = split(page, "Player Stats")[1];
-	page = split(page, "</table>")[1];
-	
-	/*
-	Split by </tr>, remove first and last elements
-	*/
-	std::vector<std::string> players = split(page, "</tr>");
-	players.erase(players.begin());
-	players.erase(players.end());
-	players.erase(players.end());	
-	for(int i = 0; i < players.size(); i++){
-		/*
-		Remove the opening <tr> element from everything too
-		*/
-		std::string currentPlayer = extract(players[i] + "</tr>", "tr");
-		if(currentPlayer.find("DP") == currentPlayer.find("HC") && currentPlayer.find("HC") == currentPlayer.find("AC")){
-		/*
-			Get the player's number in one string, and his name and ID in another.
-			*/
-			std::string num = extract(split(currentPlayer, "</td>")[0] + "</td", "td");
-			std::string nameID = extract(split(currentPlayer, "</td>")[1] + "</td", "td");
-			
-			int playerNum = 0;
-			int playerID = 0;
-			std::string name = "NULL";
-			playerNum = std::stoi(num);
-			playerID = std::stoi(getValue(nameID, "playerid"));
-			name = split(extract(nameID, "a"), "\t\t\t\t")[1];
-			
-			l->addPlayer(teamID, name, playerID, playerNum);
-		}
-		
-	}
-	
-	page = fetchWebPage(url);
-	page = split(page, "Goalie Stats")[1];
-	page = split(page, "</table>")[1];
-	
-	/*
-	Split by </tr>, remove first and last elements
-	*/
-	std::vector<std::string> goalies = split(page, "</tr>");
-	goalies.erase(goalies.begin());
-	goalies.erase(goalies.end());
-	for(int i = 0; i < goalies.size(); i++){
-		/*
-		Remove the opening <tr> element from everything too
-		*/
-		std::string currentPlayer = extract(goalies[i] + "</tr>", "tr");
-		if(currentPlayer.find("DP") == currentPlayer.find("HC") && currentPlayer.find("HC") == currentPlayer.find("AC") && currentPlayer.find("DG") == currentPlayer.find("AC")){
-		/*
-			Get the player's number in one string, and his name and ID in another.
-			*/
-			std::string num = extract(split(currentPlayer, "</td>")[0] + "</td", "td");
-			std::string nameID = extract(split(currentPlayer, "</td>")[1] + "</td", "td");
-			
-			int playerNum = 0;
-			int playerID = 0;
-			std::string name = "NULL";
-			playerNum = std::stoi(num);
-			playerID = std::stoi(getValue(nameID, "playerid"));
-			name = split(extract(nameID, "a"), "\t\t\t")[1];
-			
-			if(l->addPlayer(teamID, name, playerID, playerNum))
-				l->players[l->players.size()-1].goalie = true;
-		}
-		
-	}
-	
-}
-
-// Procedurally updates every game in the database. Only use when a full rebuild is needed.
-void hard_update(League* l){
-	for(int i = 0; i < l->games.size(); i++){
-		std::cout<<"Updating game " << i+1 << " of " << l->games.size() << "\n";
-		std::cout<<l->games[i].id<<"\n";
-		updateGame(&l->games[i],l);
-	}
-	
-	sort_games(l);
-}
-
 
 int main(){
 	League l = League(17);
