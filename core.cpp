@@ -535,7 +535,7 @@ void updateGame(Game* g, League* l){
 	if(!g->rosterTaken){
 		g->rosterTaken = true;
 		
-		std::string rosterArea = split(split(page, "Goalies")[1], "Other facts");
+		std::string rosterArea = split(split(page, "Goalies")[1], "Other facts")[0];
 		
 		std::vector<std::string> players = split(rosterArea, "playerid=");
 		for(int i = 0; i < players.size(); i++){
