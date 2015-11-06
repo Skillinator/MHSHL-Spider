@@ -40,7 +40,7 @@ void Player::printString(){
 
 
 void Player::printGoalieHeading(){
-	std::cout<<"\n             name                 ID   #  team  gp   mins  ga  sa  sv  gaa    svpercent\n";
+	std::cout<<"\n             name                 ID   #  team  gp   mins  ga  sa  sv    gaa       svpercent\n";
 }
 
 void Player::printGoalieString(){
@@ -50,10 +50,10 @@ void Player::printGoalieString(){
 	spaceBuffer(6, team);
 	spaceBuffer(4, std::to_string(gp));
 	spaceBuffer(5, std::to_string(min));
-	spaceBuffer(3, std::to_string(ga));
-	spaceBuffer(3, std::to_string(shots));
-	spaceBuffer(4, std::to_string(sv));
-	spaceBuffer(4, std::to_string(gaa));
-	spaceBuffer(5, std::to_string(svpercent));
+	spaceBuffer(5, std::to_string(ga));
+	spaceBuffer(5, std::to_string(shots));
+	spaceBuffer(5, std::to_string(sv));
+	spaceBuffer(10, std::to_string(gaa));
+	spaceBuffer(10, std::to_string(svpercent));
 	std::cout<<"\n";
 }

@@ -173,7 +173,7 @@ void processGoalie(Game* G, League* l, std::string g, bool done){
 		p-> shots += shots;
 		p->ga += goals;
 		p->min += seconds;
-		p->sv = shots-goals;
+		p->sv += shots-goals;
 		if(p->gp == 0){
 			p->gaa = 0;
 		}else{
@@ -517,13 +517,11 @@ void updateGame(Game* g, League* l){
 	* Strip off the remaining <tr> tag info, then process
 	*/
 	for(int i = 0; i < goalies1.size(); i++){
-		processGoalie(g, l, extract("<tr"+goalies1[i], "tr"), time < 0);
+		processGoalie(g, l, extract("<tr"+goalies1[i], "tr"), g->time < 0);
 	}
 	for(int i = 0; i < goalies2.size(); i++){
-		processGoalie(g, l, extract("<tr"+goalies2[i], "tr"), time < 0);
+		processGoalie(g, l, extract("<tr"+goalies2[i], "tr"), g->time < 0);
 	}
-	std::cout<<(time<0);
-	std::cout<<"\n";	
 
 }
 
@@ -705,7 +703,7 @@ int main(){
 	getGames(SEASON_2014_2015, l.teams[0].id, &l);
 	sort_games(&l);
 	hard_update(&l);
-//	showGames(l);
+	showGames(l);
 	
 	showPlayers(l);
 	//showGoaliePerformances(l);
