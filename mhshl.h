@@ -139,6 +139,8 @@ public:
 	int period; // 1-3 self explanatory. 4 is OT. 5 is SO.
 	int time; // Time is in seconds remaining in the period. -1 signifies a final. -2 F-OT. -3 F-SO.
 	int number;
+	
+	bool rosterTaken;
 };
 
 

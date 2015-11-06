@@ -7,6 +7,7 @@ Game::Game(){
 	month = day = year = startTime = awayScore = homeScore = awayShots = homeShots = period = time = 0;
 	homeTeam = awayTeam = "NUL";
 	id = "NULL";
+	rosterTaken = false;
 }
 
 Game::Game(int m, int d, int y, int st, std::string home, std::string away, int t, int num){
@@ -24,7 +25,7 @@ Game::Game(int m, int d, int y, int st, std::string home, std::string away, int 
 
 	time = t;
 	number = num;
-
+	rosterTaken = false;
 	id = twoPlace(m) + twoPlace(d) + twoPlace(y) + "-" + home;
 }
 

@@ -523,6 +523,26 @@ void updateGame(Game* g, League* l){
 		processGoalie(g, l, extract("<tr"+goalies2[i], "tr"), g->time < 0);
 	}
 
+	
+	/*
+	*
+	*
+	* PROCESS ROSTER INFORMATION
+	*
+	*
+	*/
+	
+	if(!g->rosterTaken){
+		g->rosterTaken = true;
+		
+		std::string rosterArea = split(split(page, "Goalies")[1], "Other facts");
+		
+		std::vector<std::string> players = split(rosterArea, "playerid=");
+		for(int i = 0; i < players.size(); i++){
+			int p = std::stoi(split(players[i], "&"));
+			l->getPlayer(p)->gp++;
+		}
+	}
 }
 
 void getGames(int season, int team, League *l){
