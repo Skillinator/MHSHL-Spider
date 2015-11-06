@@ -4,6 +4,9 @@
 #include "mhshl.h"
 #include "mhshlUtils.h"
 
+const int SEASON_2014_2015 = 13209;
+const int SEASON_2015_2015 = 14757;
+
 void initMHSHL(League *l){
 	l->addTeam("QCB", "Blues", "Quad City", 47180);
 	l->addTeam("DBQ", "Devils", "Dubuque", 47175);
@@ -19,14 +22,31 @@ void initMHSHL(League *l){
 	l->addTeam("LJS", "Jr. Stars", "Lincoln", 47177);
 }
 
+void getRosters(League *l){
+	for(int i = 0; i < l->teams.size(); i++){
+		getPlayers(SEASON_2014_2015, l->teams[i].id, l);
+	}
+}
 
-void initializeLeague(League *L){
+void getGames(League *l){
+	for(int i = 0; i < l.teams.size(); i++){
+		getGames(SEASON_2014_2015, l.teams[i].id, &l);
+	}
+}
+
+void initializeLeague(League *l){
 	/*
 	initMHSHL
 	getRosters
 	getGames
 	serverSync
 	*/
+	
+	initMHSHL(l);
+	getRosters(l);
+	getGames(l);
+	sort_games(l);
+	hard_update(l);
 }
 
 void update(League *l){
@@ -255,7 +275,6 @@ PenaltyEvent processPenalty(Game* g, League* l, int per, std::string s){
 	sec = l->periodLength - (60*std::stoi(split(split(time, ":")[0], ", ")[1]) + std::stoi(split(time, ":")[1]));
 	return PenaltyEvent(gID, tID, player, duration, per, sec, p);
 }
-
 
 void updateGame(Game* g, League* l){
 	std::string url = "midwest-league.stats.pointstreak.com/players-boxscore.html?gameid=" + std::to_string(g->number);
@@ -538,6 +557,7 @@ void updateGame(Game* g, League* l){
 		std::string rosterArea = split(split(page, "Goalies")[1], "Other facts")[0];
 		
 		std::vector<std::string> players = split(rosterArea, "playerid=");
+		players.erase(players.begin());
 		for(int i = 0; i < players.size(); i++){
 			int p = std::stoi(split(players[i], "&")[0]);
 			l->getPlayer(p)->gp++;
@@ -708,24 +728,13 @@ void hard_update(League* l){
 	sort_games(l);
 }
 
-const int SEASON_2014_2015 = 13209;
-const int SEASON_2015_2015 = 14757;
 
 int main(){
 	League l = League(17);
-	initMHSHL(&l);
 	
-	getPlayers(SEASON_2014_2015, 47180, &l);
+	initializeLeague(&l);
 	
-	for(int i = 0; i < l.teams.size(); i++){
-		//getGames(SEASON_2014_2015, l.teams[i].id, &l);
-	}
-	getGames(SEASON_2014_2015, l.teams[0].id, &l);
-	sort_games(&l);
-	hard_update(&l);
 	showGames(l);
-	
 	showPlayers(l);
-	//showGoaliePerformances(l);
 	return 0;
 }
