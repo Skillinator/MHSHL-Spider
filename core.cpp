@@ -539,7 +539,7 @@ void updateGame(Game* g, League* l){
 		
 		std::vector<std::string> players = split(rosterArea, "playerid=");
 		for(int i = 0; i < players.size(); i++){
-			int p = std::stoi(split(players[i], "&"));
+			int p = std::stoi(split(players[i], "&")[0]);
 			l->getPlayer(p)->gp++;
 		}
 	}
