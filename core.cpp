@@ -7,6 +7,7 @@
 const int SEASON_2014_2015 = 13209;
 const int SEASON_2015_2015 = 14757;
 
+void updateGame(Game*, League*);
 
 void getGames(int season, int team, League *l){
 	
@@ -31,7 +32,7 @@ void getGames(int season, int team, League *l){
 	std::cout<< "Extracted Games\n";
 
 	for(int i = 1; i < games.size(); i++){
-		std::cout<<"Processing game " << i+1 << " of " << games.size() << "\n";
+		std::cout<<"Processing game " << i << " of " << games.size()-1 << "\n";
 		std::string homeID, awayID = " ";
 		int	month, day, year, time, gameID;
 		
@@ -195,8 +196,8 @@ void getRosters(League *l){
 }
 
 void getGames(League *l){
-	for(int i = 0; i < l.teams.size(); i++){
-		getGames(SEASON_2014_2015, l->teams[i].id, &l);
+	for(int i = 0; i < l->teams.size(); i++){
+		getGames(SEASON_2014_2015, l->teams[i].id, l);
 	}
 }
 
@@ -356,6 +357,7 @@ void processGoalie(Game* G, League* l, std::string g, bool done){
 	
 	if(done){
 		Player* p = l->getPlayer(player);
+		p->gp++;
 		p-> shots += shots;
 		p->ga += goals;
 		p->min += seconds;
@@ -720,7 +722,7 @@ void updateGame(Game* g, League* l){
 	if(!g->rosterTaken){
 		g->rosterTaken = true;
 		
-		std::string rosterArea = split(split(page, "Goalies")[1], "Other facts")[0];
+		std::string rosterArea = split(split(page, "Players")[1], "Other facts")[0];
 		
 		std::vector<std::string> players = split(rosterArea, "playerid=");
 		players.erase(players.begin());
