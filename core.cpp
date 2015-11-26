@@ -738,5 +738,7 @@ int main(){
 	
 	showGames(l);
 	showPlayers(l);
+	
+	addTeam(true, "QCB", "Blues", "Quad City", 161616, 161616);
 	return 0;
 }
