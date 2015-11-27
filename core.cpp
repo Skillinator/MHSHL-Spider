@@ -736,10 +736,10 @@ void updateGame(Game* g, League* l){
 int main(){
 	League l = League(17);
 	
-	initializeLeague(&l);
+	//initializeLeague(&l);
 	
-	showGames(l);
-	showPlayers(l);
+	//showGames(l);
+	//showPlayers(l);
 	
 	addTeam(true, "QCB", "Blues", "Quad City", 161616, 161616);
 	return 0;
