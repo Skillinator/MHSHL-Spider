@@ -138,7 +138,7 @@ bool League::addTeam(std::string abbr, std::string name, std::string city, int i
 	if(getTeam(abbr)->abbreviation != "NUL")
 		return false;
 	
-	addTeam(varsity, abbr, name, city, identifier, season);
+	db_addTeam(varsity, abbr, name, city, identifier, season);
 	
 	Team t = Team(abbr, name, city, identifier);
 	teams.push_back(t);

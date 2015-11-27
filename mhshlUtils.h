@@ -7,7 +7,7 @@
 #include <iostream>
 #include "mhshl.h"
 
-void addTeam(bool, std::string, std::string, std::string, int, int);
+void db_addTeam(bool, std::string, std::string, std::string, int, int);
 
 std::vector<std::string> split(std::string str, std::string delim);
 std::string extract(std::string str, std::string tag);
