@@ -3,8 +3,10 @@
 #include <string>
 #include "mhshl.h"
 
-League::League(int pL){
+League::League(int pL, bool var, int s){
 	periodLength = pL * 60;
+	varsity = var;
+	season = s;
 }
 
 void League::setGoaliePerformance(std::string gID, std::string tID, int pl, int sec, int ga, int sa){
@@ -135,7 +137,9 @@ bool League::addTeam(std::string abbr, std::string name, std::string city, int i
 	
 	if(getTeam(abbr)->abbreviation != "NUL")
 		return false;
-
+	
+	addTeam(varsity, abbr, name, city, identifier, season);
+	
 	Team t = Team(abbr, name, city, identifier);
 	teams.push_back(t);
 	return true;

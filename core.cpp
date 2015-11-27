@@ -5,7 +5,7 @@
 #include "mhshlUtils.h"
 
 const int SEASON_2014_2015 = 13209;
-const int SEASON_2015_2015 = 14757;
+const int SEASON_2015_2016 = 14757;
 
 void updateGame(Game*, League*);
 
@@ -191,13 +191,13 @@ void initMHSHL(League *l){
 
 void getRosters(League *l){
 	for(int i = 0; i < l->teams.size(); i++){
-		getPlayers(SEASON_2014_2015, l->teams[i].id, l);
+		getPlayers(l->season, l->teams[i].id, l);
 	}
 }
 
 void getGames(League *l){
 	for(int i = 0; i < l->teams.size(); i++){
-		getGames(SEASON_2014_2015, l->teams[i].id, l);
+		getGames(l->season, l->teams[i].id, l);
 	}
 }
 
@@ -734,13 +734,12 @@ void updateGame(Game* g, League* l){
 }
 
 int main(){
-	League l = League(17);
+	League l = League(17, true, SEASON_2014_2015);
 	
-	//initializeLeague(&l);
+	initializeLeague(&l);
 	
-	//showGames(l);
-	//showPlayers(l);
+	showGames(l);
+	showPlayers(l);
 	
-	addTeam(true, "QCB", "Blues", "Quad City", 161616, 161616);
 	return 0;
 }

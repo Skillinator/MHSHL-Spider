@@ -149,7 +149,7 @@ League is the base container class for all the teams, games, and players.
 */
 class League{
 public:
-	League(int pL);
+	League(int pL, bool var, int s);
 	bool varsity;
 	bool addTeam(std::string abbr, std::string name, std::string city, int identifier);
 	bool addPlayer(std::string tID, std::string name, int identifier, int number);
@@ -172,7 +172,8 @@ public:
 	Team* getTeam(int num);
 
 	int periodLength;
-
+	int season;
+	
 	std::vector<Game> games;
 	std::vector<Team> teams;
 	std::vector<Player> players;
