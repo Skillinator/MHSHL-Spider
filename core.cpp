@@ -159,6 +159,9 @@ void getPlayers(int season, int team, League *l){
 		
 	}
 	
+	for(int i = 0; i < l->players.size(); i++){
+		db_updatePlayer(l->varsity, l->season, &l->players[i]);
+	}
 }
 
 // Procedurally updates every game in the database. Only use when a full rebuild is needed.
@@ -372,6 +375,8 @@ void processGoalie(Game* G, League* l, std::string g, bool done){
 		}else{
 			p->svpercent = p->sv*1.0/p->shots;
 		}
+		
+		db_updatePlayer(l->varsity, l->season, p);
 	}
 	
 }

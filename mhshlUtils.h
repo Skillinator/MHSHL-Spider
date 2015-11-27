@@ -9,6 +9,7 @@
 
 void db_addTeam(bool, std::string, std::string, std::string, int, int);
 void db_addPlayer(bool varsity, std::string tID, std::string name, int identifier, int number, int season);
+void db_updatePlayer(bool varsity, int season, Player *p);
 
 std::vector<std::string> split(std::string str, std::string delim);
 std::string extract(std::string str, std::string tag);
