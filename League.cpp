@@ -149,7 +149,9 @@ bool League::addPlayer(std::string tID, std::string name, int identifier, int nu
 	
 	if(getPlayer(tID, number)->name != "NULL")
 		return false;
-
+	
+	db_addPlayer(varsity, tID, name, identifier, number, season);
+	
 	Player p = Player(tID, name, identifier, number);
 	players.push_back(p);
 	return true;
