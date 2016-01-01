@@ -744,7 +744,7 @@ void updateGame(Game* g, League* l){
 }
 
 int main(){
-	League l = League(17, true, SEASON_2014_2015);
+	League l = League(17, true, SEASON_2015_2016);
 	
 	initializeLeague(&l);
 	
