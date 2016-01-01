@@ -160,6 +160,7 @@ void getPlayers(int season, int team, League *l){
 	}
 	
 	for(int i = 0; i < l->players.size(); i++){
+		std::cout<<"Updating Players\n";
 		db_updatePlayer(l->varsity, l->season, &l->players[i]);
 	}
 }
@@ -375,8 +376,9 @@ void processGoalie(Game* G, League* l, std::string g, bool done){
 		}else{
 			p->svpercent = p->sv*1.0/p->shots;
 		}
-		
+		std::cout<<"Updating Goalie \n";
 		db_updatePlayer(l->varsity, l->season, p);
+		std::cout<<"Successfully finished updating goalie\n";
 	}
 	
 }
@@ -734,6 +736,9 @@ void updateGame(Game* g, League* l){
 		for(int i = 0; i < players.size(); i++){
 			int p = std::stoi(split(players[i], "&")[0]);
 			l->getPlayer(p)->gp++;
+			std::cout<<"Updating Player " << l->getPlayer(p)->name << "\n";
+			if(l->getPlayer(p)->name != "NULL")
+				db_updatePlayer(l->varsity, l->season, l->getPlayer(p));
 		}
 	}
 }
