@@ -673,6 +673,7 @@ void updateGame(Game* g, League* l){
 		
 		
 		}
+		db_updateGame(l->varsity, l->season, g);	
 	}
 	
 		
@@ -744,7 +745,7 @@ void updateGame(Game* g, League* l){
 }
 
 int main(){
-	League l = League(17, true, SEASON_2015_2016);
+	League l = League(17, true, SEASON_2014_2015);
 	
 	initializeLeague(&l);
 	

@@ -44,6 +44,9 @@ void League::updatePenalties(std::string gID, int dT){
 			penalties[i].timeRemaining = 0;
 		if(penalties[i].scoredOn)
 			penalties[i].timeRemaining = 0;
+		
+		if(penalties[i].gameID == gID)
+			db_updatePenalty(varsity, season, &penalties[i]);
 	}
 }
 
@@ -179,6 +182,7 @@ void League::addPenaltyEvent(std::string gID, std::string tID, int player, int d
 	getTeam(tID)->pim += duration;
 	getPlayer(tID, player)->pim += duration;
 	penalties.push_back(pe);
+	db_addPenalty(varsity, gID, tID, player, duration, per, time, penalty);
 }
 
 void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec, int pp){
@@ -247,7 +251,8 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 		getPlayer(tID, a1)->a++;
 		getPlayer(tID, a2)->a++;
 	}
-
+	
+	db_addGoal(varsity, season, gID, tID, gs, a1, a2, per,sec,se.pp);
 }
 
 Game* League::getGame(std::string gID){

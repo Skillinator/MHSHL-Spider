@@ -12,6 +12,10 @@ void db_addPlayer(bool varsity, std::string tID, std::string name, int identifie
 void db_updatePlayer(bool varsity, int season, Player *p);
 void db_addGame(bool, std::string, int, int, int, int, std::string, std::string, int);
 void db_updateGame(bool, int, Game*);
+void db_addPenalty(bool, std::string, std::string, int, int, int, int, std::string);
+void db_updatePenalty(bool, int, PenaltyEvent*);
+
+void db_addGoal(bool, int, std::string, std::string, int, int, int, int, int, int);
 
 std::vector<std::string> split(std::string str, std::string delim);
 std::string extract(std::string str, std::string tag);
