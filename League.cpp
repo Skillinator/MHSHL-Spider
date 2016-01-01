@@ -130,6 +130,7 @@ void League::updateGameTime(std::string gID, int per, int sec){
 
 	g->time = sec;
 	g->period = per;
+	db_updateGame(varsity, season, g);
 	updatePenalties(gID, universalTime);
 }
 
@@ -165,6 +166,7 @@ bool League::addGame(int m, int d, int y, int st, std::string home, std::string 
 
 	Game g = Game(m, d, y, st, home, away, periodLength, gameID);
 	games.push_back(g);
+	db_addGame(varsity, ID, m, d, y, st, home, away, gameID);
 	return true;
 }
 
