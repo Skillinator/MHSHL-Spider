@@ -195,7 +195,7 @@ void dumpStatus(League l){
 	showGames(l);
 	showPenalties(l);
 	showGoals(l);
-	showGoaliePerformances(League l);
+	showGoaliePerformances(l);
 }
 
 

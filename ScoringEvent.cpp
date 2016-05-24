@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "mhshl.h"
+#include "mhshlUtils.h"
 
 ScoringEvent::ScoringEvent(){
 	gameID="NULL";

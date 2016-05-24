@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "mhshl.h"
+#include "mhshlUtils.h"
 
 GoaliePerformance::GoaliePerformance(){
 	gameID="NULL";
