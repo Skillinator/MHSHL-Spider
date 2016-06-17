@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "mhshl.h"
+#include "mhshlUtils.h"
 
 Team::Team(){
 	abbreviation = "NUL";

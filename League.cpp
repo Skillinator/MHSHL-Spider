@@ -3,6 +3,7 @@
 #include <string>
 #include "mhshl.h"
 #include "mhshlUtils.h"
+
 League::League(int pL, bool var, int s){
 	periodLength = pL * 60;
 	varsity = var;

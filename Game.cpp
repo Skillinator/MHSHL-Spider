@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "mhshl.h"
+#include "mhshlUtils.h"
 
 Game::Game(){
 	month = day = year = startTime = awayScore = homeScore = awayShots = homeShots = period = time = 0;

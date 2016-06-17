@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-void spaceBuffer(int len, std::string message);
+
 // Will append the zero to the beginning of a number to bring it to two places.
 std::string twoPlace(int num);
 class ScoringEvent{

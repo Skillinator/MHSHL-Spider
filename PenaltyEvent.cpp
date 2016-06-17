@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "mhshl.h"
+#include "mhshlUtils.h"
 
 PenaltyEvent::PenaltyEvent(){
 	gameID="NULL";
