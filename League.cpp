@@ -170,7 +170,7 @@ bool League::addGame(int m, int d, int y, int st, std::string home, std::string 
 
 	Game g = Game(m, d, y, st, home, away, periodLength, gameID);
 	games.push_back(g);
-	db_addGame(varsity, ID, m, d, y, st, home, away, gameID);
+	db_addGame(varsity, ID, m, d, y, st, home, away, gameID, season);
 	return true;
 }
 
@@ -183,7 +183,7 @@ void League::addPenaltyEvent(std::string gID, std::string tID, int player, int d
 	getTeam(tID)->pim += duration;
 	getPlayer(tID, player)->pim += duration;
 	penalties.push_back(pe);
-	db_addPenalty(varsity, gID, tID, player, duration, per, time, penalty);
+	db_addPenalty(varsity, gID, tID, player, duration, per, time, penalty, season);
 }
 
 void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec, int pp){

@@ -44,14 +44,15 @@ void getGames(int season, int team, League *l){
 		for(int j=0; j < elements.size(); j++){
 			elements[j] = extract("<td" + elements[j], "td");
 		}
-		homeID = l->getTeam(stoi(getValue(elements[0], "teamid")))->abbreviation;
-		awayID = l->getTeam(stoi(getValue(elements[1], "teamid")))->abbreviation;
 		
-		month = getMonth(elements[2]);
-		day = getDay(elements[2]);
+		homeID = l->getTeam(stoi(getValue(elements[1], "teamid")))->abbreviation;
+		awayID = l->getTeam(stoi(getValue(elements[3], "teamid")))->abbreviation;
+		
+		month = getMonth(elements[4]);
+		day = getDay(elements[4]);
 		year = getYear(2015, month);
-		time = getMinutes(elements[3]);
-		gameID = stoi(getValue(elements[4], "gameid"));
+		time = getMinutes(elements[5]);
+		gameID = stoi(getValue(elements[6], "gameid"));
 		
 		l->addGame(month, day, year, time, homeID, awayID, gameID);
 		
@@ -159,10 +160,13 @@ void getPlayers(int season, int team, League *l){
 		
 	}
 	
+	
+	std::cout<<"Updating players...  ";		
 	for(int i = 0; i < l->players.size(); i++){
-		std::cout<<"Updating Players\n";
+		// std::cout<<players[i]<< "  ";
 		db_updatePlayer(l->varsity, l->season, &l->players[i]);
 	}
+	std::cout<<" ...Done!\n";
 }
 
 // Procedurally updates every game in the database. Only use when a full rebuild is needed.
@@ -744,13 +748,14 @@ void updateGame(Game* g, League* l){
 	}
 }
 
-int main(){
-	League l = League(17, true, SEASON_2014_2015);
-	
+void getLeagueHistory(bool varsity, int season){
+	League l = League(14 + 3*varsity, varsity, season);
 	initializeLeague(&l);
-	
-	showGames(l);
-	showPlayers(l);
-	
+}
+
+int main(){
+	// League l = League(17, true, SEASON_2014_2015);
+	getLeagueHistory(true, SEASON_2014_2015);
+	// getLeagueHistory(true, SEASON_2015_2016);
 	return 0;
 }

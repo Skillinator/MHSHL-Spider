@@ -27,9 +27,9 @@
 void db_addTeam(bool varsity, std::string abbr, std::string name, std::string city, int id, int season);
 void db_addPlayer(bool varsity, std::string tID, std::string name, int identifier, int number, int season);
 void db_updatePlayer(bool varsity, int season, Player *p);
-void db_addGame(bool varsity, std::string id, int m, int d, int y, int start, std::string home, std::string away, int num);
+void db_addGame(bool varsity, std::string id, int m, int d, int y, int start, std::string home, std::string away, int num, int season);
 void db_updateGame(bool varsity, int season, Game *g);
-void db_addPenalty(bool varsity, std::string gID, std::string tID, int p, int d, int per, int t, std::string offense);
+void db_addPenalty(bool varsity, std::string gID, std::string tID, int p, int d, int per, int t, std::string offense, int season);
 void db_updatePenalty(bool varsity, int season, PenaltyEvent *p);
 void db_addGoal(bool varsity, int season, std::string GameID, std::string TeamID, int s, int a1, int a2, int per, int t, int pp);
 
