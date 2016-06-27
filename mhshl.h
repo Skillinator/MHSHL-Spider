@@ -31,7 +31,7 @@ public:
 	void printHeading();
 	std::string gameID;
 	std::string teamID;
-	int player; 
+	int player;
 	int duration;
 	int period;
 	int time;
@@ -52,7 +52,7 @@ public:
 	int goalsAgainst;
 	int shotsAgainst;
 	int saves;
-	
+
 	void printHeader();
 	void printString();
 };
@@ -139,7 +139,7 @@ public:
 	int period; // 1-3 self explanatory. 4 is OT. 5 is SO.
 	int time; // Time is in seconds remaining in the period. -1 signifies a final. -2 F-OT. -3 F-SO.
 	int number;
-	
+
 	bool rosterTaken;
 };
 
@@ -156,9 +156,9 @@ public:
 	void addPenaltyEvent(std::string gID, std::string tID, int player, int duration, int per, int time, std::string penalty);
 	void addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec, int pp);
 	bool addGame(int m, int d, int y, int st, std::string home, std::string away, int gameID);
-	
+
 	void setGoaliePerformance(std::string gID, std::string tID, int pl, int sec, int ga, int sa);
-	
+
 	void updateGameTime(std::string gID, int per, int sec);
 	void updatePenalties(std::string gID, int dT);
 	int powerPlayGoal(std::string gID, std::string tID);
@@ -173,7 +173,7 @@ public:
 
 	int periodLength;
 	int season;
-	
+
 	std::vector<Game> games;
 	std::vector<Team> teams;
 	std::vector<Player> players;
