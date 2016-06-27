@@ -164,7 +164,7 @@ void getPlayers(int season, int team, League *l){
 	std::cout<<"Updating players...  ";
 	for(int i = 0; i < l->players.size(); i++){
 		// std::cout<<players[i]<< "  ";
-		db_updatePlayer(*l->players[i], *l);
+		db_updatePlayer(l->players[i], *l);
 	}
 	std::cout<<" ...Done!\n";
 }

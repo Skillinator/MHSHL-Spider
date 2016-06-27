@@ -66,7 +66,7 @@ void db_addPlayer(Player player, League league){
 	stmt = con->createStatement();
 	bool exists = false;
 
-	res = stmt->executeQuery("SELECT * FROM players WHERE id=" + std::to_string(player.identifier) + " AND season=" + std::to_string(league.season));
+	res = stmt->executeQuery("SELECT * FROM players WHERE id=" + std::to_string(player.id) + " AND season=" + std::to_string(league.season));
 
 	while(res->next()){
 		exists = true;
@@ -135,7 +135,7 @@ void db_addGame(Game game, League league){
 
 	if(!exists){
 		std::cout<<"Adding game";
-		stmt->execute("INSERT INTO games(id, month, day, year, startTime, home, away, number, season) VALUES('" + game.id + "'," + std::to_string(game.month) + "," + std::to_string(game.day) + "," + std::to_string(game.year) + "," + std::to_string(game.startTime) + ",'" + game.homeTeam + "','" + game.awayTeam + "'," + std::to_string(game.number) + "," + std::to_string(League.season) + ")");
+		stmt->execute("INSERT INTO games(id, month, day, year, startTime, home, away, number, season) VALUES('" + game.id + "'," + std::to_string(game.month) + "," + std::to_string(game.day) + "," + std::to_string(game.year) + "," + std::to_string(game.startTime) + ",'" + game.homeTeam + "','" + game.awayTeam + "'," + std::to_string(game.number) + "," + std::to_string(league.season) + ")");
 	}
 
 	endConnection();
@@ -232,7 +232,7 @@ void db_addGoal(ScoringEvent goal, League league){
 
 	stmt = con->createStatement();
 	bool exists=false;
-	res=stmt->executeQuery("SELECT * FROM scoringEvents WHERE GameID='" + goal.GameID + "'&&period="+std::to_string(goal.period)+"&&time="+std::to_string(goal.time));
+	res=stmt->executeQuery("SELECT * FROM scoringEvents WHERE GameID='" + goal.gameID + "'&&period="+std::to_string(goal.period)+"&&time="+std::to_string(goal.time));
 
 	while(res->next()){
 		exists = true;

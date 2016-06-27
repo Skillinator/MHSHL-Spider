@@ -47,7 +47,7 @@ void League::updatePenalties(std::string gID, int dT){
 			penalties[i].timeRemaining = 0;
 
 		if(penalties[i].gameID == gID)
-			db_updatePenalty(*penalties[i], this);
+			db_updatePenalty(penalties[i], *this);
 	}
 }
 
@@ -134,7 +134,7 @@ void League::updateGameTime(std::string gID, int per, int sec){
 
 	g->time = sec;
 	g->period = per;
-	db_updateGame(*g, this);
+	db_updateGame(*g, *this);
 	updatePenalties(gID, universalTime);
 }
 
@@ -147,7 +147,7 @@ bool League::addTeam(std::string abbr, std::string name, std::string city, int i
 	Team t = Team(abbr, name, city, identifier);
 	teams.push_back(t);
 
-	db_addTeam(t, this);
+	db_addTeam(t, *this);
 
 	return true;
 }
@@ -161,7 +161,7 @@ bool League::addPlayer(std::string tID, std::string name, int identifier, int nu
 	Player p = Player(tID, name, identifier, number);
 	players.push_back(p);
 
-	db_addPlayer(p, this);
+	db_addPlayer(p, *this);
 
 	return true;
 }
@@ -174,7 +174,7 @@ bool League::addGame(int m, int d, int y, int st, std::string home, std::string 
 
 	Game g = Game(m, d, y, st, home, away, periodLength, gameID);
 	games.push_back(g);
-	db_addGame(g, this);
+	db_addGame(g, *this);
 	return true;
 }
 
@@ -187,7 +187,7 @@ void League::addPenaltyEvent(std::string gID, std::string tID, int player, int d
 	getTeam(tID)->pim += duration;
 	getPlayer(tID, player)->pim += duration;
 	penalties.push_back(pe);
-	db_addPenalty(pe, this);
+	db_addPenalty(pe, *this);
 }
 
 void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec, int pp){
@@ -257,7 +257,7 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 		getPlayer(tID, a2)->a++;
 	}
 
-	db_addGoal(se, this);
+	db_addGoal(se, *this);
 }
 
 Game* League::getGame(std::string gID){
