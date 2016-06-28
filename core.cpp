@@ -9,12 +9,11 @@ const int SEASON_2015_2016 = 14757;
 
 void updateGame(Game*, League*);
 
-void getGames(int season, int team, League *l){
+void getGames(Team team, League *league){
 
-	std::cout<<"Fetching Games for team " << team << " during the " << season << " season.\n";
+	std::cout<<"Fetching Games for team " << team.abbreviation << " during the " << league->season << " season.\n";
 
-	std::string url = "midwest-league.stats.pointstreak.com/players-team-schedule.html?teamid=" + std::to_string(team) + "&seasonid=" + std::to_string(season);
-
+	std::string url = "midwest-league.stats.pointstreak.com/players-team-schedule.html?teamid=" + std::to_string(team.pointstreakID) + "&seasonid=" + std::to_string(league->season);
 	std::string page = fetchWebPage(url);
 
 	std::vector<std::string> games = split(extract("<table" + split(page, "<table")[4], "table"), "<tr");
@@ -45,8 +44,8 @@ void getGames(int season, int team, League *l){
 			elements[j] = extract("<td" + elements[j], "td");
 		}
 
-		homeID = l->getTeam(stoi(getValue(elements[1], "teamid")))->abbreviation;
-		awayID = l->getTeam(stoi(getValue(elements[3], "teamid")))->abbreviation;
+		homeID = league->getTeam(stoi(getValue(elements[1], "teamid")))->abbreviation;
+		awayID = league->getTeam(stoi(getValue(elements[3], "teamid")))->abbreviation;
 
 		month = getMonth(elements[4]);
 		day = getDay(elements[4]);
@@ -54,41 +53,43 @@ void getGames(int season, int team, League *l){
 		time = getMinutes(elements[5]);
 		gameID = stoi(getValue(elements[6], "gameid"));
 
-		l->addGame(month, day, year, time, homeID, awayID, gameID);
+		league->addGame(month, day, year, time, homeID, awayID, gameID);
 
 	}
 
 }
 
-void sort_games(League* l){
+void getGames(League *league){
+	for(int i = 0; i < league->teams.size(); i++){
+		getGames(league->teams[i], league);
+	}
+}
+
+void sort_games(League* league){
 	std::cout<<"Sorting Games\n";
 	// Sort games by date. I probably could move this somewhere else because currently it will repeat for each team. Lot of redundancy.
 
 	bool sorted = false;
 	while(!sorted){
 		sorted = true;
-		for(int i = 0; i < l->games.size()-1; i++){
-			std::string date1 = std::to_string(l->games[i].year) + twoPlace(l->games[i].month) + twoPlace(l->games[i].day);
-			std::string date2 = std::to_string(l->games[i+1].year) + twoPlace(l->games[i+1].month) + twoPlace(l->games[i+1].day);
+		for(int i = 0; i < league->games.size()-1; i++){
+			std::string date1 = std::to_string(league->games[i].year) + twoPlace(league->games[i].month) + twoPlace(league->games[i].day);
+			std::string date2 = std::to_string(league->games[i+1].year) + twoPlace(league->games[i+1].month) + twoPlace(league->games[i+1].day);
 			if(stoi(date1) > stoi(date2)){
 				sorted = false;
-				Game tmp = l->games[i];
-				l->games[i] = l->games[i+1];
-				l->games[i+1] = tmp;
+				Game tmp = league->games[i];
+				league->games[i] = league->games[i+1];
+				league->games[i+1] = tmp;
 			}
 		}
 	}
 
 }
 
-void getPlayers(int season, int team, League *l){
-	std::cout<<"Fetching Players for team " << team << " during the " << season << " season.\n";
+void getPlayers(Team team, League *league){
+	std::cout<<"Fetching Players for team " << team.abbreviation << " during the " << league->season << " season.\n";
 
-	std::string url = "midwest-league.stats.pointstreak.com/players-team-roster.html?teamid=" + std::to_string(team) + "&seasonid=" + std::to_string(season);
-
-
-	Team* t = l->getTeam(team);
-	std::string teamID = t->abbreviation;
+	std::string url = "midwest-league.stats.pointstreak.com/players-team-roster.html?teamid=" + std::to_string(team.pointstreakID) + "&seasonid=" + std::to_string(league->season);
 
 	std::string page = fetchWebPage(url);
 	page = split(page, "Player Stats")[1];
@@ -120,7 +121,7 @@ void getPlayers(int season, int team, League *l){
 			playerID = std::stoi(getValue(nameID, "playerid"));
 			name = split(extract(nameID, "a"), "\t\t\t\t")[1];
 
-			l->addPlayer(teamID, name, playerID, playerNum);
+			league->addPlayer(team.abbreviation, name, playerID, playerNum);
 		}
 
 	}
@@ -154,77 +155,63 @@ void getPlayers(int season, int team, League *l){
 			playerID = std::stoi(getValue(nameID, "playerid"));
 			name = split(extract(nameID, "a"), "\t\t\t")[1];
 
-			if(l->addPlayer(teamID, name, playerID, playerNum))
-				l->players[l->players.size()-1].goalie = true;
+			if(league->addPlayer(teamID, name, playerID, playerNum))
+				league->players[league->players.size()-1].goalie = true;
 		}
 
 	}
 
 
 	std::cout<<"Updating players...  ";
-	for(int i = 0; i < l->players.size(); i++){
+	for(int i = 0; i < league->players.size(); i++){
 		// std::cout<<players[i]<< "  ";
-		db_updatePlayer(l->players[i], *l);
+		db_updatePlayer(league->players[i], *league);
 	}
 	std::cout<<" ...Done!\n";
 }
 
+void getRosters(League *league){
+	for(int i = 0; i < league->teams.size(); i++){
+		getPlayers(league->teams[i], league);
+	}
+}
+
 // Procedurally updates every game in the database. Only use when a full rebuild is needed.
-void hard_update(League* l){
-	for(int i = 0; i < l->games.size(); i++){
-		std::cout<<"Updating game " << i+1 << " of " << l->games.size() << "\n";
-		std::cout<<l->games[i].id<<"\n";
-		updateGame(&l->games[i],l);
+void hard_update(League* league){
+	for(int i = 0; i < league->games.size(); i++){
+		std::cout<<"Updating game " << i+1 << " of " << league->games.size() << "\n";
+		std::cout<<league->games[i].id<<"\n";
+		updateGame(&league->games[i], league);
 	}
 
-	sort_games(l);
+	sort_games(league);
 }
 
-
-
-void initMHSHL(League *l){
-	l->addTeam("QCB", "Blues", "Quad City", 47180);
-	l->addTeam("DBQ", "Devils", "Dubuque", 47175);
-	l->addTeam("CDR", "Jr. Roughriders", "Cedar Rapids", 47172);
-	l->addTeam("WAT", "Warriors", "Waterloo", 47182);
-	l->addTeam("DMC", "Capitals", "Des Moines", 47173);
-	l->addTeam("DMO", "Oak Leafs", "Des Moines", 47174);
-	l->addTeam("AMS", "Little Cyclones", "Ames", 47171);
-	l->addTeam("MCM", "Mohawks", "Mason City", 47178);
-	l->addTeam("SCM", "Metros", "Sioux City", 47181);
-	l->addTeam("KCJ", "Jets", "Kansas City", 96071);
-	l->addTeam("OJL", "Jr. Lancers", "Omaha", 149736);
-	l->addTeam("LJS", "Jr. Stars", "Lincoln", 47177);
+void addHardCodedTeams(League *league){
+	league->addTeam("QCB", "Blues", "Quad City", 47180);
+	league->addTeam("DBQ", "Devils", "Dubuque", 47175);
+	league->addTeam("CDR", "Jr. Roughriders", "Cedar Rapids", 47172);
+	league->addTeam("WAT", "Warriors", "Waterloo", 47182);
+	league->addTeam("DMC", "Capitals", "Des Moines", 47173);
+	league->addTeam("DMO", "Oak Leafs", "Des Moines", 47174);
+	league->addTeam("AMS", "Little Cyclones", "Ames", 47171);
+	league->addTeam("MCM", "Mohawks", "Mason City", 47178);
+	league->addTeam("SCM", "Metros", "Sioux City", 47181);
+	league->addTeam("KCJ", "Jets", "Kansas City", 96071);
+	league->addTeam("OJL", "Jr. Lancers", "Omaha", 149736);
+	league->addTeam("LJS", "Jr. Stars", "Lincoln", 47177);
 }
 
-void getRosters(League *l){
-	for(int i = 0; i < l->teams.size(); i++){
-		getPlayers(l->season, l->teams[i].pointstreakID, l);
-	}
+void initializeLeague(League *league){
+
+	addHardCodedTeams(league);
+	getRosters(league);
+	getGames(league);
+	sort_games(league);
+	hard_update(league);
 }
 
-void getGames(League *l){
-	for(int i = 0; i < l->teams.size(); i++){
-		getGames(l->season, l->teams[i].pointstreakID, l);
-	}
-}
-
-void initializeLeague(League *l){
-	/*
-	initMHSHL
-	getRosters
-	getGames
-	serverSync
-	*/
-
-	initMHSHL(l);
-	getRosters(l);
-	getGames(l);
-	sort_games(l);
-	hard_update(l);
-}
-
-void update(League *l){
+void update(League *league){
 	/*
 
 	Sort Scoring Events and Penalty Events by age
@@ -237,7 +224,7 @@ void update(League *l){
 	*/
 }
 
-ScoringEvent processGoal(Game* g, League* l, int p, std::string s){
+ScoringEvent processGoal(Game* game, League* league, int period, std::string rawGoalString){
 	/*
 	Initialize values to their default states
 	*/
@@ -246,38 +233,37 @@ ScoringEvent processGoal(Game* g, League* l, int p, std::string s){
 	int scorernum=0;
 	int a1 = 0;
 	int a2 = 0;
-	int per = p;
 	int sec=0;
 	int pp = 0;
 
 	/*
 	If no scoring occured, stop processing right here
 	*/
-	if(s.find("no scoring") != std::string::npos)
+	if(rawGoalString.find("no scoring") != std::string::npos)
 		return ScoringEvent();
 
 	/*
 	If there's a <br> on the end, remove that
 	*/
-	if(s.find("<br"))
+	if(rawGoalString.find("<br"))
 		s = split(s, "<br")[0];
-	if(s.find("(power play)")!=std::string::npos)
+	if(rawGoalString.find("(power play)")!=std::string::npos)
 		pp = 1;
-	if(s.find("(short handed)")!= std::string::npos)
+	if(rawGoalString.find("(short handed)")!= std::string::npos)
 		pp = -1;
 
 	/*
 	Handle power play, shorthanded, and empty net goals
 	*/
-	s = removeSubstring(s, "<i>(empty net)</i>");
-	s = removeSubstring(s, "<i>(power play)</i>");
-	s = removeSubstring(s, "<i>(short handed)</i>");
-	s = removeSubstring(s, "<i>(penalty shot)</i>");
+	rawGoalString = removeSubstring(rawGoalString, "<i>(empty net)</i>");
+	rawGoalString = removeSubstring(rawGoalString, "<i>(power play)</i>");
+	rawGoalString = removeSubstring(rawGoalString, "<i>(short handed)</i>");
+	rawGoalString = removeSubstring(rawGoalString, "<i>(penalty shot)</i>");
 
 	/*
 	Split by the first parenthesis
 	*/
-	std::vector<std::string> firstsplit = split(s, "(");
+	std::vector<std::string> firstsplit = split(rawGoalString, "(");
 
 	/*
 	This willl give us the team name and the scorer ID
@@ -303,7 +289,7 @@ ScoringEvent processGoal(Game* g, League* l, int p, std::string s){
 	PlayerID is found from the playerid value passed in the href to the player's page.
 	teamID is found by translating the team name into our style teamID.
 	*/
-	gID = g->id;
+	gID = game->id;
 	scorernum = std::stoi(getValue(scorer, "playerid"));
 	tID = translateTeamID(team);
 
@@ -327,27 +313,27 @@ ScoringEvent processGoal(Game* g, League* l, int p, std::string s){
 		a1 = std::stoi(getValue(assistvec[0], "playerid"));
 		a2 = std::stoi(getValue(assistvec[1], "playerid"));
 	}
-	sec = l->periodLength - (60*std::stoi(split(time, ":")[0]) + std::stoi(split(time, ":")[1]));
+	sec = league->periodLength - (60*std::stoi(split(time, ":")[0]) + std::stoi(split(time, ":")[1]));
 
-	ScoringEvent se = ScoringEvent(gID, tID, scorernum, a1, a2, per, sec);
+	ScoringEvent se = ScoringEvent(gID, tID, scorernum, a1, a2, period, sec);
 	se.powerPlay = pp;
 	return se;
 }
 
-void processGoalie(Game* G, League* l, std::string g, bool done){
+void processGoalie(Game* game, League* league, std::string rawGoalieString, bool done){
 	/*
 	Initialize values to their default states
 	*/
-	std::string gID="null";
+	std::string gID = game->id;
 	std::string tID="null";
 	int player = 0;
 	int shots = 0;
 	int goals = 0;
 	int seconds = 0;
-	gID = G->id;
-	player = std::stoi(split(split(g, "playerid=")[1], "&")[0]);
 
-	std::vector<std::string> items = split(g, "</td>");
+	player = std::stoi(split(split(rawGoalieString, "playerid=")[1], "&")[0]);
+
+	std::vector<std::string> items = split(rawGoalieString, "</td>");
 	items.erase(items.begin());
 
 	for(int i = 0; i < items.size(); i++){
@@ -359,12 +345,12 @@ void processGoalie(Game* G, League* l, std::string g, bool done){
 	shots = std::stoi(stripWhitespace(items[1]));
 	goals = shots - std::stoi(stripWhitespace(items[2]));
 
-	tID = l->getPlayer(player)->teamID;
+	tID = league->getPlayer(player)->teamID;
 
-	l->setGoaliePerformance(gID, tID, player, seconds, goals, shots);
+	league->setGoaliePerformance(gID, tID, player, seconds, goals, shots);
 
 	if(done){
-		Player* p = l->getPlayer(player);
+		Player* p = league->getPlayer(player);
 		p->gamesPlayed++;
 		p->shots += shots;
 		p->goalsAgainst += goals;
@@ -381,13 +367,13 @@ void processGoalie(Game* G, League* l, std::string g, bool done){
 			p->savePercentage = p->saves*1.0/p->shots;
 		}
 		std::cout<<"Updating Goalie \n";
-		db_updatePlayer(*p,*l);
+		db_updatePlayer(*p, *league);
 		std::cout<<"Successfully finished updating goalie\n";
 	}
 
 }
 
-PenaltyEvent processPenalty(Game* g, League* l, int per, std::string s){
+PenaltyEvent processPenalty(Game* game, League* league, int period, std::string rawPenaltyString){
 	/*
 	Initialize values to their default states
 	*/
@@ -401,30 +387,30 @@ PenaltyEvent processPenalty(Game* g, League* l, int per, std::string s){
 	/*
 	If no penalties occured, stop processing right here
 	*/
-	if(s.find("no penalties") != std::string::npos)
+	if(rawPenaltyString.find("no penalties") != std::string::npos)
 		return PenaltyEvent();
 
-	if(s.size() < 10)
+	if(rawPenaltyString.size() < 10)
 		return PenaltyEvent();
 
 	/*
 	If there's a <br> on the end, remove that
 	*/
-	if(s.find("<br")!=std::string::npos)
-		s = split(s, "<br")[0];
+	if(rawPenaltyString.find("<br")!=std::string::npos)
+		rawPenaltyString = split(s, "<br")[0];
 	/*
 	We don't really care about a misconduct. Just remove it.
 	*/
-	s = removeSubstring(s, "(Misconduct");
-	s = removeSubstring(s, "(Game Misconduct");
-	s = removeSubstring(s, "(Major");
-	s = removeSubstring(s, "(Bench Minor");
-	s = removeSubstring(s, "(Double Minor");
+	rawPenaltyString = removeSubstring(rawPenaltyString, "(Misconduct");
+	rawPenaltyString = removeSubstring(rawPenaltyString, "(Game Misconduct");
+	rawPenaltyString = removeSubstring(rawPenaltyString, "(Major");
+	rawPenaltyString = removeSubstring(rawPenaltyString, "(Bench Minor");
+	rawPenaltyString = removeSubstring(rawPenaltyString, "(Double Minor");
 
 	/*
 	Split by the first parenthesis
 	*/
-	std::vector<std::string> firstsplit = split(s, "(");
+	std::vector<std::string> firstsplit = split(rawPenaltyString, "(");
 	/*
 	This willl give us the team name and the player ID
 	The team name still needs to be run through the translate function since it's not how they're stored in our database
@@ -448,15 +434,15 @@ PenaltyEvent processPenalty(Game* g, League* l, int per, std::string s){
 	PlayerID is found from the playerid value passed in the href to the player's page.
 	teamID is found by translating the team name into our style teamID.
 	*/
-	gID = g->id;
+	gID = game->id;
 	tID = translateTeamID(team);
 	duration = std::stoi(split(time, " min")[0]);
-	sec = l->periodLength - (60*std::stoi(split(split(time, ":")[0], ", ")[1]) + std::stoi(split(time, ":")[1]));
-	return PenaltyEvent(gID, tID, player, duration, per, sec, p);
+	sec = league->periodLength - (60*std::stoi(split(split(time, ":")[0], ", ")[1]) + std::stoi(split(time, ":")[1]));
+	return PenaltyEvent(gID, tID, player, duration, period, sec, p);
 }
 
-void updateGame(Game* g, League* l){
-	std::string url = "midwest-league.stats.pointstreak.com/players-boxscore.html?gameid=" + std::to_string(g->number);
+void updateGame(Game* game, League* league){
+	std::string url = "midwest-league.stats.pointstreak.com/players-boxscore.html?gameid=" + std::to_string(game->number);
 	std::string page = fetchWebPage(url);
 
 	std::vector<PenaltyEvent> penaltyEvents;
@@ -510,7 +496,7 @@ void updateGame(Game* g, League* l){
 
 			/*
 			If there are more than one goals in that period, split them up and process them seperately.
-			If there is only one goal, process it directly.
+			If there is only one goal process it directly.
 			*/
 			if(penVec[i+1].find("<tr>") != std::string::npos){
 				std::vector<std::string> firstsplit = split(penVec[i+1], "<tr>");
@@ -520,11 +506,11 @@ void updateGame(Game* g, League* l){
 					*/
 					if(firstsplit[n].find("<td") != std::string::npos)
 						firstsplit[n] = extract(firstsplit[n], "td");
-					penaltyEvents.push_back(processPenalty(g, l, per, firstsplit[n]));
+					penaltyEvents.push_back(processPenalty(game, league, per, firstsplit[n]));
 				}
 			}else{
-				processPenalty(g, l, per, penVec[i+1]);
-				penaltyEvents.push_back(processPenalty(g, l, per, penVec[i+1]));
+				processPenalty(game, league, per, penVec[i+1]);
+				penaltyEvents.push_back(processPenalty(game, league, per, penVec[i+1]));
 			}
 		}
 	}
@@ -552,8 +538,8 @@ void updateGame(Game* g, League* l){
 	/*
 	Just take the last element and stoi it, and set as the appropriate team's shot total
 	*/
-	g->homeShots = std::stoi(homeShots[homeShots.size() - 1]);
-	g->awayShots = std::stoi(awayShots[awayShots.size() - 1]);
+	game->homeShots = std::stoi(homeShots[homeShots.size() - 1]);
+	game->awayShots = std::stoi(awayShots[awayShots.size() - 1]);
 
 	/*
 	For goals, we dont' want anything above the scoring summary, or below the next </table>
@@ -604,10 +590,10 @@ void updateGame(Game* g, League* l){
 					*/
 					if(firstsplit[n].find("<td") != std::string::npos)
 						firstsplit[n] = extract(firstsplit[n], "td");
-					scoringEvents.push_back(processGoal(g, l, per, firstsplit[n]));
+					scoringEvents.push_back(processGoal(game, league, per, firstsplit[n]));
 				}
 			}else{
-				scoringEvents.push_back(processGoal(g, l, per, goalVec[i+1]));
+				scoringEvents.push_back(processGoal(game, league, per, goalVec[i+1]));
 			}
 		}
 	}
@@ -621,16 +607,16 @@ void updateGame(Game* g, League* l){
 		PenaltyEvent mrp = penaltyEvents[0];
 
 		if(mrs.period < mrp.period){
-			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.powerPlay);
+			league->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.powerPlay);
 			scoringEvents.erase(scoringEvents.begin());
 		}else if(mrs.period > mrp.period){
-			l->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
+			league->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
 			penaltyEvents.erase(penaltyEvents.begin());
 		}else if(mrs.time > mrp.time){
-			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.powerPlay);
+			league->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.powerPlay);
 			scoringEvents.erase(scoringEvents.begin());
 		}else{
-			l->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
+			league->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
 			penaltyEvents.erase(penaltyEvents.begin());
 		}
 	}
@@ -638,7 +624,7 @@ void updateGame(Game* g, League* l){
 	if(scoringEvents.size() > 0){
 		while(scoringEvents.size() > 0){
 			ScoringEvent mrs = scoringEvents[0];
-			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.powerPlay);
+			league->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.powerPlay);
 			scoringEvents.erase(scoringEvents.begin());
 		}
 	}
@@ -646,7 +632,7 @@ void updateGame(Game* g, League* l){
 	if(penaltyEvents.size() > 0){
 		while(penaltyEvents.size() > 0){
 			PenaltyEvent mrp = penaltyEvents[0];
-			l->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
+			league->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
 			penaltyEvents.erase(penaltyEvents.begin());
 		}
 	}
@@ -663,21 +649,21 @@ void updateGame(Game* g, League* l){
 	// we still need to properly process time, I'll have to see on some NAHL games or something.
 
 	if(page.find("FINAL") != std::string::npos){
-		switch(g->period){
+		switch(game->period){
 			case 4:
-				g->time = -2;
+				game->time = -2;
 				break;
 			case 5:
-				g->time = -3;
+				game->time = -3;
 				break;
 			default:
-				g->time = -1;
-				g->period = 3;
+				game->time = -1;
+				game->period = 3;
 				break;
 
 
 		}
-		db_updateGame(*g, *l);
+		db_updateGame(*game, *league);
 	}
 
 
@@ -716,10 +702,10 @@ void updateGame(Game* g, League* l){
 	* Strip off the remaining <tr> tag info, then process
 	*/
 	for(int i = 0; i < goalies1.size(); i++){
-		processGoalie(g, l, extract("<tr"+goalies1[i], "tr"), g->time < 0);
+		processGoalie(game, league, extract("<tr"+goalies1[i], "tr"), game->time < 0);
 	}
 	for(int i = 0; i < goalies2.size(); i++){
-		processGoalie(g, l, extract("<tr"+goalies2[i], "tr"), g->time < 0);
+		processGoalie(game, league, extract("<tr"+goalies2[i], "tr"), game->time < 0);
 	}
 
 
@@ -731,8 +717,8 @@ void updateGame(Game* g, League* l){
 	*
 	*/
 
-	if(!g->rosterTaken){
-		g->rosterTaken = true;
+	if(!game->rosterTaken){
+		game->rosterTaken = true;
 
 		std::string rosterArea = split(split(page, "Players")[1], "Other facts")[0];
 
@@ -740,22 +726,20 @@ void updateGame(Game* g, League* l){
 		players.erase(players.begin());
 		for(int i = 0; i < players.size(); i++){
 			int p = std::stoi(split(players[i], "&")[0]);
-			l->getPlayer(p)->gamesPlayed++;
-			std::cout<<"Updating Player " << l->getPlayer(p)->name << "\n";
-			if(l->getPlayer(p)->name != "NULL")
-				db_updatePlayer(*l->getPlayer(p), *l);
+			league->getPlayer(p)->gamesPlayed++;
+			std::cout<<"Updating Player " << league->getPlayer(p)->name << "\n";
+			if(league->getPlayer(p)->name != "NULL")
+				db_updatePlayer(*getPlayer(p), *league);
 		}
 	}
 }
 
 void getLeagueHistory(bool varsity, int season){
-	League l = League(14 + 3*varsity, varsity, season);
-	initializeLeague(&l);
+	League league = League(14 + 3*varsity, varsity, season);
+	initializeLeague(&league);
 }
 
 int main(){
-	// League l = League(17, true, SEASON_2014_2015);
-	getLeagueHistory(true, SEASON_2014_2015);
-	// getLeagueHistory(true, SEASON_2015_2016);
+	getHistory(true, SEASON_2014_2015);
 	return 0;
 }
