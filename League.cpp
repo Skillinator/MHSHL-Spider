@@ -184,7 +184,7 @@ void League::addPenaltyEvent(std::string gID, std::string tID, int player, int d
 	if(peTest->offense != "NULL")
 		return;
 	PenaltyEvent pe = PenaltyEvent(gID, tID, player, duration, per, time, penalty);
-	getTeam(tID)->pim += duration;
+	getTeam(tID)->penaltyMinutes += duration;
 	getPlayer(tID, player)->pim += duration;
 	penalties.push_back(pe);
 	db_addPenalty(pe, *this);
@@ -235,15 +235,15 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 	}
 
 	if(againstHome)
-		getTeam(game->homeTeam)->ga++;
+		getTeam(game->homeTeam)->goalsAgainst++;
 	if(!againstHome)
-		getTeam(game->awayTeam)->ga++;
+		getTeam(game->awayTeam)->goalsAgainst++;
 
 	// Do not count shootout goals
 	if(per < 5){
 
 
-		getTeam(tID)->gf++;
+		getTeam(tID)->goalsFor++;
 
 		getPlayer(tID, gs)->g++;
 
@@ -288,7 +288,7 @@ Team* League::getTeam(int num){
 		return new Team();
 
 	for(int i = 0; i < teams.size(); i++){
-		if(teams[i].id == num)
+		if(teams[i].pointstreakID == num)
 			return &teams[i];
 	}
 

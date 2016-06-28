@@ -67,17 +67,17 @@ public:
 	std::string abbreviation;
 	std::string name;
 	std::string city;
-	int id;
-	int gp;
-	int w;
-	int l;
-	int ot;
-	int so;
-	int pts;
-	int gf;
-	int ga;
-	int pim;
-	int streak;
+	int pointStreakID;
+	int gamesPlayed;
+	int wins;
+	int losses;
+	int overtimeLosses;
+	int shootoutLosses;
+	int points;
+	int goalsFor;
+	int goalsAgainst;
+	int penaltyMinutes;
+	int winLossStreak; // Win streaks positive, losing streak negative.
 };
 
 class Player{

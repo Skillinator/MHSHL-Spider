@@ -47,7 +47,7 @@ void db_addTeam(Team team, League league){
 	}
 
 	if(!exists){
-		stmt->execute("INSERT INTO teams(abbr, name, city, id, season) VALUES('" + team.abbreviation + "','" + team.name + "','" + team.city + "'," + std::to_string(team.id) + "," + std::to_string(league.season) + ")");
+		stmt->execute("INSERT INTO teams(abbr, name, city, id, season) VALUES('" + team.abbreviation + "','" + team.name + "','" + team.city + "'," + std::to_string(team.pointstreakID) + "," + std::to_string(league.season) + ")");
 	}
 
 	endConnection();
