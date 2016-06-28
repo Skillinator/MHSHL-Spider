@@ -155,7 +155,7 @@ void getPlayers(Team team, League *league){
 			playerID = std::stoi(getValue(nameID, "playerid"));
 			name = split(extract(nameID, "a"), "\t\t\t")[1];
 
-			if(league->addPlayer(teamID, name, playerID, playerNum))
+			if(league->addPlayer(team.abbreviation, name, playerID, playerNum))
 				league->players[league->players.size()-1].goalie = true;
 		}
 
@@ -246,7 +246,7 @@ ScoringEvent processGoal(Game* game, League* league, int period, std::string raw
 	If there's a <br> on the end, remove that
 	*/
 	if(rawGoalString.find("<br"))
-		s = split(s, "<br")[0];
+		rawGoalString = split(rawGoalString, "<br")[0];
 	if(rawGoalString.find("(power play)")!=std::string::npos)
 		pp = 1;
 	if(rawGoalString.find("(short handed)")!= std::string::npos)
@@ -397,7 +397,7 @@ PenaltyEvent processPenalty(Game* game, League* league, int period, std::string 
 	If there's a <br> on the end, remove that
 	*/
 	if(rawPenaltyString.find("<br")!=std::string::npos)
-		rawPenaltyString = split(s, "<br")[0];
+		rawPenaltyString = split(rawPenaltyString, "<br")[0];
 	/*
 	We don't really care about a misconduct. Just remove it.
 	*/
@@ -729,7 +729,7 @@ void updateGame(Game* game, League* league){
 			league->getPlayer(p)->gamesPlayed++;
 			std::cout<<"Updating Player " << league->getPlayer(p)->name << "\n";
 			if(league->getPlayer(p)->name != "NULL")
-				db_updatePlayer(*getPlayer(p), *league);
+				db_updatePlayer(*league->getPlayer(p), *league);
 		}
 	}
 }
@@ -740,6 +740,6 @@ void getLeagueHistory(bool varsity, int season){
 }
 
 int main(){
-	getHistory(true, SEASON_2014_2015);
+	getLeagueHistory(true, SEASON_2014_2015);
 	return 0;
 }
