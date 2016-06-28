@@ -17,7 +17,7 @@ Team::Team(){
 	goalsFor = 0;
 	goalsAgainst = 0;
 	penaltyMinutes = 0;
-	winLossstreak = 0;
+	winLosstreak = 0;
 }
 
 Team::Team(std::string abbr, std::string n, std::string c, int identifier){
@@ -34,7 +34,7 @@ Team::Team(std::string abbr, std::string n, std::string c, int identifier){
 	goalsFor = 0;
 	goalsAgainst = 0;
 	penaltyMinutes = 0;
-	winLossstreak = 0;
+	winLosstreak = 0;
 }
 
 void Team::printHeading(){

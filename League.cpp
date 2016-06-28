@@ -197,18 +197,18 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 		if(gs != seTest->scorer){
 			getPlayer(tID, seTest->scorer)->goals--;
 			getPlayer(tID, gs)->goals++;
-			if(seTest->pp == 1){
+			if(seTest->powerPlay == 1){
 				getPlayer(tID, seTest->scorer)->powerPlayGoals--;
 				getPlayer(tID, gs)->powerPlayGoals++;
 			}
-			if(seTest->pp == -1){
+			if(seTest->powerPlay == -1){
 				getPlayer(tID, seTest->scorer)->shortHandedGoals--;
 				getPlayer(tID, gs)->shortHandedGoals++;
 			}
 		}
 		if(a1 != seTest->assist1){
 			getPlayer(tID, seTest->assist1)->assists--;
-			getPlayer(tID, a1)->assits++;
+			getPlayer(tID, a1)->assists++;
 		}
 		if(a2 != seTest->assist2){
 			getPlayer(tID, seTest->assist2)->assists--;
@@ -250,10 +250,10 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 
 		getPlayer(tID, gs)->goals++;
 
-		if(se.pp == 1)
+		if(se.powerPlay == 1)
 			getPlayer(tID, gs)->powerPlayGoals++;
 
-		if(se.pp == -1){
+		if(se.powerPlay == -1){
 			getPlayer(tID, gs)->shortHandedGoals++;
 		}
 		getPlayer(tID, a1)->assists++;

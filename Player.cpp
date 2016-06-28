@@ -8,7 +8,7 @@ Player::Player(){
 	teamID = "NUL";
 	name = "NULL";
 	goalie = false;
-	jerseyNumber = 66
+	jerseyNumber = 66;
 	pointstreakID = 0;
 
 	gamesPlayed = 0;
@@ -77,15 +77,15 @@ void Player::printGoalieHeading(){
 
 void Player::printGoalieString(){
 	spaceBuffer(30, name);
-	spaceBuffer(8, std::to_string(id));
-	spaceBuffer(3, std::to_string(number));
-	spaceBuffer(6, team);
-	spaceBuffer(4, std::to_string(gp));
-	spaceBuffer(5, std::to_string(min));
-	spaceBuffer(5, std::to_string(ga));
+	spaceBuffer(8, std::to_string(pointstreakID));
+	spaceBuffer(3, std::to_string(jerseyNumber));
+	spaceBuffer(6, teamID);
+	spaceBuffer(4, std::to_string(gamesPlayed));
+	spaceBuffer(5, std::to_string(minutesPlayed));
+	spaceBuffer(5, std::to_string(goalsAgainst));
 	spaceBuffer(5, std::to_string(shots));
-	spaceBuffer(5, std::to_string(sv));
-	spaceBuffer(10, std::to_string(gaa));
-	spaceBuffer(10, std::to_string(svpercent));
+	spaceBuffer(5, std::to_string(saves));
+	spaceBuffer(10, std::to_string(goalsAgainstAverage));
+	spaceBuffer(10, std::to_string(savePercentage));
 	std::cout<<"\n";
 }
