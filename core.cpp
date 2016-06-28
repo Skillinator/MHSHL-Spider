@@ -330,7 +330,7 @@ ScoringEvent processGoal(Game* g, League* l, int p, std::string s){
 	sec = l->periodLength - (60*std::stoi(split(time, ":")[0]) + std::stoi(split(time, ":")[1]));
 
 	ScoringEvent se = ScoringEvent(gID, tID, scorernum, a1, a2, per, sec);
-	se.pp = pp;
+	se.powerPlay = pp;
 	return se;
 }
 
@@ -621,13 +621,13 @@ void updateGame(Game* g, League* l){
 		PenaltyEvent mrp = penaltyEvents[0];
 
 		if(mrs.period < mrp.period){
-			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.pp);
+			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.powerPlay);
 			scoringEvents.erase(scoringEvents.begin());
 		}else if(mrs.period > mrp.period){
 			l->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
 			penaltyEvents.erase(penaltyEvents.begin());
 		}else if(mrs.time > mrp.time){
-			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.pp);
+			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.powerPlay);
 			scoringEvents.erase(scoringEvents.begin());
 		}else{
 			l->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
@@ -638,7 +638,7 @@ void updateGame(Game* g, League* l){
 	if(scoringEvents.size() > 0){
 		while(scoringEvents.size() > 0){
 			ScoringEvent mrs = scoringEvents[0];
-			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.pp);
+			l->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.powerPlay);
 			scoringEvents.erase(scoringEvents.begin());
 		}
 	}

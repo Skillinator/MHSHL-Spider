@@ -7,6 +7,7 @@
 
 // Will append the zero to the beginning of a number to bring it to two places.
 std::string twoPlace(int num);
+
 class ScoringEvent{
 public:
 	ScoringEvent();
@@ -20,7 +21,7 @@ public:
 	int assist2;
 	int period; // 1-3 normal, 4 OT, 5 SO
 	int time; // Seconds remaining in the period.
-	int pp;
+	int powerPlay;
 };
 
 class PenaltyEvent{

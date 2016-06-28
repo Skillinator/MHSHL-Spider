@@ -239,7 +239,7 @@ void db_addGoal(ScoringEvent goal, League league){
 	}
 
 	if(!exists){
-		stmt->execute("INSERT INTO scoringEvents(GameID, TeamID, scorer, a1, a2, period, time, pp, season) VALUES('" + goal.gameID + "', '" + goal.teamID + "', " + std::to_string(goal.scorer) + ","+std::to_string(goal.assist1)+","+std::to_string(goal.assist2)+","+std::to_string(goal.period) + "," + std::to_string(goal.time) + "," + std::to_string(goal.pp) + "," + std::to_string(league.season) + ")");
+		stmt->execute("INSERT INTO scoringEvents(GameID, TeamID, scorer, a1, a2, period, time, pp, season) VALUES('" + goal.gameID + "', '" + goal.teamID + "', " + std::to_string(goal.scorer) + ","+std::to_string(goal.assist1)+","+std::to_string(goal.assist2)+","+std::to_string(goal.period) + "," + std::to_string(goal.time) + "," + std::to_string(goal.powerPlay) + "," + std::to_string(league.season) + ")");
 	}
 
 	endConnection();

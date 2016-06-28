@@ -18,7 +18,7 @@ ScoringEvent::ScoringEvent(std::string gID, std::string tID, int gs, int a1, int
 	assist2 = a2;
 	period = per;
 	time = t;
-	pp = 0;
+	powerPlay = 0;
 }
 
 void ScoringEvent::printHeading(){

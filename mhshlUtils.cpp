@@ -35,7 +35,7 @@ std::string stripWhitespace(std::string s){
 	}
 	if(product == "&nbsp;")
 		return "";
-	
+
 	return product;
 }
 
@@ -62,7 +62,7 @@ std::string fetchWebPage(std::string url){
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &str);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-		
+
 		res = curl_easy_perform(curl);
 
 		if(res != CURLE_OK)
@@ -82,7 +82,7 @@ void spaceBuffer(int len, std::string str){
 	for(int x = 0; x < (len-str.length())/2; x++){
 		std::cout<<" ";
 	}
-	
+
 	if((len-str.length())%2)
 		std::cout<<" ";
 
@@ -138,7 +138,7 @@ void showPlayers(League l){
 		if(!l.players[i].goalie)
 			l.players[i].printString();
 	}
-	
+
 	std::cout<< " GOALIES \n";
 	l.players[0].printGoalieHeading();
 	for(int i = 0; i < l.players.size(); i++){
