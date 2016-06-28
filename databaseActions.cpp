@@ -66,14 +66,14 @@ void db_addPlayer(Player player, League league){
 	stmt = con->createStatement();
 	bool exists = false;
 
-	res = stmt->executeQuery("SELECT * FROM players WHERE id=" + std::to_string(player.id) + " AND season=" + std::to_string(league.season));
+	res = stmt->executeQuery("SELECT * FROM players WHERE id=" + std::to_string(player.pointstreakID) + " AND season=" + std::to_string(league.season));
 
 	while(res->next()){
 		exists = true;
 	}
 
 	if(!exists){
-		stmt->execute("INSERT INTO players(team, name, id, number, season) VALUES('" + player.team + "','" + player.name + "','" + std::to_string(player.id) + "'," + std::to_string(player.number) + "," + std::to_string(league.season) + ")");
+		stmt->execute("INSERT INTO players(team, name, id, number, season) VALUES('" + player.teamID + "','" + player.name + "','" + std::to_string(player.pointstreakID) + "'," + std::to_string(player.jerseyNumber) + "," + std::to_string(league.season) + ")");
 	}
 
 	endConnection();
@@ -91,7 +91,7 @@ void db_updatePlayer(Player player, League league){
 	stmt = con->createStatement();
 	bool exists = false;
 
-	res = stmt->executeQuery("SELECT * FROM players WHERE id=" + std::to_string(player.id) + " AND season=" + std::to_string(league.season));
+	res = stmt->executeQuery("SELECT * FROM players WHERE id=" + std::to_string(player.pointstreakID) + " AND season=" + std::to_string(league.season));
 
 	while(res->next()){
 		exists = true;
@@ -101,12 +101,12 @@ void db_updatePlayer(Player player, League league){
 		db_addPlayer(player, league);
 	}
 
-	stmt->execute("UPDATE players SET gp = " + std::to_string(player.gp) + " WHERE id=" + std::to_string(player.id));
+	stmt->execute("UPDATE players SET gp = " + std::to_string(player.gamesPlayed) + " WHERE id=" + std::to_string(player.pointstreakID));
 
 	if(player.goalie){
-		stmt->execute("UPDATE players SET goalie = 1 WHERE id=" + std::to_string(player.id));
+		stmt->execute("UPDATE players SET goalie = 1 WHERE id=" + std::to_string(player.pointstreakID));
 	}else{
-		stmt->execute("UPDATE players SET goalie = 0 WHERE id=" + std::to_string(player.id));
+		stmt->execute("UPDATE players SET goalie = 0 WHERE id=" + std::to_string(player.pointstreakID));
 	}
 
 	endConnection();

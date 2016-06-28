@@ -5,18 +5,49 @@
 #include "mhshlUtils.h"
 
 Player::Player(){
-	team = "NUL";
+	teamID = "NUL";
 	name = "NULL";
-	gp = g = a = pp = sh = pim = goalStreak = pointStreak = min = shots = ga = gaa = sv = svpercent = 0;
+	goalie = false;
+	jerseyNumber = 66
+	pointstreakID = 0;
+
+	gamesPlayed = 0;
+	goals = 0;
+	assists = 0;
+	powerPlayGoals = 0;
+	shortHandedGoals = 0;
+	penaltyMinutes = 0;
+	goalStreak = 0;
+	pointStreak = 0;
+	minutesPlayed = 0;
+	shots = 0;
+	goalsAgainst = 0;
+	goalsAgainstAverage = 0;
+	saves = 0;
+	savePercentage = 0;
 }
 
 Player::Player(std::string tID, std::string gname, int identifier, int num){
-	team = tID;
+	teamID = tID;
 	name = gname;
-	number = num;
-	id = identifier;
+	jerseyNumber = num;
+	pointstreakID = identifier;
 	goalie = false;
-	gp = g = a = pp = sh = pim = goalStreak = pointStreak = min = shots = ga = gaa = sv = svpercent = 0;
+
+	gamesPlayed = 0;
+	goals = 0;
+	assists = 0;
+	powerPlayGoals = 0;
+	shortHandedGoals = 0;
+	penaltyMinutes = 0;
+	goalStreak = 0;
+	pointStreak = 0;
+	minutesPlayed = 0;
+	shots = 0;
+	goalsAgainst = 0;
+	goalsAgainstAverage = 0;
+	saves = 0;
+	savePercentage = 0;
 }
 
 void Player::printHeading(){
@@ -25,15 +56,15 @@ void Player::printHeading(){
 
 void Player::printString(){
 	spaceBuffer(30, name);
-	spaceBuffer(8, std::to_string(id));
-	spaceBuffer(3, std::to_string(number));
-	spaceBuffer(6, team);
-	spaceBuffer(4, std::to_string(gp));
-	spaceBuffer(3, std::to_string(g));
-	spaceBuffer(3, std::to_string(a));
-	spaceBuffer(4, std::to_string(pp));
-	spaceBuffer(4, std::to_string(sh));
-	spaceBuffer(5, std::to_string(pim));
+	spaceBuffer(8, std::to_string(pointstreakID));
+	spaceBuffer(3, std::to_string(jerseyNumber));
+	spaceBuffer(6, teamID);
+	spaceBuffer(4, std::to_string(gamesPlayed));
+	spaceBuffer(3, std::to_string(goals));
+	spaceBuffer(3, std::to_string(assists));
+	spaceBuffer(4, std::to_string(powerPlayGoals));
+	spaceBuffer(4, std::to_string(shortHandedGoals));
+	spaceBuffer(5, std::to_string(penaltyMinutes));
 	spaceBuffer(12, std::to_string(goalStreak));
 	spaceBuffer(13, std::to_string(pointStreak));
 	std::cout<<"\n";

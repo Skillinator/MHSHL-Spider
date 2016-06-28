@@ -185,7 +185,7 @@ void League::addPenaltyEvent(std::string gID, std::string tID, int player, int d
 		return;
 	PenaltyEvent pe = PenaltyEvent(gID, tID, player, duration, per, time, penalty);
 	getTeam(tID)->penaltyMinutes += duration;
-	getPlayer(tID, player)->pim += duration;
+	getPlayer(tID, player)->penaltyMinutes += duration;
 	penalties.push_back(pe);
 	db_addPenalty(pe, *this);
 }
@@ -195,30 +195,33 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 	ScoringEvent *seTest = getScoringEvent(gID, per, sec);
 	if(seTest->teamID != "NUL"){
 		if(gs != seTest->scorer){
-			getPlayer(tID, seTest->scorer)->g--;
-			getPlayer(tID, gs)->g++;
+			getPlayer(tID, seTest->scorer)->goals--;
+			getPlayer(tID, gs)->goals++;
 			if(seTest->pp == 1){
-				getPlayer(tID, seTest->scorer)->pp--;
-				getPlayer(tID, gs)->pp++;
+				getPlayer(tID, seTest->scorer)->powerPlayGoals--;
+				getPlayer(tID, gs)->powerPlayGoals++;
 			}
 			if(seTest->pp == -1){
-				getPlayer(tID, seTest->scorer)->sh--;
-				getPlayer(tID, gs)->sh++;
+				getPlayer(tID, seTest->scorer)->shortHandedGoals--;
+				getPlayer(tID, gs)->shortHandedGoals++;
 			}
 		}
 		if(a1 != seTest->assist1){
-			getPlayer(tID, seTest->assist1)->a--;
-			getPlayer(tID, a1)->a++;
+			getPlayer(tID, seTest->assist1)->assists--;
+			getPlayer(tID, a1)->assits++;
 		}
 		if(a2 != seTest->assist2){
-			getPlayer(tID, seTest->assist2)->a--;
-			getPlayer(tID, a2)->a++;
+			getPlayer(tID, seTest->assist2)->assists--;
+			getPlayer(tID, a2)->assists++;
 		}
+		seTest->scorer = gs;
+		seTest->assist1 = a1;
+		seTest->assist2 = a2;
 		return;
 	}
 
 	ScoringEvent se = ScoringEvent(gID, tID, gs, a1, a2, per, sec);
-	se.pp = pp;
+	se.powerPlay = pp;
 	goals.push_back(se);
 
 	Game* game = getGame(gID);
@@ -245,16 +248,16 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 
 		getTeam(tID)->goalsFor++;
 
-		getPlayer(tID, gs)->g++;
+		getPlayer(tID, gs)->goals++;
 
 		if(se.pp == 1)
-			getPlayer(tID, gs)->pp++;
+			getPlayer(tID, gs)->powerPlayGoals++;
 
 		if(se.pp == -1){
-			getPlayer(tID, gs)->sh++;
+			getPlayer(tID, gs)->shortHandedGoals++;
 		}
-		getPlayer(tID, a1)->a++;
-		getPlayer(tID, a2)->a++;
+		getPlayer(tID, a1)->assists++;
+		getPlayer(tID, a2)->assists++;
 	}
 
 	db_addGoal(se, *this);
@@ -300,7 +303,7 @@ Player* League::getPlayer(std::string tID, int num){
 		return new Player();
 
 	for(int i = 0; i < players.size(); i++){
-		if(players[i].team == tID && players[i].id == num)
+		if(players[i].teamID == tID && players[i].pointstreakID == num)
 			return &players[i];
 	}
 
@@ -313,7 +316,7 @@ Player* League::getPlayer(int id){
 		return new Player();
 
 	for(int i = 0; i < players.size(); i++){
-		if(players[i].id == id)
+		if(players[i].pointstreakID == id)
 			return &players[i];
 	}
 

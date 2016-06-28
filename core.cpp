@@ -199,13 +199,13 @@ void initMHSHL(League *l){
 
 void getRosters(League *l){
 	for(int i = 0; i < l->teams.size(); i++){
-		getPlayers(l->season, l->teams[i].id, l);
+		getPlayers(l->season, l->teams[i].pointstreakID, l);
 	}
 }
 
 void getGames(League *l){
 	for(int i = 0; i < l->teams.size(); i++){
-		getGames(l->season, l->teams[i].id, l);
+		getGames(l->season, l->teams[i].pointstreakID, l);
 	}
 }
 
@@ -359,26 +359,26 @@ void processGoalie(Game* G, League* l, std::string g, bool done){
 	shots = std::stoi(stripWhitespace(items[1]));
 	goals = shots - std::stoi(stripWhitespace(items[2]));
 
-	tID = l->getPlayer(player)->team;
+	tID = l->getPlayer(player)->teamID;
 
 	l->setGoaliePerformance(gID, tID, player, seconds, goals, shots);
 
 	if(done){
 		Player* p = l->getPlayer(player);
-		p->gp++;
-		p-> shots += shots;
-		p->ga += goals;
-		p->min += seconds;
-		p->sv += shots-goals;
-		if(p->gp == 0){
-			p->gaa = 0;
+		p->gamesPlayed++;
+		p->shots += shots;
+		p->goalsAgainst += goals;
+		p->minutesPlayed += seconds;
+		p->saves += shots-goals;
+		if(p->gamesPlayed == 0){
+			p->goalsAgainstAverage = 0;
 		}else{
-			p->gaa = p->ga*1.0/p->gp;
+			p->goalsAgainstAverage = p->goalsAgainst*1.0/p->gamesPlayed;
 		}
 		if(p->shots == 0){
-			p->svpercent = 0;
+			p->savePercentage = 0;
 		}else{
-			p->svpercent = p->sv*1.0/p->shots;
+			p->savePercentage = p->saves*1.0/p->shots;
 		}
 		std::cout<<"Updating Goalie \n";
 		db_updatePlayer(*p,*l);
@@ -740,7 +740,7 @@ void updateGame(Game* g, League* l){
 		players.erase(players.begin());
 		for(int i = 0; i < players.size(); i++){
 			int p = std::stoi(split(players[i], "&")[0]);
-			l->getPlayer(p)->gp++;
+			l->getPlayer(p)->gamesPlayed++;
 			std::cout<<"Updating Player " << l->getPlayer(p)->name << "\n";
 			if(l->getPlayer(p)->name != "NULL")
 				db_updatePlayer(*l->getPlayer(p), *l);

@@ -67,7 +67,7 @@ public:
 	std::string abbreviation;
 	std::string name;
 	std::string city;
-	int pointStreakID;
+	int pointstreakID;
 	int gamesPlayed;
 	int wins;
 	int losses;
@@ -88,25 +88,25 @@ public:
 	void printString();
 	void printGoalieHeading();
 	void printGoalieString();
-	std::string team; // Abbreviation
+	std::string teamID; // Abbreviation
 	std::string name;
-	int id;
-	int number;
-	int gp;
-	int g;
-	int a;
-	int pp;
-	int sh;
-	int pim;
+	int pointstreakID;
+	int jerseyNumber;
+	int gamesPlayed;
+	int goals;
+	int assists;
+	int powerPlayGoals;
+	int shortHandedGoals;
+	int penaltyMinutes;
 	int goalStreak;
 	int pointStreak;
 	bool goalie;
-	int min;
+	int minutesPlayed;
 	int shots;
-	int ga;
-	float gaa;
-	int sv;
-	float svpercent;
+	int goalsAgainst;
+	float goalsAgainstAverage;
+	int saves;
+	float savePercentage;
 };
 
 /*
