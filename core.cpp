@@ -53,7 +53,7 @@ void getGames(Team team, League *league){
 		time = getMinutes(elements[5]);
 		gameID = stoi(getValue(elements[6], "gameid"));
 
-		league->addGame(month, day, year, time, homeID, awayID, gameID);
+		league->addGame(Game(month, day, year, time, homeID, awayID, league->periodLength, gameID));
 
 	}
 
@@ -121,7 +121,7 @@ void getPlayers(Team team, League *league){
 			playerID = std::stoi(getValue(nameID, "playerid"));
 			name = split(extract(nameID, "a"), "\t\t\t\t")[1];
 
-			league->addPlayer(team.abbreviation, name, playerID, playerNum);
+			league->addPlayer(Player(team.abbreviation, name, playerID, playerNum));
 		}
 
 	}
@@ -155,7 +155,7 @@ void getPlayers(Team team, League *league){
 			playerID = std::stoi(getValue(nameID, "playerid"));
 			name = split(extract(nameID, "a"), "\t\t\t")[1];
 
-			if(league->addPlayer(team.abbreviation, name, playerID, playerNum))
+			if(league->addPlayer(Player(team.abbreviation, name, playerID, playerNum)))
 				league->players[league->players.size()-1].goalie = true;
 		}
 
@@ -188,18 +188,18 @@ void hard_update(League* league){
 }
 
 void addHardCodedTeams(League *league){
-	league->addTeam("QCB", "Blues", "Quad City", 47180);
-	league->addTeam("DBQ", "Devils", "Dubuque", 47175);
-	league->addTeam("CDR", "Jr. Roughriders", "Cedar Rapids", 47172);
-	league->addTeam("WAT", "Warriors", "Waterloo", 47182);
-	league->addTeam("DMC", "Capitals", "Des Moines", 47173);
-	league->addTeam("DMO", "Oak Leafs", "Des Moines", 47174);
-	league->addTeam("AMS", "Little Cyclones", "Ames", 47171);
-	league->addTeam("MCM", "Mohawks", "Mason City", 47178);
-	league->addTeam("SCM", "Metros", "Sioux City", 47181);
-	league->addTeam("KCJ", "Jets", "Kansas City", 96071);
-	league->addTeam("OJL", "Jr. Lancers", "Omaha", 149736);
-	league->addTeam("LJS", "Jr. Stars", "Lincoln", 47177);
+	league->addTeam(Team("QCB", "Blues", "Quad City", 47180));
+	league->addTeam(Team("DBQ", "Devils", "Dubuque", 47175));
+	league->addTeam(Team("CDR", "Jr. Roughriders", "Cedar Rapids", 47172));
+	league->addTeam(Team("WAT", "Warriors", "Waterloo", 47182));
+	league->addTeam(Team("DMC", "Capitals", "Des Moines", 47173));
+	league->addTeam(Team("DMO", "Oak Leafs", "Des Moines", 47174));
+	league->addTeam(Team("AMS", "Little Cyclones", "Ames", 47171));
+	league->addTeam(Team("MCM", "Mohawks", "Mason City", 47178));
+	league->addTeam(Team("SCM", "Metros", "Sioux City", 47181));
+	league->addTeam(Team("KCJ", "Jets", "Kansas City", 96071));
+	league->addTeam(Team("OJL", "Jr. Lancers", "Omaha", 149736));
+	league->addTeam(Team("LJS", "Jr. Stars", "Lincoln", 47177));
 }
 
 void initializeLeague(League *league){
@@ -445,158 +445,13 @@ void updateGame(Game* game, League* league){
 	std::string url = "midwest-league.stats.pointstreak.com/players-boxscore.html?gameid=" + std::to_string(game->number);
 	std::string page = fetchWebPage(url);
 
+
 	std::vector<PenaltyEvent> penaltyEvents;
 	std::vector<ScoringEvent> scoringEvents;
 
-	/*
-	*
-	*
-	* PROCESS PENALTY INFORMATION
-	*
-	*
-	*/
-
-
-	/*
-	For Penalties, delete everything above the "Penalties" header. Once again, delete all that follows </table>.
-	*/
-	std::string penalties = split(page, "Penalties")[1];
-	penalties = split(penalties, "</table>")[0];
-
-	/*
-	Split by </td> to break up the periods. The first and last elements are garbage, just toss them.
-	*/
-	std::vector<std::string> penVec = split(penalties, "</td>");
-	penVec.erase(penVec.begin());
-	penVec.erase(penVec.end());
-
-	/*
-	Go through and remove the opening <td> tag now from every element, it's unnecessary.
-	*/
-	for(int i = 0; i < penVec.size(); i++){
-		penVec[i] = extract(penVec[i] + "</td>", "td");
-	}
-
-
-	/*
-	Cycle through goals by period
-	*/
-	for(int i = 0; i < penVec.size()-1; i+=2){
-
-		/*
-		Only if there was a goal in that period
-		*/
-
-		if(penVec[i+1].find("(no penalties)") == std::string::npos ){
-
-			/*
-			Get the actual number for this period
-			*/
-			int per = getPeriod(penVec[i]);
-
-			/*
-			If there are more than one goals in that period, split them up and process them seperately.
-			If there is only one goal process it directly.
-			*/
-			if(penVec[i+1].find("<tr>") != std::string::npos){
-				std::vector<std::string> firstsplit = split(penVec[i+1], "<tr>");
-				for(int n = 0; n < firstsplit.size(); n++){
-					/*
-					If it wasn't the first goal of the period, there will be another <td> tag on it. We can't have that, so strip it off.
-					*/
-					if(firstsplit[n].find("<td") != std::string::npos)
-						firstsplit[n] = extract(firstsplit[n], "td");
-					penaltyEvents.push_back(processPenalty(game, league, per, firstsplit[n]));
-				}
-			}else{
-				processPenalty(game, league, per, penVec[i+1]);
-				penaltyEvents.push_back(processPenalty(game, league, per, penVec[i+1]));
-			}
-		}
-	}
-
-
-	/*
-	*
-	*
-	* PROCESS SCORING INFORMATION
-	*
-	*
-	*/
-
-	/*
-	Take the page after "Shots on Goal", before "</div>", then after "</a>";
-	*/
-	std::string shots = split(split(split(page, "Shots on Goal")[1], "</div>")[0], "</a>")[1];
-
-	/*
-	Home team's is first, away second. Also split by " "
-	*/
-	std::vector<std::string> homeShots = split(split(shots, "<br>")[0], " ");
-	std::vector<std::string> awayShots = split(split(split(shots, "<br>")[1],  "  ")[0], " ");
-
-	/*
-	Just take the last element and stoi it, and set as the appropriate team's shot total
-	*/
-	game->homeShots = std::stoi(homeShots[homeShots.size() - 1]);
-	game->awayShots = std::stoi(awayShots[awayShots.size() - 1]);
-
-	/*
-	For goals, we dont' want anything above the scoring summary, or below the next </table>
-	*/
-	std::string goals = split(page, "Scoring Summary")[1];
-	goals = split(goals, "</table>")[0];
-
-	/*
-	Split by </td> to break up the periods. The first and last elements are garbage, just toss them.
-	*/
-	std::vector<std::string> goalVec = split(goals, "</td>");
-	goalVec.erase(goalVec.begin());
-	goalVec.erase(goalVec.end());
-
-	/*
-	Go through and remove the opening <td> tag now from every element, it's unnecessary.
-	*/
-	for(int i = 0; i < goalVec.size(); i++){
-		goalVec[i] = extract(goalVec[i] + "</td>", "td");
-	}
-
-
-	/*
-	Cycle through goals by period
-	*/
-	for(int i = 0; i < goalVec.size(); i+=2){
-
-		/*
-		Only if there was a goal in that period
-		*/
-
-		if(goalVec[i+1].find("(no scoring)") == std::string::npos ){
-
-			/*
-			Get the actual number for this period
-			*/
-			int per = getPeriod(goalVec[i]);
-
-			/*
-			If there are more than one goals in that period, split them up and process them seperately.
-			If there is only one goal, process it directly.
-			*/
-			if(goalVec[i+1].find("<tr>") != std::string::npos){
-				std::vector<std::string> firstsplit = split(goalVec[i+1], "<tr>");
-				for(int n = 0; n < firstsplit.size(); n++){
-					/*
-					If it wasn't the first goal of the period, there will be another <td> tag on it. We can't have that, so strip it off.
-					*/
-					if(firstsplit[n].find("<td") != std::string::npos)
-						firstsplit[n] = extract(firstsplit[n], "td");
-					scoringEvents.push_back(processGoal(game, league, per, firstsplit[n]));
-				}
-			}else{
-				scoringEvents.push_back(processGoal(game, league, per, goalVec[i+1]));
-			}
-		}
-	}
+	parseShotsOnGoal(page, game);
+	parsePenaltyEvents(page, &penaltyEvents, game, league);
+	parseScoringEvents(page, &scoringEvents, game, league);
 
 	/*
 	* Go through these in chronological order.
@@ -607,16 +462,16 @@ void updateGame(Game* game, League* league){
 		PenaltyEvent mrp = penaltyEvents[0];
 
 		if(mrs.period < mrp.period){
-			league->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.powerPlay);
+			league->addScoringEvent(mrs);
 			scoringEvents.erase(scoringEvents.begin());
 		}else if(mrs.period > mrp.period){
-			league->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
+			league->addPenaltyEvent(mrp);
 			penaltyEvents.erase(penaltyEvents.begin());
 		}else if(mrs.time > mrp.time){
-			league->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.powerPlay);
+			league->addScoringEvent(mrs);
 			scoringEvents.erase(scoringEvents.begin());
 		}else{
-			league->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
+			league->addPenaltyEvent(mrp);
 			penaltyEvents.erase(penaltyEvents.begin());
 		}
 	}
@@ -624,7 +479,7 @@ void updateGame(Game* game, League* league){
 	if(scoringEvents.size() > 0){
 		while(scoringEvents.size() > 0){
 			ScoringEvent mrs = scoringEvents[0];
-			league->addScoringEvent(mrs.gameID, mrs.teamID, mrs.scorer, mrs.assist1, mrs.assist2, mrs.period, mrs.time, mrs.powerPlay);
+			league->addScoringEvent(mrs);
 			scoringEvents.erase(scoringEvents.begin());
 		}
 	}
@@ -632,7 +487,7 @@ void updateGame(Game* game, League* league){
 	if(penaltyEvents.size() > 0){
 		while(penaltyEvents.size() > 0){
 			PenaltyEvent mrp = penaltyEvents[0];
-			league->addPenaltyEvent(mrp.gameID, mrp.teamID, mrp.player, mrp.duration, mrp.period, mrp.time, mrp.offense);
+			league->addPenaltyEvent(mrp);
 			penaltyEvents.erase(penaltyEvents.begin());
 		}
 	}

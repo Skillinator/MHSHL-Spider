@@ -138,99 +138,97 @@ void League::updateGameTime(std::string gID, int per, int sec){
 	updatePenalties(gID, universalTime);
 }
 
-bool League::addTeam(std::string abbr, std::string name, std::string city, int identifier){
+bool League::addTeam(Team team){
 
-	if(getTeam(abbr)->abbreviation != "NUL")
+	if(getTeam(team.abbreviation)->abbreviation != "NUL")
 		return false;
 
+	teams.push_back(team);
 
-	Team t = Team(abbr, name, city, identifier);
-	teams.push_back(t);
-
-	db_addTeam(t, *this);
+	db_addTeam(team, *this);
 
 	return true;
 }
 
-bool League::addPlayer(std::string tID, std::string name, int identifier, int number){
+bool League::addPlayer(Player player){
 
-	if(getPlayer(tID, number)->name != "NULL")
+	if(getPlayer(player.teamID, player.jerseyNumber)->name != "NULL")
 		return false;
 
+	players.push_back(player);
 
-	Player p = Player(tID, name, identifier, number);
-	players.push_back(p);
-
-	db_addPlayer(p, *this);
+	db_addPlayer(player, *this);
 
 	return true;
 }
 
-bool League::addGame(int m, int d, int y, int st, std::string home, std::string away, int gameID){
-	std::string ID = twoPlace(m) + twoPlace(d) + twoPlace(y) + "-" + home;
+bool League::addGame(Game game){
 
-	if(getGame(ID)->id != "NULL")
+	if(getGame(game.id)->id != "NULL")
 		return false;
 
-	Game g = Game(m, d, y, st, home, away, periodLength, gameID);
-	games.push_back(g);
-	db_addGame(g, *this);
+	games.push_back(game);
+	db_addGame(game, *this);
+
 	return true;
 }
 
-void League::addPenaltyEvent(std::string gID, std::string tID, int player, int duration, int per, int time, std::string penalty){
-	updateGameTime(gID, per, time);
-	PenaltyEvent *peTest = getPenaltyEvent(gID, tID, player, per, time, duration, penalty);
+void League::addPenaltyEvent(PenaltyEvent penaltyEvent){
+
+	updateGameTime(penaltyEvent.gameID, penaltyEvent.period, penaltyEvent.time);
+
+	PenaltyEvent *peTest = getPenaltyEvent(penaltyEvent.gameID, penaltyEvent.teamID, penaltyEvent.player, penaltyEvent.power, penaltyEvent.time, penaltyEvent.duration, penaltyEvent.offense);
 	if(peTest->offense != "NULL")
 		return;
-	PenaltyEvent pe = PenaltyEvent(gID, tID, player, duration, per, time, penalty);
-	getTeam(tID)->penaltyMinutes += duration;
-	getPlayer(tID, player)->penaltyMinutes += duration;
-	penalties.push_back(pe);
-	db_addPenalty(pe, *this);
+
+	getTeam(penaltyEvent.teamID)->penaltyMinutes += penaltyEvent.duration;
+	getPlayer(penaltyEvent.teamID, penaltyEvent.player)->penaltyMinutes += penaltyEvent.duration;
+
+	penalties.push_back(penaltyEvent);
+	db_addPenalty(penaltyEvent, *this);
 }
 
-void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec, int pp){
-	updateGameTime(gID, per, sec);
-	ScoringEvent *seTest = getScoringEvent(gID, per, sec);
+void League::addScoringEvent(ScoringEvent scoringEvent){
+	updateGameTime(scoringEvent.gameID, scoringEvent.period, scoringEvent.time);
+
+	ScoringEvent *seTest = getScoringEvent(scoringEvent.gameID, scoringEvent.period, scoringEvent.time);
 	if(seTest->teamID != "NUL"){
-		if(gs != seTest->scorer){
-			getPlayer(tID, seTest->scorer)->goals--;
-			getPlayer(tID, gs)->goals++;
+		if(scoringEvent.scorer != seTest->scorer){
+			getPlayer(scoringEvent.teamID, seTest->scorer)->goals--;
+			getPlayer(scoringEvent.teamID, scoringEvent.scorer)->goals++;
 			if(seTest->powerPlay == 1){
-				getPlayer(tID, seTest->scorer)->powerPlayGoals--;
-				getPlayer(tID, gs)->powerPlayGoals++;
+				getPlayer(scoringEvent.teamID, seTest->scorer)->powerPlayGoals--;
+				getPlayer(scoringEvent.teamID, scoringEvent.scorer)->powerPlayGoals++;
 			}
 			if(seTest->powerPlay == -1){
-				getPlayer(tID, seTest->scorer)->shortHandedGoals--;
-				getPlayer(tID, gs)->shortHandedGoals++;
+				getPlayer(scoringEvent.teamID, seTest->scorer)->shortHandedGoals--;
+				getPlayer(scoringEvent.teamID, scoringEvent.scorer)->shortHandedGoals++;
 			}
 		}
-		if(a1 != seTest->assist1){
-			getPlayer(tID, seTest->assist1)->assists--;
-			getPlayer(tID, a1)->assists++;
+
+		if(scoringEvent.assist1 != seTest->assist1){
+			getPlayer(scoringEvent.teamID, seTest->assist1)->assists--;
+			getPlayer(scoringEvent.teamID, scoringEvent.assist11)->assists++;
 		}
-		if(a2 != seTest->assist2){
-			getPlayer(tID, seTest->assist2)->assists--;
-			getPlayer(tID, a2)->assists++;
+		if(scoringEvent.assist2 != seTest->assist2){
+			getPlayer(scoringEvent.teamID, seTest->assist2)->assists--;
+			getPlayer(scoringEvent.teamID, scoringEvent.assist2)->assists++;
 		}
-		seTest->scorer = gs;
-		seTest->assist1 = a1;
-		seTest->assist2 = a2;
+		seTest->scorer = scoringEvent.scorer;
+		seTest->assist1 = scoringEvent.assist1;
+		seTest->assist2 = scoringEvent.assist2;
 		return;
 	}
 
-	ScoringEvent se = ScoringEvent(gID, tID, gs, a1, a2, per, sec);
-	se.powerPlay = pp;
-	goals.push_back(se);
+	goals.push_back(scoringEvent);
 
-	Game* game = getGame(gID);
+	Game* game = getGame(scoringEvent.gameID);
 
 	bool againstHome = false;
 
 	if(game->id == "NULL")
 		return;
-	if(game->homeTeam == tID){
+	if(game->homeTeam == scoringEvent.teamID){
 		game->homeScore++;
 	} else{
 		game->awayScore++;
@@ -245,22 +243,21 @@ void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, i
 	// Do not count shootout goals
 	if(per < 5){
 
+		getTeam(scoringEvent.teamID)->goalsFor++;
 
-		getTeam(tID)->goalsFor++;
+		getPlayer(scoringEvent.teamID, scoringEvent.scorer)->goals++;
 
-		getPlayer(tID, gs)->goals++;
+		if(scoringEvent.powerPlay == 1)
+			getPlayer(scoringEvent.teamID, scoringEvent.scorer)->powerPlayGoals++;
 
-		if(se.powerPlay == 1)
-			getPlayer(tID, gs)->powerPlayGoals++;
-
-		if(se.powerPlay == -1){
-			getPlayer(tID, gs)->shortHandedGoals++;
+		if(scoringEvent.powerPlay == -1){
+			getPlayer(scoringEvent.teamID, scoringEvent.scorer)->shortHandedGoals++;
 		}
-		getPlayer(tID, a1)->assists++;
-		getPlayer(tID, a2)->assists++;
+		getPlayer(scoringEvent.teamID, scoringEvent.assist1)->assists++;
+		getPlayer(scoringEvent.teamID, scoringEvent.assist2)->assists++;
 	}
 
-	db_addGoal(se, *this);
+	db_addGoal(scoringEvent, *this);
 }
 
 Game* League::getGame(std::string gID){

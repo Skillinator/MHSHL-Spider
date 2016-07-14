@@ -187,7 +187,6 @@ void showGoaliePerformances(League l){
 	}
 }
 
-
 void dumpStatus(League l){
 
 	showTeams(l);
