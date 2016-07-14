@@ -43,9 +43,9 @@ void db_addGoal(ScoringEvent goal, League league);
  *
  */
 
-void parsePenaltyEvents(std::string page, std::vector<PenaltyEvent> *penaltyEvents, Game *game);
+void parsePenaltyEvents(std::string page, std::vector<PenaltyEvent> *penaltyEvents, Game *game, League *league);
 void parseShotsOnGoal(std::string page, Game *game);
-void parseScoringEvents(std::string page, std::vector<ScoringEvent> *scoringEvents, Game *game);
+void parseScoringEvents(std::string page, std::vector<ScoringEvent> *scoringEvents, Game *game, League *league);
 
 /*
  *
