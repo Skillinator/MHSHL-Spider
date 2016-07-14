@@ -221,11 +221,11 @@ void parsePenaltyEvents(std::string page, std::vector<PenaltyEvent> *penaltyEven
           */
           if(firstsplit[n].find("<td") != std::string::npos)
             firstsplit[n] = extract(firstsplit[n], "td");
-          penaltyEvents.push_back(processPenalty(game, league, per, firstsplit[n]));
+          penaltyEvents->push_back(processPenalty(game, league, per, firstsplit[n]));
         }
       }else{
         processPenalty(game, league, per, penVec[i+1]);
-        penaltyEvents.push_back(processPenalty(game, league, per, penVec[i+1]));
+        penaltyEvents->push_back(processPenalty(game, league, per, penVec[i+1]));
       }
     }
   }
@@ -301,10 +301,10 @@ void parseScoringEvents(std::string page, std::vector<ScoringEvent> *scoringEven
 					*/
 					if(firstsplit[n].find("<td") != std::string::npos)
 						firstsplit[n] = extract(firstsplit[n], "td");
-					scoringEvents.push_back(processGoal(game, league, per, firstsplit[n]));
+					scoringEvents->push_back(processGoal(game, league, per, firstsplit[n]));
 				}
 			}else{
-				scoringEvents.push_back(processGoal(game, league, per, goalVec[i+1]));
+				scoringEvents->push_back(processGoal(game, league, per, goalVec[i+1]));
 			}
 		}
 	}
