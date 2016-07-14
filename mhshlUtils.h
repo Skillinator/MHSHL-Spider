@@ -33,6 +33,19 @@ void db_addPenalty(PenaltyEvent penalty, League league);
 void db_updatePenalty(PenaltyEvent penalty, League league);
 void db_addGoal(ScoringEvent goal, League league);
 
+/*
+ *
+ * Parsing functions
+ *
+ * A collection of functions removed from core.cpp for better readability.
+ *
+ * Implementations found in parsingFunctions.cpp
+ *
+ */
+
+void parsePenaltyEvents(std::string page, std::vector<PenaltyEvents> *penaltyEvents, Game *game);
+void parseShotsOnGoal(std::string page, Game *game);
+void parseScoringEvents(std::string page, std::vector<ScoringEvent> *scoringEvents, Game *game);
 
 /*
  *

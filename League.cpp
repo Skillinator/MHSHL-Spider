@@ -177,7 +177,7 @@ void League::addPenaltyEvent(PenaltyEvent penaltyEvent){
 
 	updateGameTime(penaltyEvent.gameID, penaltyEvent.period, penaltyEvent.time);
 
-	PenaltyEvent *peTest = getPenaltyEvent(penaltyEvent.gameID, penaltyEvent.teamID, penaltyEvent.player, penaltyEvent.power, penaltyEvent.time, penaltyEvent.duration, penaltyEvent.offense);
+	PenaltyEvent *peTest = getPenaltyEvent(penaltyEvent.gameID, penaltyEvent.teamID, penaltyEvent.player, penaltyEvent.period, penaltyEvent.time, penaltyEvent.duration, penaltyEvent.offense);
 	if(peTest->offense != "NULL")
 		return;
 
@@ -208,7 +208,7 @@ void League::addScoringEvent(ScoringEvent scoringEvent){
 
 		if(scoringEvent.assist1 != seTest->assist1){
 			getPlayer(scoringEvent.teamID, seTest->assist1)->assists--;
-			getPlayer(scoringEvent.teamID, scoringEvent.assist11)->assists++;
+			getPlayer(scoringEvent.teamID, scoringEvent.assist1)->assists++;
 		}
 		if(scoringEvent.assist2 != seTest->assist2){
 			getPlayer(scoringEvent.teamID, seTest->assist2)->assists--;
@@ -241,7 +241,7 @@ void League::addScoringEvent(ScoringEvent scoringEvent){
 		getTeam(game->awayTeam)->goalsAgainst++;
 
 	// Do not count shootout goals
-	if(per < 5){
+	if(scoringEvent.period < 5){
 
 		getTeam(scoringEvent.teamID)->goalsFor++;
 
