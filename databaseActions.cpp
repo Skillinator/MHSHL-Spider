@@ -135,7 +135,7 @@ void db_addGame(Game game, League league){
 
 	if(!exists){
 		std::cout<<"Adding game";
-		stmt->execute("INSERT INTO games(id, month, day, year, startTime, home, away, number, season) VALUES('" + game.id + "'," + std::to_string(game.month) + "," + std::to_string(game.day) + "," + std::to_string(game.year) + "," + std::to_string(game.startTime) + ",'" + game.homeTeam + "','" + game.awayTeam + "'," + std::to_string(game.number) + "," + std::to_string(league.season) + ")");
+		stmt->execute("INSERT INTO games(id, month, day, year, startTime, home, away, number, season, homeScore, awayScore) VALUES('" + game.id + "'," + std::to_string(game.month) + "," + std::to_string(game.day) + "," + std::to_string(game.year) + "," + std::to_string(game.startTime) + ",'" + game.homeTeam + "','" + game.awayTeam + "'," + std::to_string(game.number) + "," + std::to_string(league.season) + ", " + std::to_string(game.homeScore) + "," + std::to_string(game.awayScore) + ")");
 	}
 
 	endConnection();
@@ -166,6 +166,8 @@ void db_updateGame(Game game, League league){
 	stmt->execute("UPDATE games SET period=" + std::to_string(game.period) + " WHERE id='" + game.id + "'");
 	stmt->execute("UPDATE games SET homeShots=" + std::to_string(game.homeShots) + " WHERE id='" + game.id + "'");
 	stmt->execute("UPDATE games SET awayShots=" + std::to_string(game.awayShots) + " WHERE id='" + game.id + "'");
+	stmt->execute("UPDATE games SET homeScore =" + std::to_string(game.homeScore) + " WHERE id='" + game.id + "'");
+	stmt->execute("UPDATE games SET awayScore=" + std::to_string(game.awayScore) + " WHERE id='" + game.id + "'");
 
 	endConnection();
 	delete stmt;
