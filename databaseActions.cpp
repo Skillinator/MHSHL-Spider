@@ -13,6 +13,8 @@
 sql::Driver *driver;
 sql::Connection *con;
 
+void db_updatePlayer(Player, League);
+
 void startConnection(){
 	driver = get_driver_instance();
 	con = driver->connect("tcp://127.0.0.1:3306", user, pass);
