@@ -224,59 +224,6 @@ void update(League *league){
 	*/
 }
 
-void processGoalie(Game* game, League* league, std::string rawGoalieString, bool done){
-	/*
-	Initialize values to their default states
-	*/
-	std::string gID = game->id;
-	std::string tID="null";
-	int player = 0;
-	int shots = 0;
-	int goals = 0;
-	int seconds = 0;
-
-	player = std::stoi(split(split(rawGoalieString, "playerid=")[1], "&")[0]);
-
-	std::vector<std::string> items = split(rawGoalieString, "</td>");
-	items.erase(items.begin());
-
-	for(int i = 0; i < items.size(); i++){
-		items[i] = extract(items[i]+"</td>", "td");
-	}
-	if(stripWhitespace(items[0]) == "")
-		return;
-	seconds = std::stoi(stripWhitespace(items[0]));
-	shots = std::stoi(stripWhitespace(items[1]));
-	goals = shots - std::stoi(stripWhitespace(items[2]));
-
-	tID = league->getPlayer(player)->teamID;
-
-	league->setGoaliePerformance(gID, tID, player, seconds, goals, shots);
-
-	if(done){
-		Player* p = league->getPlayer(player);
-		p->gamesPlayed++;
-		p->shots += shots;
-		p->goalsAgainst += goals;
-		p->minutesPlayed += seconds;
-		p->saves += shots-goals;
-		if(p->gamesPlayed == 0){
-			p->goalsAgainstAverage = 0;
-		}else{
-			p->goalsAgainstAverage = p->goalsAgainst*1.0/p->gamesPlayed;
-		}
-		if(p->shots == 0){
-			p->savePercentage = 0;
-		}else{
-			p->savePercentage = p->saves*1.0/p->shots;
-		}
-		std::cout<<"Updating Goalie \n";
-		db_updatePlayer(*p, *league);
-		std::cout<<"Successfully finished updating goalie\n";
-	}
-
-}
-
 void updateGame(Game* game, League* league){
 	std::string url = "midwest-league.stats.pointstreak.com/players-boxscore.html?gameid=" + std::to_string(game->number);
 	std::string page = fetchWebPage(url);
@@ -288,7 +235,7 @@ void updateGame(Game* game, League* league){
 	parseShotsOnGoal(page, game);
 	parsePenaltyEvents(page, &penaltyEvents, game, league);
 	parseScoringEvents(page, &scoringEvents, game, league);
-
+	
 	/*
 	* Go through these in chronological order.
 	*/
@@ -328,7 +275,6 @@ void updateGame(Game* game, League* league){
 		}
 	}
 
-
 	/*
 	*
 	*
@@ -351,8 +297,6 @@ void updateGame(Game* game, League* league){
 				game->time = -1;
 				game->period = 3;
 				break;
-
-
 		}
 		db_updateGame(*game, *league);
 	}

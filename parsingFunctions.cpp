@@ -5,6 +5,58 @@
 #include "mhshl.h"
 #include "mhshlUtils.h"
 
+void processGoalie(Game* game, League* league, std::string rawGoalieString, bool done){
+	/*
+	Initialize values to their default states
+	*/
+	std::string gID = game->id;
+	std::string tID="null";
+	int player = 0;
+	int shots = 0;
+	int goals = 0;
+	int seconds = 0;
+
+	player = std::stoi(split(split(rawGoalieString, "playerid=")[1], "&")[0]);
+
+	std::vector<std::string> items = split(rawGoalieString, "</td>");
+	items.erase(items.begin());
+
+	for(int i = 0; i < items.size(); i++){
+		items[i] = extract(items[i]+"</td>", "td");
+	}
+	if(stripWhitespace(items[0]) == "")
+		return;
+	seconds = std::stoi(stripWhitespace(items[0]));
+	shots = std::stoi(stripWhitespace(items[1]));
+	goals = shots - std::stoi(stripWhitespace(items[2]));
+
+	tID = league->getPlayer(player)->teamID;
+
+	league->setGoaliePerformance(gID, tID, player, seconds, goals, shots);
+
+	if(done){
+		Player* p = league->getPlayer(player);
+		p->gamesPlayed++;
+		p->shots += shots;
+		p->goalsAgainst += goals;
+		p->minutesPlayed += seconds;
+		p->saves += shots-goals;
+		if(p->gamesPlayed == 0){
+			p->goalsAgainstAverage = 0;
+		}else{
+			p->goalsAgainstAverage = p->goalsAgainst*1.0/p->gamesPlayed;
+		}
+		if(p->shots == 0){
+			p->savePercentage = 0;
+		}else{
+			p->savePercentage = p->saves*1.0/p->shots;
+		}
+		std::cout<<"Updating Goalie \n";
+		db_updatePlayer(*p, *league);
+		std::cout<<"Successfully finished updating goalie\n";
+	}
+
+}
 
 ScoringEvent processGoal(Game* game, League* league, int period, std::string rawGoalString){
 	/*
@@ -169,7 +221,6 @@ PenaltyEvent processPenalty(Game* game, League* league, int period, std::string 
 	sec = league->periodLength - (60*std::stoi(split(split(time, ":")[0], ", ")[1]) + std::stoi(split(time, ":")[1]));
 	return PenaltyEvent(gID, tID, player, duration, period, sec, p);
 }
-
 
 void parsePenaltyEvents(std::string page, std::vector<PenaltyEvent> *penaltyEvents, Game *game, League *league){
   /*
