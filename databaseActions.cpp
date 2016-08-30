@@ -79,6 +79,8 @@ void db_addPlayer(Player player, League league){
 	endConnection();
 	delete stmt;
 	delete res;
+
+	updatePlayer(player, league);
 }
 
 void db_updatePlayer(Player player, League league){
@@ -102,6 +104,13 @@ void db_updatePlayer(Player player, League league){
 	}
 
 	stmt->execute("UPDATE players SET gp = " + std::to_string(player.gamesPlayed) + " WHERE id=" + std::to_string(player.pointstreakID));
+	stmt->execute("UPDATE players SET goals = " + std::to_string(player.goals) + " WHERE id=" + std::to_string(player.pointstreakID));
+	stmt->execute("UPDATE players SET assists = " + std::to_string(player.assists) + " WHERE id=" + std::to_string(player.pointstreakID));
+	stmt->execute("UPDATE players SET ppGoals = " + std::to_string(player.powerPlayGoals) + " WHERE id=" + std::to_string(player.pointstreakID));
+	stmt->execute("UPDATE players SET shGoals = " + std::to_string(player.shortHandedGoals) + " WHERE id=" + std::to_string(player.pointstreakID));
+	stmt->execute("UPDATE players SET pims = " + std::to_string(player.penaltyMinutes) + " WHERE id=" + std::to_string(player.pointstreakID));
+	stmt->execute("UPDATE players SET gstreak = " + std::to_string(player.goalStreak) + " WHERE id=" + std::to_string(player.pointstreakID));
+	stmt->execute("UPDATE players SET pstreak = " + std::to_string(player.pointStreak) + " WHERE id=" + std::to_string(player.pointstreakID));
 
 	if(player.goalie){
 		stmt->execute("UPDATE players SET goalie = 1 WHERE id=" + std::to_string(player.pointstreakID));
