@@ -15,24 +15,38 @@
  * methods within the League class, and have the same arguments save the addition of two: a boolean for varsity status
  * (True signifies varsity, false signifies Junior Varsity) and the integer for season used in all relevant Pointstreak URLs.
  * Their use is otherwise the same. These methods should not be called anywhere outside of their respective League functions
- * (db_addTeam should not be called from anywhere other than League.addTeam). 
- * 
+ * (db_addTeam should not be called from anywhere other than League.addTeam).
+ *
  * The behavior of the following functions should be self-explanatory. They have no return, and simply use the same parameters
  * used in their league functions.
  *
- * Implementations can all be found in databaseActions.cpp 
+ * Implementations can all be found in databaseActions.cpp
  *
  */
 
-void db_addTeam(bool varsity, std::string abbr, std::string name, std::string city, int id, int season);
-void db_addPlayer(bool varsity, std::string tID, std::string name, int identifier, int number, int season);
-void db_updatePlayer(bool varsity, int season, Player *p);
-void db_addGame(bool varsity, std::string id, int m, int d, int y, int start, std::string home, std::string away, int num, int season);
-void db_updateGame(bool varsity, int season, Game *g);
-void db_addPenalty(bool varsity, std::string gID, std::string tID, int p, int d, int per, int t, std::string offense, int season);
-void db_updatePenalty(bool varsity, int season, PenaltyEvent *p);
-void db_addGoal(bool varsity, int season, std::string GameID, std::string TeamID, int s, int a1, int a2, int per, int t, int pp);
+void db_addTeam(Team *team, League *league);
+void db_addPlayer(Player *player, League *league);
+void db_updatePlayer(Player *player, League *league);
+void db_addGame(Game *game, League *league);
+void db_updateGame(Game *game, League *league);
+void db_addPenalty(PenaltyEvent *penalty, League *league);
+void db_updatePenalty(PenaltyEvent *penalty, League *league);
+void db_addGoal(ScoringEvent *goal, League *league);
 
+/*
+ *
+ * Parsing functions
+ *
+ * A collection of functions removed from core.cpp for better readability.
+ *
+ * Implementations found in parsingFunctions.cpp
+ *
+ */
+
+void parsePenaltyEvents(std::string page, std::vector<PenaltyEvent> *penaltyEvents, Game *game, League *league);
+void parseShotsOnGoal(std::string page, Game *game);
+void parseScoringEvents(std::string page, std::vector<ScoringEvent> *scoringEvents, Game *game, League *league);
+void processGoalie(Game* game, League* league, std::string rawGoalieString, bool done);
 
 /*
  *
@@ -54,7 +68,7 @@ std::vector<std::string> split(std::string str, std::string delim);
  * string str = "<html> <body parameters = "even other notation within the tag won't hinder us">This is the part we want returned</body></html>"
  *
  * extract(str, "body") would return the value "This is the part we want returned"
- */ 
+ */
 std::string extract(std::string str, std::string tag);
 
 /*
@@ -131,7 +145,7 @@ int getMinutes(std::string time);
  * Functions with nowhere else to go
  */
 
-// takes the city of a team and translates it into their three-character team identifier 
+// takes the city of a team and translates it into their three-character team identifier
 std::string translateTeamID(std::string s);
 
 #endif

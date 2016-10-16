@@ -7,6 +7,7 @@
 
 // Will append the zero to the beginning of a number to bring it to two places.
 std::string twoPlace(int num);
+
 class ScoringEvent{
 public:
 	ScoringEvent();
@@ -20,7 +21,7 @@ public:
 	int assist2;
 	int period; // 1-3 normal, 4 OT, 5 SO
 	int time; // Seconds remaining in the period.
-	int pp;
+	int powerPlay;
 };
 
 class PenaltyEvent{
@@ -31,7 +32,7 @@ public:
 	void printHeading();
 	std::string gameID;
 	std::string teamID;
-	int player; 
+	int player;
 	int duration;
 	int period;
 	int time;
@@ -52,7 +53,7 @@ public:
 	int goalsAgainst;
 	int shotsAgainst;
 	int saves;
-	
+
 	void printHeader();
 	void printString();
 };
@@ -66,17 +67,17 @@ public:
 	std::string abbreviation;
 	std::string name;
 	std::string city;
-	int id;
-	int gp;
-	int w;
-	int l;
-	int ot;
-	int so;
-	int pts;
-	int gf;
-	int ga;
-	int pim;
-	int streak;
+	int pointstreakID;
+	int gamesPlayed;
+	int wins;
+	int losses;
+	int overtimeLosses;
+	int shootoutLosses;
+	int points;
+	int goalsFor;
+	int goalsAgainst;
+	int penaltyMinutes;
+	int winLossStreak; // Win streaks positive, losing streak negative.
 };
 
 class Player{
@@ -87,25 +88,25 @@ public:
 	void printString();
 	void printGoalieHeading();
 	void printGoalieString();
-	std::string team; // Abbreviation
+	std::string teamID; // Abbreviation
 	std::string name;
-	int id;
-	int number;
-	int gp;
-	int g;
-	int a;
-	int pp;
-	int sh;
-	int pim;
+	int pointstreakID;
+	int jerseyNumber;
+	int gamesPlayed;
+	int goals;
+	int assists;
+	int powerPlayGoals;
+	int shortHandedGoals;
+	int penaltyMinutes;
 	int goalStreak;
 	int pointStreak;
 	bool goalie;
-	int min;
+	int minutesPlayed;
 	int shots;
-	int ga;
-	float gaa;
-	int sv;
-	float svpercent;
+	int goalsAgainst;
+	float goalsAgainstAverage;
+	int saves;
+	float savePercentage;
 };
 
 /*
@@ -139,7 +140,7 @@ public:
 	int period; // 1-3 self explanatory. 4 is OT. 5 is SO.
 	int time; // Time is in seconds remaining in the period. -1 signifies a final. -2 F-OT. -3 F-SO.
 	int number;
-	
+
 	bool rosterTaken;
 };
 
@@ -151,14 +152,14 @@ class League{
 public:
 	League(int pL, bool var, int s);
 	bool varsity;
-	bool addTeam(std::string abbr, std::string name, std::string city, int identifier);
-	bool addPlayer(std::string tID, std::string name, int identifier, int number);
-	void addPenaltyEvent(std::string gID, std::string tID, int player, int duration, int per, int time, std::string penalty);
-	void addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec, int pp);
-	bool addGame(int m, int d, int y, int st, std::string home, std::string away, int gameID);
-	
+	bool addTeam(Team *team);
+	bool addPlayer(Player *player);
+	void addPenaltyEvent(PenaltyEvent *penaltyEvent);
+	void addScoringEvent(ScoringEvent *scoringEvent);
+	bool addGame(Game *game);
+
 	void setGoaliePerformance(std::string gID, std::string tID, int pl, int sec, int ga, int sa);
-	
+
 	void updateGameTime(std::string gID, int per, int sec);
 	void updatePenalties(std::string gID, int dT);
 	int powerPlayGoal(std::string gID, std::string tID);
@@ -173,7 +174,7 @@ public:
 
 	int periodLength;
 	int season;
-	
+
 	std::vector<Game> games;
 	std::vector<Team> teams;
 	std::vector<Player> players;

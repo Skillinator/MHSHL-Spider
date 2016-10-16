@@ -16,7 +16,7 @@ void League::setGoaliePerformance(std::string gID, std::string tID, int pl, int 
 	for(int i = 0; i < goaliePerformances.size(); i++){
 		if(goaliePerformances.size() == 0)
 			break;
-		
+
 		GoaliePerformance temp = goaliePerformances[i];
 		if(temp.teamID == tID && temp.gameID == gID && temp.player == pl){
 			goaliePerformances[i].seconds = sec;
@@ -45,9 +45,9 @@ void League::updatePenalties(std::string gID, int dT){
 			penalties[i].timeRemaining = 0;
 		if(penalties[i].scoredOn)
 			penalties[i].timeRemaining = 0;
-		
+
 		if(penalties[i].gameID == gID)
-			db_updatePenalty(varsity, season, &penalties[i]);
+			db_updatePenalty(&penalties[i], this);
 	}
 }
 
@@ -72,7 +72,7 @@ void League::removeOldestPenalty(std::string gID, std::string tID){
 int League::powerPlayGoal(std::string gID, std::string tID){
 	int homePenalties = 0;
 	int awayPenalties = 0;
-		
+
 	std::string homeID = getGame(gID)->homeTeam;
 	std::string awayID = getGame(gID)->awayTeam;
 
@@ -90,7 +90,7 @@ int League::powerPlayGoal(std::string gID, std::string tID){
 			}
 		}
 	}
-	
+
 	if(homePenalties == awayPenalties)
 		return 0;
 	if(tID == homeID){
@@ -109,7 +109,7 @@ int League::powerPlayGoal(std::string gID, std::string tID){
 			removeOldestPenalty(gID, homeID);
 			return 1;
 		}
-		
+
 		if(homePenalties < awayPenalties)
 			return -1;
 
@@ -134,126 +134,130 @@ void League::updateGameTime(std::string gID, int per, int sec){
 
 	g->time = sec;
 	g->period = per;
-	db_updateGame(varsity, season, g);
+	db_updateGame(g, this);
 	updatePenalties(gID, universalTime);
 }
 
-bool League::addTeam(std::string abbr, std::string name, std::string city, int identifier){
-	
-	if(getTeam(abbr)->abbreviation != "NUL")
+bool League::addTeam(Team *team){
+
+	if(getTeam(team->abbreviation)->abbreviation != "NUL")
 		return false;
-	
-	db_addTeam(varsity, abbr, name, city, identifier, season);
-	
-	Team t = Team(abbr, name, city, identifier);
-	teams.push_back(t);
+
+	teams.push_back(*team);
+
+	db_addTeam(team, this);
+
 	return true;
 }
 
-bool League::addPlayer(std::string tID, std::string name, int identifier, int number){
-	
-	if(getPlayer(tID, number)->name != "NULL")
+bool League::addPlayer(Player *player){
+
+	if(getPlayer(player->teamID, player->jerseyNumber)->name != "NULL")
 		return false;
-	
-	db_addPlayer(varsity, tID, name, identifier, number, season);
-	
-	Player p = Player(tID, name, identifier, number);
-	players.push_back(p);
+
+	players.push_back(*player);
+
+	db_addPlayer(player, this);
+
 	return true;
 }
 
-bool League::addGame(int m, int d, int y, int st, std::string home, std::string away, int gameID){
-	std::string ID = twoPlace(m) + twoPlace(d) + twoPlace(y) + "-" + home;
+bool League::addGame(Game *game){
 
-	if(getGame(ID)->id != "NULL")
+	if(getGame(game->id)->id != "NULL")
 		return false;
 
-	Game g = Game(m, d, y, st, home, away, periodLength, gameID);
-	games.push_back(g);
-	db_addGame(varsity, ID, m, d, y, st, home, away, gameID, season);
+	games.push_back(*game);
+	db_addGame(game, this);
+
 	return true;
 }
 
-void League::addPenaltyEvent(std::string gID, std::string tID, int player, int duration, int per, int time, std::string penalty){
-	updateGameTime(gID, per, time);
-	PenaltyEvent *peTest = getPenaltyEvent(gID, tID, player, per, time, duration, penalty);
+void League::addPenaltyEvent(PenaltyEvent *penaltyEvent){
+
+	updateGameTime(penaltyEvent->gameID, penaltyEvent->period, penaltyEvent->time);
+
+	PenaltyEvent *peTest = getPenaltyEvent(penaltyEvent->gameID, penaltyEvent->teamID, penaltyEvent->player, penaltyEvent->period, penaltyEvent->time, penaltyEvent->duration, penaltyEvent->offense);
 	if(peTest->offense != "NULL")
 		return;
-	PenaltyEvent pe = PenaltyEvent(gID, tID, player, duration, per, time, penalty);
-	getTeam(tID)->pim += duration;
-	getPlayer(tID, player)->pim += duration;
-	penalties.push_back(pe);
-	db_addPenalty(varsity, gID, tID, player, duration, per, time, penalty, season);
+
+	getTeam(penaltyEvent->teamID)->penaltyMinutes += penaltyEvent->duration;
+	getPlayer(penaltyEvent->teamID, penaltyEvent->player)->penaltyMinutes += penaltyEvent->duration;
+
+	penalties.push_back(*penaltyEvent);
+	db_addPenalty(penaltyEvent, this);
 }
 
-void League::addScoringEvent(std::string gID, std::string tID, int gs, int a1, int a2, int per, int sec, int pp){
-	updateGameTime(gID, per, sec);	
-	ScoringEvent *seTest = getScoringEvent(gID, per, sec);
+void League::addScoringEvent(ScoringEvent *scoringEvent){
+	updateGameTime(scoringEvent->gameID, scoringEvent->period, scoringEvent->time);
+
+	ScoringEvent *seTest = getScoringEvent(scoringEvent->gameID, scoringEvent->period, scoringEvent->time);
 	if(seTest->teamID != "NUL"){
-		if(gs != seTest->scorer){
-			getPlayer(tID, seTest->scorer)->g--;
-			getPlayer(tID, gs)->g++;
-			if(seTest->pp == 1){
-				getPlayer(tID, seTest->scorer)->pp--;
-				getPlayer(tID, gs)->pp++;
+		if(scoringEvent->scorer != seTest->scorer){
+			getPlayer(scoringEvent->teamID, seTest->scorer)->goals--;
+			getPlayer(scoringEvent->teamID, scoringEvent->scorer)->goals++;
+			if(seTest->powerPlay == 1){
+				getPlayer(scoringEvent->teamID, seTest->scorer)->powerPlayGoals--;
+				getPlayer(scoringEvent->teamID, scoringEvent->scorer)->powerPlayGoals++;
 			}
-			if(seTest->pp == -1){
-				getPlayer(tID, seTest->scorer)->sh--;
-				getPlayer(tID, gs)->sh++;
+			if(seTest->powerPlay == -1){
+				getPlayer(scoringEvent->teamID, seTest->scorer)->shortHandedGoals--;
+				getPlayer(scoringEvent->teamID, scoringEvent->scorer)->shortHandedGoals++;
 			}
 		}
-		if(a1 != seTest->assist1){
-			getPlayer(tID, seTest->assist1)->a--;
-			getPlayer(tID, a1)->a++;
+
+		if(scoringEvent->assist1 != seTest->assist1){
+			getPlayer(scoringEvent->teamID, seTest->assist1)->assists--;
+			getPlayer(scoringEvent->teamID, scoringEvent->assist1)->assists++;
 		}
-		if(a2 != seTest->assist2){
-			getPlayer(tID, seTest->assist2)->a--;
-			getPlayer(tID, a2)->a++;
+		if(scoringEvent->assist2 != seTest->assist2){
+			getPlayer(scoringEvent->teamID, seTest->assist2)->assists--;
+			getPlayer(scoringEvent->teamID, scoringEvent->assist2)->assists++;
 		}
+		seTest->scorer = scoringEvent->scorer;
+		seTest->assist1 = scoringEvent->assist1;
+		seTest->assist2 = scoringEvent->assist2;
 		return;
 	}
 
-	ScoringEvent se = ScoringEvent(gID, tID, gs, a1, a2, per, sec);
-	se.pp = pp;
-	goals.push_back(se);
-	
-	Game* game = getGame(gID);
+	goals.push_back(*scoringEvent);
+
+	Game* game = getGame(scoringEvent->gameID);
 
 	bool againstHome = false;
-	
+
 	if(game->id == "NULL")
 		return;
-	if(game->homeTeam == tID){
+	if(game->homeTeam == scoringEvent->teamID){
 		game->homeScore++;
 	} else{
 		game->awayScore++;
 		againstHome = true;
 	}
-	
+
 	if(againstHome)
-		getTeam(game->homeTeam)->ga++;
+		getTeam(game->homeTeam)->goalsAgainst++;
 	if(!againstHome)
-		getTeam(game->awayTeam)->ga++;
-	
+		getTeam(game->awayTeam)->goalsAgainst++;
+
 	// Do not count shootout goals
-	if(per < 5){
+	if(scoringEvent->period < 5){
 
+		getTeam(scoringEvent->teamID)->goalsFor++;
 
-		getTeam(tID)->gf++;
+		getPlayer(scoringEvent->teamID, scoringEvent->scorer)->goals++;
 
-		getPlayer(tID, gs)->g++;
-		
-		if(se.pp == 1)
-			getPlayer(tID, gs)->pp++;
+		if(scoringEvent->powerPlay == 1)
+			getPlayer(scoringEvent->teamID, scoringEvent->scorer)->powerPlayGoals++;
 
-		if(se.pp == -1){
-			getPlayer(tID, gs)->sh++;
+		if(scoringEvent->powerPlay == -1){
+			getPlayer(scoringEvent->teamID, scoringEvent->scorer)->shortHandedGoals++;
 		}
-		getPlayer(tID, a1)->a++;
-		getPlayer(tID, a2)->a++;
+		getPlayer(scoringEvent->teamID, scoringEvent->assist1)->assists++;
+		getPlayer(scoringEvent->teamID, scoringEvent->assist2)->assists++;
 	}
-	
-	db_addGoal(varsity, season, gID, tID, gs, a1, a2, per,sec,se.pp);
+
+	db_addGoal(scoringEvent, this);
 }
 
 Game* League::getGame(std::string gID){
@@ -284,7 +288,7 @@ Team* League::getTeam(int num){
 		return new Team();
 
 	for(int i = 0; i < teams.size(); i++){
-		if(teams[i].id == num)
+		if(teams[i].pointstreakID == num)
 			return &teams[i];
 	}
 
@@ -296,7 +300,7 @@ Player* League::getPlayer(std::string tID, int num){
 		return new Player();
 
 	for(int i = 0; i < players.size(); i++){
-		if(players[i].team == tID && players[i].id == num)
+		if(players[i].teamID == tID && players[i].pointstreakID == num)
 			return &players[i];
 	}
 
@@ -304,17 +308,17 @@ Player* League::getPlayer(std::string tID, int num){
 }
 
 Player* League::getPlayer(int id){
-	
+
 	if(players.size() == 0)
 		return new Player();
 
 	for(int i = 0; i < players.size(); i++){
-		if(players[i].id == id)
+		if(players[i].pointstreakID == id)
 			return &players[i];
 	}
 
 	return new Player();
-	
+
 }
 
 PenaltyEvent* League::getPenaltyEvent(std::string gID, std::string tID, int player, int per, int time, int duration, std::string penalty){
