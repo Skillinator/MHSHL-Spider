@@ -24,14 +24,14 @@
  *
  */
 
-void db_addTeam(Team team, League league);
-void db_addPlayer(Player player, League league);
-void db_updatePlayer(Player player, League league);
-void db_addGame(Game game, League league);
-void db_updateGame(Game game, League league);
-void db_addPenalty(PenaltyEvent penalty, League league);
-void db_updatePenalty(PenaltyEvent penalty, League league);
-void db_addGoal(ScoringEvent goal, League league);
+void db_addTeam(Team *team, League *league);
+void db_addPlayer(Player *player, League *league);
+void db_updatePlayer(Player *player, League *league);
+void db_addGame(Game *game, League *league);
+void db_updateGame(Game *game, League *league);
+void db_addPenalty(PenaltyEvent *penalty, League *league);
+void db_updatePenalty(PenaltyEvent *penalty, League *league);
+void db_addGoal(ScoringEvent *goal, League *league);
 
 /*
  *

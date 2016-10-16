@@ -152,11 +152,11 @@ class League{
 public:
 	League(int pL, bool var, int s);
 	bool varsity;
-	bool addTeam(Team team);
-	bool addPlayer(Player player);
-	void addPenaltyEvent(PenaltyEvent penaltyEvent);
-	void addScoringEvent(ScoringEvent scoringEvent);
-	bool addGame(Game game);
+	bool addTeam(Team *team);
+	bool addPlayer(Player *player);
+	void addPenaltyEvent(PenaltyEvent *penaltyEvent);
+	void addScoringEvent(ScoringEvent *scoringEvent);
+	bool addGame(Game *game);
 
 	void setGoaliePerformance(std::string gID, std::string tID, int pl, int sec, int ga, int sa);
 

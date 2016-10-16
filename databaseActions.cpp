@@ -29,25 +29,25 @@ void setSchema(bool varsity){
 	}
 }
 
-void db_addTeam(Team team, League league){
+void db_addTeam(Team *team, League *league){
 	startConnection();
 
 	sql::Statement *stmt;
 	sql::ResultSet *res;
 
-	setSchema(league.varsity);
+	setSchema(league->varsity);
 
 	stmt = con->createStatement();
 	bool exists = false;
 
-	res = stmt->executeQuery("SELECT * FROM teams WHERE abbr='" + team.abbreviation + "' AND season='" + std::to_string(league.season) + "'");
+	res = stmt->executeQuery("SELECT * FROM teams WHERE abbr='" + team->abbreviation + "' AND season='" + std::to_string(league->season) + "'");
 
 	while(res->next()){
 		exists = true;
 	}
 
 	if(!exists){
-		stmt->execute("INSERT INTO teams(abbr, name, city, id, season) VALUES('" + team.abbreviation + "','" + team.name + "','" + team.city + "'," + std::to_string(team.pointstreakID) + "," + std::to_string(league.season) + ")");
+		stmt->execute("INSERT INTO teams(abbr, name, city, id, season) VALUES('" + team->abbreviation + "','" + team->name + "','" + team->city + "'," + std::to_string(team->pointstreakID) + "," + std::to_string(league->season) + ")");
 	}
 
 	endConnection();
@@ -55,25 +55,25 @@ void db_addTeam(Team team, League league){
 	delete res;
 }
 
-void db_addPlayer(Player player, League league){
+void db_addPlayer(Player *player, League *league){
 	startConnection();
 
 	sql::Statement *stmt;
 	sql::ResultSet *res;
 
-	setSchema(league.varsity);
+	setSchema(league->varsity);
 
 	stmt = con->createStatement();
 	bool exists = false;
 
-	res = stmt->executeQuery("SELECT * FROM players WHERE id=" + std::to_string(player.pointstreakID) + " AND season=" + std::to_string(league.season));
+	res = stmt->executeQuery("SELECT * FROM players WHERE id=" + std::to_string(player->pointstreakID) + " AND season=" + std::to_string(league->season));
 
 	while(res->next()){
 		exists = true;
 	}
 
 	if(!exists){
-		stmt->execute("INSERT INTO players(team, name, id, number, season) VALUES('" + player.teamID + "','" + player.name + "','" + std::to_string(player.pointstreakID) + "'," + std::to_string(player.jerseyNumber) + "," + std::to_string(league.season) + ")");
+		stmt->execute("INSERT INTO players(team, name, id, number, season) VALUES('" + player->teamID + "','" + player->name + "','" + std::to_string(player->pointstreakID) + "'," + std::to_string(player->jerseyNumber) + "," + std::to_string(league->season) + ")");
 	}
 
 	endConnection();
@@ -83,17 +83,17 @@ void db_addPlayer(Player player, League league){
 	db_updatePlayer(player, league);
 }
 
-void db_updatePlayer(Player player, League league){
+void db_updatePlayer(Player *player, League *league){
 	startConnection();
 	sql::Statement *stmt;
 	sql::ResultSet *res;
 
-	setSchema(league.varsity);
+	setSchema(league->varsity);
 
 	stmt = con->createStatement();
 	bool exists = false;
 
-	res = stmt->executeQuery("SELECT * FROM players WHERE id=" + std::to_string(player.pointstreakID) + " AND season=" + std::to_string(league.season));
+	res = stmt->executeQuery("SELECT * FROM players WHERE id=" + std::to_string(player->pointstreakID) + " AND season=" + std::to_string(league->season));
 
 	while(res->next()){
 		exists = true;
@@ -103,40 +103,39 @@ void db_updatePlayer(Player player, League league){
 		db_addPlayer(player, league);
 	}
 
-	stmt->execute("UPDATE players SET gp = " + std::to_string(player.gamesPlayed) + " WHERE id=" + std::to_string(player.pointstreakID));
-	stmt->execute("UPDATE players SET goals = " + std::to_string(player.goals) + " WHERE id=" + std::to_string(player.pointstreakID));
-	stmt->execute("UPDATE players SET assists = " + std::to_string(player.assists) + " WHERE id=" + std::to_string(player.pointstreakID));
-	stmt->execute("UPDATE players SET ppGoals = " + std::to_string(player.powerPlayGoals) + " WHERE id=" + std::to_string(player.pointstreakID));
-	stmt->execute("UPDATE players SET shGoals = " + std::to_string(player.shortHandedGoals) + " WHERE id=" + std::to_string(player.pointstreakID));
-	stmt->execute("UPDATE players SET pims = " + std::to_string(player.penaltyMinutes) + " WHERE id=" + std::to_string(player.pointstreakID));
-	stmt->execute("UPDATE players SET gstreak = " + std::to_string(player.goalStreak) + " WHERE id=" + std::to_string(player.pointstreakID));
-	stmt->execute("UPDATE players SET pstreak = " + std::to_string(player.pointStreak) + " WHERE id=" + std::to_string(player.pointstreakID));
+	stmt->execute("UPDATE players SET gp = " + std::to_string(player->gamesPlayed) + " WHERE id=" + std::to_string(player->pointstreakID));
+	stmt->execute("UPDATE players SET goals = " + std::to_string(player->goals) + " WHERE id=" + std::to_string(player->pointstreakID));
+	stmt->execute("UPDATE players SET assists = " + std::to_string(player->assists) + " WHERE id=" + std::to_string(player->pointstreakID));
+	stmt->execute("UPDATE players SET ppGoals = " + std::to_string(player->powerPlayGoals) + " WHERE id=" + std::to_string(player->pointstreakID));
+	stmt->execute("UPDATE players SET shGoals = " + std::to_string(player->shortHandedGoals) + " WHERE id=" + std::to_string(player->pointstreakID));
+	stmt->execute("UPDATE players SET pims = " + std::to_string(player->penaltyMinutes) + " WHERE id=" + std::to_string(player->pointstreakID));
+	stmt->execute("UPDATE players SET gstreak = " + std::to_string(player->goalStreak) + " WHERE id=" + std::to_string(player->pointstreakID));
+	stmt->execute("UPDATE players SET pstreak = " + std::to_string(player->pointStreak) + " WHERE id=" + std::to_string(player->pointstreakID));
 
-	if(player.goalie){
-		stmt->execute("UPDATE players SET goalie = 1 WHERE id=" + std::to_string(player.pointstreakID));
+	if(player->goalie){
+		stmt->execute("UPDATE players SET goalie = 1 WHERE id=" + std::to_string(player->pointstreakID));
 	}else{
-		stmt->execute("UPDATE players SET goalie = 0 WHERE id=" + std::to_string(player.pointstreakID));
+		stmt->execute("UPDATE players SET goalie = 0 WHERE id=" + std::to_string(player->pointstreakID));
 	}
 
 	endConnection();
 	delete stmt;
 	delete res;
 
-
 }
 
-void db_addGame(Game game, League league){
+void db_addGame(Game *game, League *league){
 	startConnection();
 
 	sql::Statement *stmt;
 	sql::ResultSet *res;
 
-	setSchema(league.varsity);
+	setSchema(league->varsity);
 
 	stmt = con->createStatement();
 	bool exists = false;
 
-	res = stmt->executeQuery("SELECT * FROM games WHERE id='" + game.id + "'");
+	res = stmt->executeQuery("SELECT * FROM games WHERE id='" + game->id + "'");
 
 	while(res->next()){
 		exists = true;
@@ -144,7 +143,7 @@ void db_addGame(Game game, League league){
 
 	if(!exists){
 		std::cout<<"Adding game";
-		stmt->execute("INSERT INTO games(id, month, day, year, startTime, home, away, number, season, homeScore, awayScore) VALUES('" + game.id + "'," + std::to_string(game.month) + "," + std::to_string(game.day) + "," + std::to_string(game.year) + "," + std::to_string(game.startTime) + ",'" + game.homeTeam + "','" + game.awayTeam + "'," + std::to_string(game.number) + "," + std::to_string(league.season) + ", " + std::to_string(game.homeScore) + "," + std::to_string(game.awayScore) + ")");
+		stmt->execute("INSERT INTO games(id, month, day, year, startTime, home, away, number, season, homeScore, awayScore) VALUES('" + game->id + "'," + std::to_string(game->month) + "," + std::to_string(game->day) + "," + std::to_string(game->year) + "," + std::to_string(game->startTime) + ",'" + game->homeTeam + "','" + game->awayTeam + "'," + std::to_string(game->number) + "," + std::to_string(league->season) + ", " + std::to_string(game->homeScore) + "," + std::to_string(game->awayScore) + ")");
 	}
 
 	endConnection();
@@ -152,16 +151,16 @@ void db_addGame(Game game, League league){
 	delete res;
 }
 
-void db_updateGame(Game game, League league){
+void db_updateGame(Game *game, League *league){
 	startConnection();
 	sql::Statement *stmt;
 	sql::ResultSet *res;
 
-	setSchema(league.varsity);
+	setSchema(league->varsity);
 
 	stmt = con->createStatement();
 	bool exists=false;
-	res = stmt->executeQuery("SELECT * FROM games WHERE id='" + game.id + "'");
+	res = stmt->executeQuery("SELECT * FROM games WHERE id='" + game->id + "'");
 
 	while(res->next()){
 		exists = true;
@@ -171,35 +170,35 @@ void db_updateGame(Game game, League league){
 		db_addGame(game, league);
 	}
 
-	stmt->execute("UPDATE games SET time=" + std::to_string(game.time) + " WHERE id='" + game.id + "'");
-	stmt->execute("UPDATE games SET period=" + std::to_string(game.period) + " WHERE id='" + game.id + "'");
-	stmt->execute("UPDATE games SET homeShots=" + std::to_string(game.homeShots) + " WHERE id='" + game.id + "'");
-	stmt->execute("UPDATE games SET awayShots=" + std::to_string(game.awayShots) + " WHERE id='" + game.id + "'");
-	stmt->execute("UPDATE games SET homeScore =" + std::to_string(game.homeScore) + " WHERE id='" + game.id + "'");
-	stmt->execute("UPDATE games SET awayScore=" + std::to_string(game.awayScore) + " WHERE id='" + game.id + "'");
+	stmt->execute("UPDATE games SET time=" + std::to_string(game->time) + " WHERE id='" + game->id + "'");
+	stmt->execute("UPDATE games SET period=" + std::to_string(game->period) + " WHERE id='" + game->id + "'");
+	stmt->execute("UPDATE games SET homeShots=" + std::to_string(game->homeShots) + " WHERE id='" + game->id + "'");
+	stmt->execute("UPDATE games SET awayShots=" + std::to_string(game->awayShots) + " WHERE id='" + game->id + "'");
+	stmt->execute("UPDATE games SET homeScore =" + std::to_string(game->homeScore) + " WHERE id='" + game->id + "'");
+	stmt->execute("UPDATE games SET awayScore=" + std::to_string(game->awayScore) + " WHERE id='" + game->id + "'");
 
 	endConnection();
 	delete stmt;
 	delete res;
 }
 
-void db_addPenalty(PenaltyEvent penalty, League league){
+void db_addPenalty(PenaltyEvent *penalty, League *league){
 	startConnection();
 	sql::Statement *stmt;
 	sql::ResultSet *res;
 
-	setSchema(league.varsity);
+	setSchema(league->varsity);
 
 	stmt = con->createStatement();
 	bool exists = false;
-	res=stmt->executeQuery("SELECT * FROM penaltyEvents WHERE GameID='"+penalty.gameID+"'&&player="+std::to_string(penalty.player)+"&&time="+std::to_string(penalty.time));
+	res=stmt->executeQuery("SELECT * FROM penaltyEvents WHERE GameID='"+penalty->gameID+"'&&player="+std::to_string(penalty->player)+"&&time="+std::to_string(penalty->time));
 
 	while(res->next()){
 		exists = true;
 	}
 
 	if(!exists){
-		stmt->execute("INSERT INTO penaltyEvents(GameID, TeamID, player, duration, period, time, timeRemaining, offense, season) VALUES('" + penalty.gameID + "', '" + penalty.teamID + "', " + std::to_string(penalty.player) + ", " + std::to_string(penalty.duration) + ", " + std::to_string(penalty.period) + ", " + std::to_string(penalty.time) + ", " + std::to_string(penalty.timeRemaining) + ", '" + penalty.offense + "'," + std::to_string(league.season) + ")");
+		stmt->execute("INSERT INTO penaltyEvents(GameID, TeamID, player, duration, period, time, timeRemaining, offense, season) VALUES('" + penalty->gameID + "', '" + penalty->teamID + "', " + std::to_string(penalty->player) + ", " + std::to_string(penalty->duration) + ", " + std::to_string(penalty->period) + ", " + std::to_string(penalty->time) + ", " + std::to_string(penalty->timeRemaining) + ", '" + penalty->offense + "'," + std::to_string(league->season) + ")");
 	}
 
 	endConnection();
@@ -207,16 +206,16 @@ void db_addPenalty(PenaltyEvent penalty, League league){
 	delete res;
 }
 
-void db_updatePenalty(PenaltyEvent penalty, League league){
+void db_updatePenalty(PenaltyEvent *penalty, League *league){
 	startConnection();
 	sql::Statement *stmt;
 	sql::ResultSet *res;
 
-	setSchema(league.varsity);
+	setSchema(league->varsity);
 
 	stmt = con->createStatement();
 	bool exists = false;
-	res=stmt->executeQuery("SELECT * FROM penaltyEvents WHERE GameID='"+penalty.gameID+"'&&player="+std::to_string(penalty.player)+"&&time="+std::to_string(penalty.time));
+	res=stmt->executeQuery("SELECT * FROM penaltyEvents WHERE GameID='"+penalty->gameID+"'&&player="+std::to_string(penalty->player)+"&&time="+std::to_string(penalty->time));
 
 	while(res->next()){
 		exists = true;
@@ -227,30 +226,30 @@ void db_updatePenalty(PenaltyEvent penalty, League league){
 	}
 
 
-	stmt->execute("UPDATE penaltyEvents SET timeRemaining=" + std::to_string(penalty.timeRemaining) + " WHERE GameID='" + penalty.gameID + "'&&player=" + std::to_string(penalty.player) + "&&time=" + std::to_string(penalty.time));
-	stmt->execute("UPDATE penaltyEvents SET goalsWhile=" + std::to_string(penalty.goalsWhile) + " WHERE GameID='" + penalty.gameID + "'&&player=" + std::to_string(penalty.player) + "&&time=" + std::to_string(penalty.time));
+	stmt->execute("UPDATE penaltyEvents SET timeRemaining=" + std::to_string(penalty->timeRemaining) + " WHERE GameID='" + penalty->gameID + "'&&player=" + std::to_string(penalty->player) + "&&time=" + std::to_string(penalty->time));
+	stmt->execute("UPDATE penaltyEvents SET goalsWhile=" + std::to_string(penalty->goalsWhile) + " WHERE GameID='" + penalty->gameID + "'&&player=" + std::to_string(penalty->player) + "&&time=" + std::to_string(penalty->time));
 	endConnection();
 	delete stmt;
 	delete res;
 }
 
-void db_addGoal(ScoringEvent goal, League league){
+void db_addGoal(ScoringEvent *goal, League *league){
 	startConnection();
 	sql::Statement *stmt;
 	sql::ResultSet *res;
 
-	setSchema(league.varsity);
+	setSchema(league->varsity);
 
 	stmt = con->createStatement();
 	bool exists=false;
-	res=stmt->executeQuery("SELECT * FROM scoringEvents WHERE GameID='" + goal.gameID + "'&&period="+std::to_string(goal.period)+"&&time="+std::to_string(goal.time));
+	res=stmt->executeQuery("SELECT * FROM scoringEvents WHERE GameID='" + goal->gameID + "'&&period="+std::to_string(goal->period)+"&&time="+std::to_string(goal->time));
 
 	while(res->next()){
 		exists = true;
 	}
 
 	if(!exists){
-		stmt->execute("INSERT INTO scoringEvents(GameID, TeamID, scorer, a1, a2, period, time, pp, season) VALUES('" + goal.gameID + "', '" + goal.teamID + "', " + std::to_string(goal.scorer) + ","+std::to_string(goal.assist1)+","+std::to_string(goal.assist2)+","+std::to_string(goal.period) + "," + std::to_string(goal.time) + "," + std::to_string(goal.powerPlay) + "," + std::to_string(league.season) + ")");
+		stmt->execute("INSERT INTO scoringEvents(GameID, TeamID, scorer, a1, a2, period, time, pp, season) VALUES('" + goal->gameID + "', '" + goal->teamID + "', " + std::to_string(goal->scorer) + ","+std::to_string(goal->assist1)+","+std::to_string(goal->assist2)+","+std::to_string(goal->period) + "," + std::to_string(goal->time) + "," + std::to_string(goal->powerPlay) + "," + std::to_string(league->season) + ")");
 	}
 
 	endConnection();

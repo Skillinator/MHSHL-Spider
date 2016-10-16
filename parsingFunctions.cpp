@@ -52,7 +52,7 @@ void processGoalie(Game* game, League* league, std::string rawGoalieString, bool
 			p->savePercentage = p->saves*1.0/p->shots;
 		}
 		std::cout<<"Updating Goalie \n";
-		db_updatePlayer(*p, *league);
+		db_updatePlayer(p, league);
 		std::cout<<"Successfully finished updating goalie\n";
 	}
 

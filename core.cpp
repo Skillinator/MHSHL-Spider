@@ -53,7 +53,7 @@ void getGames(Team team, League *league){
 		time = getMinutes(elements[5]);
 		gameID = stoi(getValue(elements[6], "gameid"));
 
-		league->addGame(Game(month, day, year, time, homeID, awayID, league->periodLength, gameID));
+		league->addGame(new Game(month, day, year, time, homeID, awayID, league->periodLength, gameID));
 
 	}
 
@@ -121,7 +121,7 @@ void getPlayers(Team team, League *league){
 			playerID = std::stoi(getValue(nameID, "playerid"));
 			name = split(extract(nameID, "a"), "\t\t\t\t")[1];
 
-			league->addPlayer(Player(team.abbreviation, name, playerID, playerNum));
+			league->addPlayer(new Player(team.abbreviation, name, playerID, playerNum));
 		}
 
 	}
@@ -155,7 +155,7 @@ void getPlayers(Team team, League *league){
 			playerID = std::stoi(getValue(nameID, "playerid"));
 			name = split(extract(nameID, "a"), "\t\t\t")[1];
 
-			if(league->addPlayer(Player(team.abbreviation, name, playerID, playerNum)))
+			if(league->addPlayer(new Player(team.abbreviation, name, playerID, playerNum)))
 				league->players[league->players.size()-1].goalie = true;
 		}
 
@@ -165,7 +165,7 @@ void getPlayers(Team team, League *league){
 	std::cout<<"Updating players...  ";
 	for(int i = 0; i < league->players.size(); i++){
 		// std::cout<<players[i]<< "  ";
-		db_updatePlayer(league->players[i], *league);
+		db_updatePlayer(&league->players[i], league);
 	}
 	std::cout<<" ...Done!\n";
 }
@@ -188,18 +188,18 @@ void hard_update(League* league){
 }
 
 void addHardCodedTeams(League *league){
-	league->addTeam(Team("QCB", "Blues", "Quad City", 47180));
-	league->addTeam(Team("DBQ", "Devils", "Dubuque", 47175));
-	league->addTeam(Team("CDR", "Jr. Roughriders", "Cedar Rapids", 47172));
-	league->addTeam(Team("WAT", "Warriors", "Waterloo", 47182));
-	league->addTeam(Team("DMC", "Capitals", "Des Moines", 47173));
-	league->addTeam(Team("DMO", "Oak Leafs", "Des Moines", 47174));
-	league->addTeam(Team("AMS", "Little Cyclones", "Ames", 47171));
-	league->addTeam(Team("MCM", "Mohawks", "Mason City", 47178));
-	league->addTeam(Team("SCM", "Metros", "Sioux City", 47181));
-	league->addTeam(Team("KCJ", "Jets", "Kansas City", 96071));
-	league->addTeam(Team("OJL", "Jr. Lancers", "Omaha", 149736));
-	league->addTeam(Team("LJS", "Jr. Stars", "Lincoln", 47177));
+	league->addTeam(new Team("QCB", "Blues", "Quad City", 47180));
+	league->addTeam(new Team("DBQ", "Devils", "Dubuque", 47175));
+	league->addTeam(new Team("CDR", "Jr. Roughriders", "Cedar Rapids", 47172));
+	league->addTeam(new Team("WAT", "Warriors", "Waterloo", 47182));
+	league->addTeam(new Team("DMC", "Capitals", "Des Moines", 47173));
+	league->addTeam(new Team("DMO", "Oak Leafs", "Des Moines", 47174));
+	league->addTeam(new Team("AMS", "Little Cyclones", "Ames", 47171));
+	league->addTeam(new Team("MCM", "Mohawks", "Mason City", 47178));
+	league->addTeam(new Team("SCM", "Metros", "Sioux City", 47181));
+	league->addTeam(new Team("KCJ", "Jets", "Kansas City", 96071));
+	league->addTeam(new Team("OJL", "Jr. Lancers", "Omaha", 149736));
+	league->addTeam(new Team("LJS", "Jr. Stars", "Lincoln", 47177));
 }
 
 void initializeLeague(League *league){
@@ -235,7 +235,7 @@ void updateGame(Game* game, League* league){
 	parseShotsOnGoal(page, game);
 	parsePenaltyEvents(page, &penaltyEvents, game, league);
 	parseScoringEvents(page, &scoringEvents, game, league);
-	
+
 	/*
 	* Go through these in chronological order.
 	*/
@@ -245,16 +245,16 @@ void updateGame(Game* game, League* league){
 		PenaltyEvent mrp = penaltyEvents[0];
 
 		if(mrs.period < mrp.period){
-			league->addScoringEvent(mrs);
+			league->addScoringEvent(&mrs);
 			scoringEvents.erase(scoringEvents.begin());
 		}else if(mrs.period > mrp.period){
-			league->addPenaltyEvent(mrp);
+			league->addPenaltyEvent(&mrp);
 			penaltyEvents.erase(penaltyEvents.begin());
 		}else if(mrs.time > mrp.time){
-			league->addScoringEvent(mrs);
+			league->addScoringEvent(&mrs);
 			scoringEvents.erase(scoringEvents.begin());
 		}else{
-			league->addPenaltyEvent(mrp);
+			league->addPenaltyEvent(&mrp);
 			penaltyEvents.erase(penaltyEvents.begin());
 		}
 	}
@@ -262,7 +262,7 @@ void updateGame(Game* game, League* league){
 	if(scoringEvents.size() > 0){
 		while(scoringEvents.size() > 0){
 			ScoringEvent mrs = scoringEvents[0];
-			league->addScoringEvent(mrs);
+			league->addScoringEvent(&mrs);
 			scoringEvents.erase(scoringEvents.begin());
 		}
 	}
@@ -270,7 +270,7 @@ void updateGame(Game* game, League* league){
 	if(penaltyEvents.size() > 0){
 		while(penaltyEvents.size() > 0){
 			PenaltyEvent mrp = penaltyEvents[0];
-			league->addPenaltyEvent(mrp);
+			league->addPenaltyEvent(&mrp);
 			penaltyEvents.erase(penaltyEvents.begin());
 		}
 	}
@@ -298,7 +298,7 @@ void updateGame(Game* game, League* league){
 				game->period = 3;
 				break;
 		}
-		db_updateGame(*game, *league);
+		db_updateGame(game, league);
 	}
 
 
@@ -364,7 +364,7 @@ void updateGame(Game* game, League* league){
 			league->getPlayer(p)->gamesPlayed++;
 			std::cout<<"Updating Player " << league->getPlayer(p)->name << "\n";
 			if(league->getPlayer(p)->name != "NULL")
-				db_updatePlayer(*league->getPlayer(p), *league);
+				db_updatePlayer(league->getPlayer(p), league);
 		}
 	}
 }
