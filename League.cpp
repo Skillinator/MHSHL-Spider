@@ -47,7 +47,7 @@ void League::updatePenalties(std::string gID, int dT){
 			penalties[i].timeRemaining = 0;
 
 		if(penalties[i].gameID == gID)
-			game->updatePenalty(&penalties[i], this);
+			db_updatePenalty(&penalties[i], this);
 	}
 }
 
@@ -208,7 +208,7 @@ void League::addScoringEvent(ScoringEvent *scoringEvent){
 
 		if(scoringEvent->assist1 != seTest->assist1){
 			getPlayer(scoringEvent->teamID, seTest->assist1)->assists--;
-			getPlayer(scoringEvent->teamID, scoringEvent.assist1)->assists++;
+			getPlayer(scoringEvent->teamID, scoringEvent->assist1)->assists++;
 		}
 		if(scoringEvent->assist2 != seTest->assist2){
 			getPlayer(scoringEvent->teamID, seTest->assist2)->assists--;
